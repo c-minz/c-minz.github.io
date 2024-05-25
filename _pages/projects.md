@@ -3,9 +3,9 @@ layout: page
 permalink: /projects/
 title: Projects
 description: List of past, ongoing and planned projects.
-nav: true
+nav: false
 nav_order: 5
-display_categories: [work, fun]
+display_categories: [Main projects, Side projects]
 horizontal: false
 ---
 
