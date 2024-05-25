@@ -8,6 +8,7 @@ _site
 .tweet-cache
 .project
 .settings/
+public/
 Gemfile.lock
 assets/libs/
 node_modules/
