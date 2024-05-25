@@ -1,9 +1,15 @@
-"AJP":
-  url: https://aapt.scitation.org/journal/ajp
-  color: "#00369f"
+"Ann. Phys.":
+  url: https://www.sciencedirect.com/journal/annals-of-physics
+  color: "#0272b1"
 
-"PhysRev":
-  url: https://journals.aps.org/
+"CTAN":
+  url: https://ctan.org
+  color: "#cccccc"
 
-"Vision":
-  color: "#009f36"
+"PRD":
+  url: https://journals.aps.org/prd
+  color: "#467e91"
+  
+"Whiterose":
+  url: https://etheses.whiterose.ac.uk
+  color: "#587898"
