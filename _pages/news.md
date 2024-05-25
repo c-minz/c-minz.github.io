@@ -2,8 +2,7 @@
 layout: page
 permalink: /news/
 title: News
-nav: true
-nav_order: 5
+nav: false
 description: List of recent news.
 ---
 

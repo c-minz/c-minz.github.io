@@ -4,7 +4,7 @@ permalink: /projects/
 title: Projects
 description: List of past, ongoing and planned projects.
 nav: true
-nav_order: 6
+nav_order: 5
 display_categories: [work, fun]
 horizontal: false
 ---
