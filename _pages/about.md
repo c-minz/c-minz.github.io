@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Research assistant at Leipzig University (ITP, Br&uuml;derstr. 16).
+subtitle: Ph.D. (York), research assistant at ITP, Leipzig University.
 
 profile:
   align: right
