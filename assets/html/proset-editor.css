@@ -1,0 +1,137 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	min-width: 470px;
+	max-width: 750px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 23px;
+	color: #227799;
+	padding-top: 20px;
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+}
+
+#subtitle {
+	text-align: center;
+	font-style: italic;
+	font-size: 15px;
+	color: #30a3fc;
+	background-color: #edf1fd;
+	padding-top: 0px;
+	margin-top: 0px;
+}
+
+#introduction {
+	vertical-align: center;
+	padding: 10px;
+}
+
+.keyboard {
+	font-family: 'Source Code Pro', 'Courier New', Courier, monospace;
+	font-weight: bold;
+}
+
+#editor {
+	padding: 15px;
+	clear: both;
+	float: none;
+	border: 0.5px solid #e6e6e6;
+}
+
+#editor_main {
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 25px;
+	background-color: #ffffff;
+}
+
+#txtInput {
+	width: 350px;
+}
+
+#cnvPoset {
+	border: 0.5px solid #e6e6e6;
+	padding: 15px;
+	margin: 2px;
+}
+
+#txtOutputPermutation {
+	width: 352px;
+}
+
+h2 {
+	margin-top: 35px;
+	margin-bottom: 8px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 17px;
+	color: black;
+}
+
+input[type=text], input[type=number] {
+	height: 25px;
+}
+
+input[type=button] {
+	font-weight: bold;
+	min-height: 33px;
+	min-width: 33px;
+}
+
+label {
+	display: inline-block;
+	height: 20px;
+	padding-top: 5px;
+}
+
+#editor_controls, #editor_settings {
+	float: left;
+	min-width: 200px;
+}
+
+#butMoveUUp, #butMoveVDown {
+	display: inline-block;
+	margin-left: 20px;
+}
+
+#txtSelection {
+	width: 75px;
+	margin: 4px;
+	text-align: center;
+	font-size: 14px;
+}
+
+#butReflect, #butOpposite {
+	display: inline-block;
+	font-weight: normal;
+	margin-top: 15px;
+	margin-bottom: 25px;
+}
+
+#editor_output {
+	clear: both;
+}
+
+#txtOutputLatex {
+	min-width: 150px;
+	width: 85%;
+	max-width: 700px;
+}
+
+#editor_help, #editor_about {
+	clear: both;
+	float: none;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+#editor_copyright {
+	text-align: center;
+	margin-top: 25px;
+	margin-bottom: 25px;
+}

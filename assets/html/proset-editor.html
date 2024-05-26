@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Editor for diagrams of partially ordered sets" />
+<meta name="author" content="Christoph Minz" />
+<meta name="keywords" content="partial order, partially ordered set, poset, causal set, causet" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The PrOSET Editor</title>
+
+<link rel="stylesheet" href="proset-editor.css">
+<script type="text/javascript" src="proset-editor.js"></script>
+
+</head>
+
+<body>
+
+<h1>The PrOSET Editor</h1>
+<p id="subtitle">
+	Partially re-Ordered SET
+</p>
+
+<p id="introduction">
+	Welcome to the PrOSET editor to visualise and modify finite partially 
+	ordered sets (posets) represented as their Hasse diagrams. Finite posets are 
+	interval subsets of causal sets, for example. 
+	<br />
+	This version only supports Hasse diagrams of 2-dimensional posets, represented 
+	by a permutation of consecutive integers starting from 1 (given as a comma 
+	separated list).
+</p>
+
+<form id="editor">
+	
+	<div id="editor_main">
+		<input type="text" id="txtInput"
+			name="input" value="4,2,6,1,5,3" />
+		<input type="button" id="butGenerate" 
+			onClick="generatePosetFromInput()" 
+			value="Generate" title="Generate poset from permutation" />
+		<br/>
+		<canvas id="cnvPoset" width="400" height="400"></canvas>
+		<br />
+		<input type="button" id="butCopyToInput" 
+			onClick="copyToInput( 'txtOutputPermutation' )" 
+			value="&#x2B6E;" title="Copy to input" />
+		<input type="text" id="txtOutputPermutation" />
+		<input type="button" id="butCopyPermutation" 
+			onClick="copyToClipboard( 'txtOutputPermutation' )" 
+			value="&#x23CD;" title="Copy to clipboard" />
+	</div>
+	
+	<div id="editor_controls">
+		<h2>Controls</h2>
+		<input type="button" id="butMoveVUp" 
+			onClick="moveV( 1 )" 
+			value="&#x25E4;" title="Move up in v-direction [Shift]+[W]" />
+		<input type="button" id="butMoveUUp" 
+			onClick="moveU( 1 )" 
+			value="&#x25E5;" title="Move up in u-direction [Shift]+[D]" />
+		<br/>
+		<input type="number" id="txtSelection" 
+			onChange="redrawPoset()" 
+			value="0" min="0" max="10" title="Selected event [W], [A], [S], [D]" />
+		<input type="button" id="butRemoveEvent" 
+			onClick="removeSelectedEvent()" 
+			value="&#x2716;" title="Remove selected event [Delete]" />
+		<input type="button" id="butAddEvent" 
+			onClick="addEvent()" 
+			value="&#x2B24;" title="Add new event on the right [.]" />
+		<br/>
+		<input type="button" id="butMoveUDown" 
+			onClick="moveU( -1 )" 
+			value="&#x25E3;" title="Move down in u-direction [Shift]+[A]" />
+		<input type="button" id="butMoveVDown" 
+			onClick="moveV( -1 )" 
+			value="&#x25E2;" title="Move down in v-direction [Shift]+[S]" />
+		<br />
+		<input type="button" id="butOpposite" 
+			onClick="turnOpposite()" 
+			value="&#x2B0D; Opposite" title="Turn into opposite poset" />
+		<input type="button" id="butReflect" 
+			onClick="reflect()" 
+			value="&#x2B0C; Reflect" title="Reflect horizontally" />
+	</div>
+	
+	<div id="editor_settings">
+		<h2>Settings</h2>
+		<input type="checkbox" id="chbShowLabels" 
+			onClick="redrawPoset()" 
+			value="0"/>
+		<label for="chbShowLabels" id="lblShowLabels">
+			Show labels
+		</label>
+		<br />
+		<input type="checkbox" id="chbShowCross" 
+			onClick="redrawPoset()" 
+			value="1" />
+		<label for="chbShowCross" id="lblShowCross">
+			Show selection cross
+		</label>
+		<br />
+		<input type="checkbox" id="chbShowGrid" 
+			onClick="redrawPoset()" 
+			value="0" />
+		<label for="chbShowGrid" id="lblShowGrid">
+				Show permutation grid
+		</label>
+	</div>
+	
+	<div id="editor_output">
+		<h2>Export</h2>
+		<p>
+			If you want to include a graphic of the poset in a LaTeX document, then 
+			import the
+			<a href="https://ctan.org/pkg/causets" target="_blank">
+				package causets
+			</a>
+			with the macro <span class="keyboard">\usepackage{causets}</span> in the 
+			preample. Copy and paste the code from below. It can be used as inline 
+			text or in a mathematical expression. 
+		</p>
+		<label for="txtOutputLatex" id="lblOutputLatex">
+			LaTeX code
+		</label>
+		<br />
+		<input type="text" id="txtOutputLatex" />
+		<input type="button" id="butCopyLatex" 
+			onClick="copyToClipboard( 'txtOutputLatex' )" 
+			value="&#x23CD;" title="Copy to clipboard" />
+	</div>
+	
+</form>
+
+<div id="editor_help">
+	<h2>Help</h2>
+	Enter a permutation of consecutive positive integers starting from 1 in the 
+	input field and press "Generate" to create the Hasse diagram. Elements of the 
+	diagram can be selected and moved with the button controls or using the 
+	keyboard:
+	<br />
+	<span class="keyboard">[W]</span> / 
+	<span class="keyboard">[S]</span> to select the next element NW / SE,<br />
+	<span class="keyboard">[A]</span> / 
+	<span class="keyboard">[D]</span> to select the next element SW / NE,<br />
+	<span class="keyboard">[Shift]+[W]</span> / 
+	<span class="keyboard">[Shift]+[S]</span> to move the element NW / SE,<br />
+	<span class="keyboard">[Shift]+[A]</span> / 
+	<span class="keyboard">[Shift]+[D]</span> to move the element SW / NE,<br />
+	<span class="keyboard">[Delete]</span> / 
+	<span class="keyboard">[.]</span> to remove the element / add an element.
+</div>
+
+<div id="editor_about">
+	<h2>About</h2>
+	This editor was developed as a tool for a research project and is built on 
+	the same methods as the 
+	<a href="https://ctan.org/pkg/causets" target="_blank">LaTeX package causets</a>, 
+	but this editor has less functionality. The LaTeX package offers many more 
+	options to draw, style and modify Hasse diagrams, including diagrams for 
+	higher dimensional posets. More information are given in the package manual.
+	
+	<h2>Disclaimer</h2>
+	This web tool has been tested, but I do not take responsibility of 
+	incorrectly represented data. Please send me a comprehensive problem 
+	description and information of your browser (name and version) if you 
+	encounter an error. 
+	<br />
+	I also welcome any suggestions to improve the tool.
+	
+	<p id="editor_copyright">
+		Copyright 2024 by Christoph Minz, version v0.1 (last revision 2024-05-16).
+	</p>
+</div>
+
+</body>
+
+</html>
