@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Ph.D. (York), research assistant at ITP, Leipzig University.
+subtitle: Ph.D. Research assistant at ITP, Leipzig University, Germany.
 
 profile:
   align: right
@@ -22,12 +22,12 @@ I am a researcher in mathematical and theoretical physics, mostly working on
 I received my PhD from the University of York, UK in July 2022, for which I worked on classical and quantum field theory on causal sets.
 Most of my [repositories](/repositories/) contain source code developed for research projects on these topics. 
 
-My research interests also include quantum gravity, for example, the approaches of causal set theory, causal dynamical triangulations, non-commutative geometry of spacetimes. 
+My research interests also include quantum gravity, not only causal set theory, but also other approaches like causal dynamical triangulations, and non-commutative geometry of spacetimes. 
 
 
 ## Causal sets and Hasse diagrams
 
 Alongside my doctoral studies, I developed the [LaTeX package "causets"](https://ctan.org/pkg/causets) to draw Hasse diagrams for causal sets and partially ordered sets, more generally. 
 The drawing method is based on 2D-orders, using a permutation of integers as input. 
-To find the best permutation to generate a diagram, I started to develop an online tool: [**PrOSET Editor**](proset-editor.html)
+To find the best permutation to generate a diagram, I started to develop an online tool, the [PrOSET Editor](/assets/html/proset-editor.html).
 

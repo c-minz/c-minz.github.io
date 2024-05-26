@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Launched this github.io website.
+First launch of the website.

@@ -6,10 +6,10 @@ nav: false
 nav_order: 6
 ---
 
-Website responsible is Christoph Minz.
+The website responsible is Christoph Minz.
 
-Institute of Theoretical Physics, 
-Leipzig University, 
+Institute of Theoretical Physics <br />
+Leipzig University <br />
 04103 Leipzig
 
 E-Mail: christoph.minz[_at_]itp.uni-leipzig.de
