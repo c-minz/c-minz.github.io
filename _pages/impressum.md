@@ -1,12 +1,12 @@
 ---
 layout: page
 title: Impressum
-permalink: /impressum/
+permalink: /impressum.html
 nav: false
 nav_order: 6
 ---
 
-The website responsible is Christoph Minz.
+The person responsible for the website is Christoph Minz.
 
 Institute of Theoretical Physics <br />
 Leipzig University <br />

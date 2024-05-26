@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Ph.D. Research assistant at ITP, Leipzig University, Germany.
+subtitle: **Ph.D.**, currently research assistant at ITP, Leipzig University, Germany.
 
 profile:
   align: right
