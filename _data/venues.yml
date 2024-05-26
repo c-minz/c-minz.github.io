@@ -1,4 +1,4 @@
-"Ann. Phys.":
+"Elsevier: Ann. Phys.":
   url: https://www.sciencedirect.com/journal/annals-of-physics
   color: "#0272b1"
 
@@ -6,10 +6,22 @@
   url: https://ctan.org
   color: "#cccccc"
 
-"PRD":
+"APS: PRD":
   url: https://journals.aps.org/prd
   color: "#467e91"
 
 "Whiterose":
   url: https://etheses.whiterose.ac.uk
   color: "#587898"
+
+"Springer: AHP":
+  url: https://link.springer.com/journal/23
+  color: "#002457"
+
+"IOP: CQG":
+  url: https://iopscience.iop.org/journal/0264-9381
+  color: "#88cabb"
+
+"IOP: JPA":
+  url: https://iopscience.iop.org/journal/1751-8121
+  color: "#009434"
