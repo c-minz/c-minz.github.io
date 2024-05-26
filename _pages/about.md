@@ -27,7 +27,14 @@ My research interests also include quantum gravity, not only causal set theory, 
 
 ## Causal sets and Hasse diagrams
 
-Alongside my doctoral studies, I developed the [LaTeX package "causets"](https://ctan.org/pkg/causets) to draw Hasse diagrams for causal sets and partially ordered sets, more generally. 
-The drawing method is based on 2D-orders, using a permutation of integers as input. 
-To find the best permutation to generate a diagram, I started to develop an online tool, the [PrOSET Editor](/assets/html/proset-editor.html).
+Alongside my doctoral studies, I developed a LaTeX package to draw Hasse diagrams for causal sets. It is available through [CTAN](https://ctan.org/pkg/causets), so that it already comes with a full LaTeX installation (for example, it is ready to use on Overleaf). Just load the package with
+```tex
+\usepackage{causets}
+```
 
+Package features are:
+- has short macros working in text and math mode
+- the macro input is a permutation of consecutive integers
+- generalises the idea of 2D-orders to draw generic diagrams
+- uses TikZ to draw diagrams for ease of use also in larger graphics
+- the online **PrOSET Editor** helps to generate the macro (currently working for 2D-orders): [PrOSET Editor](/assets/html/proset-editor.html)
