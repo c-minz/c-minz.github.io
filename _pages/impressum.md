@@ -6,7 +6,7 @@ nav: false
 nav_order: 6
 ---
 
-## Website responsible
+## Responsibility
 Website responsible is Christoph Minz.
 
 Institute of Theoretical Physics, 
