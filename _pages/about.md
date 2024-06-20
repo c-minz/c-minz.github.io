@@ -24,17 +24,5 @@ Most of my [repositories](/repositories/) contain source code developed for rese
 
 My research interests also include quantum gravity, not only causal set theory, but also other approaches like causal dynamical triangulations, and non-commutative geometry of spacetimes. 
 
-
-## Causal sets and Hasse diagrams
-
-Alongside my doctoral studies, I developed a LaTeX package to draw Hasse diagrams for causal sets. It is available through [CTAN](https://ctan.org/pkg/causets), so that it already comes with a full LaTeX installation (for example, it is ready to use on Overleaf). Just load the package with
-```tex
-\usepackage{causets}
-```
-
-Package features are:
-- has short macros working in text and math mode
-- the macro input is a permutation of consecutive integers
-- generalises the idea of 2D-orders to draw generic diagrams
-- uses TikZ to draw diagrams for ease of use also in larger graphics
-- the online **PrOSET Editor** helps to generate the macro (currently working for 2D-orders): [PrOSET Editor](/assets/html/proset-editor.html)
+Please follow this link to get [more information on my projects](/projects/). 
+These include the development of the [LaTeX package 'causets'](https://ctan.org/pkg/causets) and an [online editor 'PrOSET'](/assets/html/proset-editor.html). 

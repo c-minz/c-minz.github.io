@@ -2,10 +2,10 @@
 layout: page
 permalink: /projects/
 title: Projects
-description: List of past, ongoing and planned projects.
-nav: false
-nav_order: 5
-display_categories: [Main projects, Side projects]
+description: List of projects from my past, present and future research
+nav: true
+nav_order: 1
+display_categories: [Main research, Side research]
 horizontal: false
 ---
 
