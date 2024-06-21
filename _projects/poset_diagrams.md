@@ -58,10 +58,11 @@ Each file contains the catalogues of finite posets for a fixed cardinality, one 
 
 The symmetry properties (and corresponding counters) are defined in {% cite Minz:2024 %}.
 
-- [Catalogue of 1 posets with cardinality 1](/assets/pdf/PosetCataloguePart1.pdf)
-- [Catalogue of 2 posets with cardinality 2](/assets/pdf/PosetCataloguePart2.pdf)
-- [Catalogue of 5 posets with cardinality 3](/assets/pdf/PosetCataloguePart3.pdf)
-- [Catalogue of 16 posets with cardinality 4](/assets/pdf/PosetCataloguePart4.pdf)
-- [Catalogue of 63 posets with cardinality 5](/assets/pdf/PosetCataloguePart5.pdf)
-- [Catalogue of 318 posets with cardinality 6](/assets/pdf/PosetCataloguePart6.pdf)
-- [Catalogue of 2045 posets with cardinality 7](/assets/pdf/PosetCataloguePart7.pdf)
+These are the catalogues of the 
+- [1 poset with cardinality 1](/assets/pdf/PosetCataloguePart1.pdf)
+- [2 posets with cardinality 2](/assets/pdf/PosetCataloguePart2.pdf)
+- [5 posets with cardinality 3](/assets/pdf/PosetCataloguePart3.pdf)
+- [16 posets with cardinality 4](/assets/pdf/PosetCataloguePart4.pdf)
+- [63 posets with cardinality 5](/assets/pdf/PosetCataloguePart5.pdf)
+- [318 posets with cardinality 6](/assets/pdf/PosetCataloguePart6.pdf)
+- [2045 posets with cardinality 7](/assets/pdf/PosetCataloguePart7.pdf)
