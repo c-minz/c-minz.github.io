@@ -20,10 +20,10 @@ The package supports three main commands
 - `\rcauset{..,i,..}{..,i/j,..}` to draw a poset based on a drawing of a 2D order as before (permutation in the first argument), but with some links `i/j` removed (second argument)
 - `\causet{..,i,..}{..,i/j,..}` to draw a poset where the vertices are arranged according to the permutation as before (first argument) and links are added between every pair of elements `i/j` (third argument)
 
-For example:
+Here are some macro examples that create posets for use in math or text mode: 
 ```tex
-\pcauset{1,...,7}  % to insert a 7-chain in text or math mode
-\pcauset{7,...,1}  % to insert a 7-antichain
+\pcauset{1,2,...,7}  % to insert a 7-chain
+\pcauset{7,6,...,1}  % to insert a 7-antichain
 ```
 
 The package is based on TikZ, so there are plenty of additional options to label, restyle, and combine the graphics with other TikZ code.
@@ -31,16 +31,17 @@ The package is based on TikZ, so there are plenty of additional options to label
 
 ## Online editor: PrOSET
 
-Since the macros of the LaTeX package are built on permutations that are not always easy to find, here is an online tool (currently only supporting the input for the `\pcauset` macro):
+The macros of the LaTeX package are built on permutations. 
+To help find a permutation for the representation as a Hasse diagram, you may use this online tool (currently only supporting the input for the `\pcauset` macro):
 
-[Open the PrOSET editor](/assets/html/proset-editor.html)
+**[Go to the PrOSET editor](/assets/html/proset-editor.html)**
 
 
 ## Catalogues of finite posets
 
 Here is a catalogue of Hasse diagrams of all finite posets up to cardinality 7, all of which have been generated with the LaTeX package. 
 
-Each file contains the catalogues of finite posets for a fixed cardinality, one poset per page including the following properties:
+Each file contains the catalogues of finite posets for a fixed cardinality, one poset per page including the following properties (see also [Catalogue legend](/assets/pdf/PosetCatalogueLegend.pdf)):
 - upper left `d`: dimension of the order (as primary page order, descending)
 - upper centre `l`: number of layers (as secondary page order, ascending)
 - upper right `e`: number of edges in the diagram (as tertiary page order, ascending)
@@ -55,14 +56,12 @@ Each file contains the catalogues of finite posets for a fixed cardinality, one 
 - lower centre `u`: locally unsymmetric poset counter
 - lower right `p`: poset counter
 
-For an explanation of the symmetry properties and counters, see {% cite Minz:2024 %}.
+The symmetry properties (and corresponding counters) are defined in {% cite Minz:2024 %}.
 
-Here are the catalogues:
-- [Catalogue legend](/assets/pdf/PosetCatalogueLegend.pdf)
-- [Catalogue of posets with cardinality 1](/assets/pdf/PosetCataloguePart1.pdf)
-- [Catalogue of posets with cardinality 2](/assets/pdf/PosetCataloguePart2.pdf)
-- [Catalogue of posets with cardinality 3](/assets/pdf/PosetCataloguePart3.pdf)
-- [Catalogue of posets with cardinality 4](/assets/pdf/PosetCataloguePart4.pdf)
-- [Catalogue of posets with cardinality 5](/assets/pdf/PosetCataloguePart5.pdf)
-- [Catalogue of posets with cardinality 6](/assets/pdf/PosetCataloguePart6.pdf)
-- [Catalogue of posets with cardinality 7](/assets/pdf/PosetCataloguePart7.pdf)
+- [Catalogue of 1 posets with cardinality 1](/assets/pdf/PosetCataloguePart1.pdf)
+- [Catalogue of 2 posets with cardinality 2](/assets/pdf/PosetCataloguePart2.pdf)
+- [Catalogue of 5 posets with cardinality 3](/assets/pdf/PosetCataloguePart3.pdf)
+- [Catalogue of 16 posets with cardinality 4](/assets/pdf/PosetCataloguePart4.pdf)
+- [Catalogue of 63 posets with cardinality 5](/assets/pdf/PosetCataloguePart5.pdf)
+- [Catalogue of 318 posets with cardinality 6](/assets/pdf/PosetCataloguePart6.pdf)
+- [Catalogue of 2045 posets with cardinality 7](/assets/pdf/PosetCataloguePart7.pdf)

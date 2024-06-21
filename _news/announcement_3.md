@@ -6,4 +6,4 @@ related_posts: false
 ---
 
 [More information on my projects](/projects/) are now available on a separate page. 
-The first project includes a catalogues of the Hasse diagrams of all posets up to a cardinality of 7.
+The first project page includes a catalogues of the Hasse diagrams of all posets up to cardinality 7 as supplemental material to my recent preprint, [Local symmetries in partially ordered sets](https://www.arxiv.org/abs/2406.14533).
