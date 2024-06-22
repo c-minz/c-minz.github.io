@@ -2,7 +2,7 @@
 layout: page
 title: Hasse diagrams
 description: Online editor (PrOSET) and LaTeX package (causets) for Hasse diagrams of posets and causal sets.
-img: assets/img/CataloguePage_3Crown.png
+img: assets/img/PosetCatalogue_3Crown.png
 importance: 1
 category: side
 related_publications: true
@@ -37,32 +37,90 @@ To help find a permutation for the representation as a Hasse diagram, you may us
 **[Go to the PrOSET editor](/assets/html/proset-editor.html)**
 
 
-## Catalogues of finite posets
+## Catalogue of finite posets
 
-Here is a catalogue of Hasse diagrams of all finite posets up to cardinality 7, all of which have been generated with the LaTeX package. 
+The diagrams in this catalogues are generated with the LaTeX package. 
+The symmetry properties annotated in the catalogues are defined in {% cite Minz:2024 %}.
 
-Each file contains the catalogues of finite posets for a fixed cardinality, one poset per page including the following properties (see also [Catalogue legend](/assets/pdf/PosetCatalogueLegend.pdf)):
+Each file of the catalogue contains all finite posets for a fixed cardinality, one poset per page including annotated properties (see also [catalogue legend](/assets/pdf/PosetCatalogueLegend.pdf)):
 - upper left `d`: dimension of the order (as primary page order, descending)
 - upper centre `l`: number of layers (as secondary page order, ascending)
 - upper right `e`: number of edges in the diagram (as tertiary page order, ascending)
 - centre: Hasse diagram
-- lower left `s`: prime symmetry
-	+ 1: has a singleton-symmetry
-	+ 2: has a 2-chain-symmetry
-	+ 3: has a wedge-symmetry
-	+ 4: has a vee-symmetry
-	+ 5: has a 3-chain-symmetry
+- lower left `s`: prime symmetry (1: singleton-symmetry, 2: 2-chain-symmetry, 3: wedge-symmetry, 4: vee-symmetry, 5: 3-chain-symmetry), 
   or 1-stable locally unsymmetric poset counter
 - lower centre `u`: locally unsymmetric poset counter
 - lower right `p`: poset counter
 
-The symmetry properties (and corresponding counters) are defined in {% cite Minz:2024 %}.
-
-These are the catalogues of the 
-- [1 poset with cardinality 1](/assets/pdf/PosetCataloguePart1.pdf)
-- [2 posets with cardinality 2](/assets/pdf/PosetCataloguePart2.pdf)
-- [5 posets with cardinality 3](/assets/pdf/PosetCataloguePart3.pdf)
-- [16 posets with cardinality 4](/assets/pdf/PosetCataloguePart4.pdf)
-- [63 posets with cardinality 5](/assets/pdf/PosetCataloguePart5.pdf)
-- [318 posets with cardinality 6](/assets/pdf/PosetCataloguePart6.pdf)
-- [2045 posets with cardinality 7](/assets/pdf/PosetCataloguePart7.pdf)
+<div class="row row-cols-1 row-cols-4">
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart1.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart1_Poset1.png" title="Posets with cardinality 1" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">1 poset with 1 element</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart2.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart2_Poset2.png" title="Posets with cardinality 2" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">2 posets with 2 elements</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart3.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart3_Poset5.png" title="Posets with cardinality 3" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">5 posets with 3 elements</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart4.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart4_Poset16.png" title="Posets with cardinality 4" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">16 posets with 4 elements</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart5.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart5_Poset63.png" title="Posets with cardinality 5" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">63 posets with 5 elements</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart6.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart6_Poset318.png" title="Posets with cardinality 6" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">318 posets with 6 elements</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCataloguePart7.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCataloguePart7_Poset2045.png" title="Posets with cardinality 7" class="img-fluid" %}
+        <div class="card-body">
+          <p class="card-text">2045 posets with 7 elements</p>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
