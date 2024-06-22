@@ -42,7 +42,7 @@ To help find a permutation for the representation as a Hasse diagram, you may us
 The diagrams in this catalogues are generated with the LaTeX package. 
 The symmetry properties annotated in the catalogues are defined in {% cite Minz:2024 %}.
 
-Each file of the catalogue contains all finite posets for a fixed cardinality, one poset per page including annotated properties (see also [catalogue legend](/assets/pdf/PosetCatalogueLegend.pdf)):
+Each file of the catalogue contains all finite posets for a fixed cardinality, one poset per page including annotated properties:
 - upper left `d`: dimension of the order (as primary page order, descending)
 - upper centre `l`: number of layers (as secondary page order, ascending)
 - upper right `e`: number of edges in the diagram (as tertiary page order, ascending)
@@ -52,14 +52,12 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
 - lower centre `u`: locally unsymmetric poset counter
 - lower right `p`: poset counter
 
-<div class="row row-cols-1 row-cols-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart1.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart1_Poset1.png" title="Posets with cardinality 1" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">1 poset with 1 element</p>
-        </div>
+        <div class="card-body">1 poset</div>
       </div>
     </a>
   </div>
@@ -67,9 +65,7 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
     <a href="/assets/pdf/PosetCataloguePart2.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart2_Poset2.png" title="Posets with cardinality 2" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">2 posets with 2 elements</p>
-        </div>
+        <div class="card-body">2 posets</div>
       </div>
     </a>
   </div>
@@ -77,9 +73,7 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
     <a href="/assets/pdf/PosetCataloguePart3.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart3_Poset5.png" title="Posets with cardinality 3" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">5 posets with 3 elements</p>
-        </div>
+        <div class="card-body">5 posets</div>
       </div>
     </a>
   </div>
@@ -87,9 +81,7 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
     <a href="/assets/pdf/PosetCataloguePart4.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart4_Poset16.png" title="Posets with cardinality 4" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">16 posets with 4 elements</p>
-        </div>
+        <div class="card-body">16 posets</div>
       </div>
     </a>
   </div>
@@ -97,9 +89,7 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
     <a href="/assets/pdf/PosetCataloguePart5.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart5_Poset63.png" title="Posets with cardinality 5" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">63 posets with 5 elements</p>
-        </div>
+        <div class="card-body">63 posets</div>
       </div>
     </a>
   </div>
@@ -107,9 +97,7 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
     <a href="/assets/pdf/PosetCataloguePart6.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart6_Poset318.png" title="Posets with cardinality 6" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">318 posets with 6 elements</p>
-        </div>
+        <div class="card-body">318 posets</div>
       </div>
     </a>
   </div>
@@ -117,10 +105,17 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
     <a href="/assets/pdf/PosetCataloguePart7.pdf">
       <div class="card">
         {% include figure.liquid path="assets/img/PosetCataloguePart7_Poset2045.png" title="Posets with cardinality 7" class="img-fluid" %}
-        <div class="card-body">
-          <p class="card-text">2045 posets with 7 elements</p>
-        </div>
+        <div class="card-body">2045 posets</div>
+      </div>
+    </a>
+  </div>
+  <div class="col">
+    <a href="/assets/pdf/PosetCatalogueLegend.pdf">
+      <div class="card">
+        {% include figure.liquid path="assets/img/PosetCatalogueLegend.png" title="Legend" class="img-fluid" %}
+        <div class="card-body">Legend</div>
       </div>
     </a>
   </div>
 </div>
+
