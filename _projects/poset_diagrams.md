@@ -132,5 +132,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
 </div>
 </div>
 
+<p>&nbsp;</p>
+
 In case you spot an error in the catalogue, please get in contact with me. 
 
