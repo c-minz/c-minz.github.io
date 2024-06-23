@@ -15,9 +15,9 @@ social: true # includes social icons at the bottom of the page
 ---
 
 I am a researcher in mathematical and theoretical physics, mostly working on 
-- causal set theory (a framework for quantum gravity),
+- causal set theory (an approach to quantum gravity),
 - Tomita-Takesaki modular theory in quantum field theory, and
-- algebraic framework of quantum field theory.
+- other aspects of quantum field theory (mostly using the algebraic framework).
 
 I received my PhD from the University of York, UK in July 2022, for which I worked on classical and quantum field theory on causal sets.
 Most of my [repositories](/repositories/) contain source code developed for research projects on these topics. 
