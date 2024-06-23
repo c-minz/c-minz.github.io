@@ -8,12 +8,8 @@ category: side
 related_publications: true
 ---
 
-## General introduction
 
-Causal set theory is an approach to quantum gravity, a theory to describe gravity and its interaction with quantum fields more fundamentally. 
-Although, the phrase  _quantum_  suggests that gravity is expected to split into smallest portions just like the fields and energies describing elementary particles, it is still an unsolved question what the nature of gravity actually is. 
-
-In causal set theory, spacetime is assumed to be the macroscopic counterpart to ensembles of fundamentally discrete structures that are mathematically described by a collection of spacetime points (events or elements) and their causal relations (a partial ordering). 
+In the quantum gravity approach of causal set theory, a spacetime manifold is assumed to be the macroscopic counterpart to ensembles of fundamentally discrete structures that are mathematically described by a collection of spacetime points (events or elements) and their causal relations (a partial ordering). 
 These partially ordered sets are, especially for a finite number of elements, represented with Hasse diagrams. 
 Since partial orders are a fairly common structure in many areas of mathematics, Hasse diagrams are also useful in contexts other than causal set theory.
 
@@ -64,7 +60,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
 - lower right `p`: poset counter
 
 <div class="container">
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart1.pdf">
       <div class="card h-100 hoverable">
