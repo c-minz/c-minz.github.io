@@ -8,41 +8,52 @@ category: side
 related_publications: true
 ---
 
+## General introduction
+
+Causal set theory is an approach to quantum gravity, a theory to describe gravity and its interaction with quantum fields more fundamentally. 
+Although, the phrase  _quantum_  suggests that gravity is expected to split into smallest portions just like the fields and energies describing elementary particles, it is still an unsolved question what the nature of gravity actually is. 
+
+In causal set theory, spacetime is assumed to be the macroscopic counterpart to ensembles of fundamentally discrete structures that are mathematically described by a collection of spacetime points (events or elements) and their causal relations (a partial ordering). 
+These partially ordered sets are, especially for a finite number of elements, represented with Hasse diagrams. 
+Since partial orders are a fairly common structure in many areas of mathematics, Hasse diagrams are also useful in contexts other than causal set theory.
+
+
 ## LaTeX package: causets
 
-Alongside my doctoral studies, I developed a LaTeX package `causets` {% cite Minz:2020 %} to draw Hasse diagrams, especially for the use in causal set theory. It is available through [CTAN](https://ctan.org/pkg/causets), so that it already comes with a full LaTeX installation (for example, it is ready to use on Overleaf). Just load the package with
+The LaTeX package `causets` {% cite Minz:2020 %} provides macros to draw Hasse diagrams of partially ordered sets (posets) and causal sets (causets). It is available through [CTAN](https://ctan.org/pkg/causets) and it comes with a full LaTeX installation and is ready to use on Overleaf. Just load the package with
 ```tex
 \usepackage{causets}
 ```
 
-The package supports three main commands
-- `\pcauset{..,i,..}` to draw a 2D order using a permutation of a list of consecutive integers `i`
-- `\rcauset{..,i,..}{..,i/j,..}` to draw a poset based on a drawing of a 2D order as before (permutation in the first argument), but with some links `i/j` removed (second argument)
-- `\causet{..,i,..}{..,i/j,..}` to draw a poset where the vertices are arranged according to the permutation as before (first argument) and links are added between every pair of elements `i/j` (third argument)
+The package is build on three main commands that can be used in text and math mode. 
+The macros are 
+- `\pcauset{..,i,..}` to insert a Hasse diagram of a 2D-order using a permutation consecutive integers,
+- `\rcauset{..,i,..}{..,i/j,..}` to print a diagram based on a permutation as before (first argument) but with the links `i/j` listed in the second argument removed, 
+- `\causet{..,i,..}{..,i/j,..}` to place a diagram where the vertices are arranged according to a 2D-order permutation (first argument) but the links are added only between the element pairs `i/j` given in the second argument. 
 
-Here are some macro examples that create posets for use in math or text mode: 
+For example, use
 ```tex
 \pcauset{1,2,...,7}  % to insert a 7-chain
 \pcauset{7,6,...,1}  % to insert a 7-antichain
 ```
 
-The package is based on TikZ, so there are plenty of additional options to label, restyle, and combine the graphics with other TikZ code.
+The diagrams are created with TikZ, so that there are plenty of additional options to label, restyle, and combine the graphics with other TikZ code.
+You may find more information in the [package manual on CTAN](https://ctan.org/pkg/causets) and the [package repository on GitHub](https://github.com/c-minz/LaTeX-causets).
 
 
 ## Online editor: PrOSET
 
 The macros of the LaTeX package are built on permutations. 
-To help find a permutation for the representation as a Hasse diagram, you may use this online tool (currently only supporting the input for the `\pcauset` macro):
+To help find a permutation for a Hasse diagram, I am developing an online tool, the PrOSET editor (currently supporting the input for the `\pcauset` macro).
 
 **[Go to the PrOSET editor](/assets/html/proset-editor.html)**
 
 
 ## Catalogue of finite posets
 
-The diagrams in this catalogues are generated with the LaTeX package. 
-The symmetry properties annotated in the catalogues are defined in {% cite Minz:2024 %}.
+The diagrams in this catalogue are generated with the LaTeX package and the symmetry properties annotated in the catalogue are defined in {% cite Minz:2024 %}.
 
-Each file of the catalogue contains all finite posets for a fixed cardinality, one poset per page including annotated properties:
+Each file of the catalogue contains all partial orders on a given number of elements, one poset per page including the annotated properties:
 - upper left `d`: dimension of the order (as primary page order, descending)
 - upper centre `l`: number of layers (as secondary page order, ascending)
 - upper right `e`: number of edges in the diagram (as tertiary page order, ascending)
@@ -120,4 +131,6 @@ Each file of the catalogue contains all finite posets for a fixed cardinality, o
   </div>
 </div>
 </div>
+
+In case you spot an error in the catalogue, please get in contact with me. 
 
