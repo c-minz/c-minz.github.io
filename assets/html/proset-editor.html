@@ -9,171 +9,541 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>The PrOSET Editor</title>
 
-<link rel="stylesheet" href="proset-editor.css">
+<link rel="stylesheet" href="../css/proset-editor.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link defer="" rel="stylesheet" href="../css/academicons.min.css">
 <script type="text/javascript" src="proset-editor.js"></script>
 
 </head>
 
-<body>
+<body class="fixed-top-nav sticky-bottom-footer" style="padding-top: 57px;" 
+	onload="initializeEditor()">
+<header>
+<nav class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation" 
+	id="navbar">
+	<div class="container">
+		<button class="navbar-toggler collapsed ml-auto" type="button" 
+			data-toggle="collapse" data-target="#navbarNav" 
+			aria-controls="navbarNav" aria-expanded="false" 
+			aria-label="Toggle navigation">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar top-bar"></span>
+			<span class="icon-bar middle-bar"></span>
+			<span class="icon-bar bottom-bar"></span>
+		</button>
+		<div class="navbar-collapse text-right" id="navbarNav">
+			<ul class="navbar-nav ml-auto flex-nowrap" 
+				style="background-color: white;">
+				<li class="nav-item"><a class="nav-link" href="#import">Import</a></li>
+				<li class="nav-item"><a class="nav-link" href="#edit">Edit</a></li>
+				<li class="nav-item"><a class="nav-link" href="#export">Export</a></li>
+				<li class="nav-item"><a class="nav-link" href="#help">Help</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+</header>
 
-<h1>The PrOSET Editor</h1>
-<p id="subtitle">
-	The Partially re-Ordered SET Editor v0.1
-</p>
-
-<p id="introduction">
-	Welcome to the PrOSET editor to visualise and modify finite partially 
-	ordered sets (posets) represented as their Hasse diagrams. Finite posets are 
-	interval subsets of causal sets, for example. 
-	<br />
-	This version only supports Hasse diagrams of 2-dimensional posets, represented 
-	by a permutation of consecutive integers starting from 1 (given as a comma 
-	separated list).
-</p>
-
-<form id="editor">
-	
-	<div id="editor_main">
-		<input type="text" id="txtInput"
-			name="input" value="4,2,6,1,5,3" />
-		<input type="button" id="butGenerate" 
-			onClick="generatePosetFromInput()" 
-			value="Generate" title="Generate poset from permutation" />
-		<br/>
-		<canvas id="cnvPoset" width="400" height="400"></canvas>
-		<br />
-		<input type="button" id="butCopyToInput" 
-			onClick="copyToInput( 'txtOutputPermutation' )" 
-			value="&#x2B6E;" title="Copy to input" />
-		<input type="text" id="txtOutputPermutation" />
-		<input type="button" id="butCopyPermutation" 
-			onClick="copyToClipboard( 'txtOutputPermutation' )" 
-			value="&#x23CD;" title="Copy to clipboard" />
+<div class="container mt-5" role="main">
+<div class="post">
+	<h1>The PrOSET Editor</h1>
+	<p id="subtitle">
+		The <b>p</b>artially (<b>r</b>e)<b>o</b>rdered <b>set</b> editor v1.0
+	</p>
+	<div class="alert alert-danger" role="alert" id="msgJavascript">
+		This editor uses JavaScript. Please activated it.
 	</div>
 	
-	<div id="editor_controls">
-		<h2>Controls</h2>
-		<input type="button" id="butMoveVUp" 
-			onClick="moveV( 1 )" 
-			value="&#x25E4;" title="Move up in v-direction [Shift]+[W]" />
-		<input type="button" id="butMoveUUp" 
-			onClick="moveU( 1 )" 
-			value="&#x25E5;" title="Move up in u-direction [Shift]+[D]" />
-		<br/>
-		<input type="number" id="txtSelection" 
-			onChange="redrawPoset()" 
-			value="0" min="0" max="10" title="Selected event [W], [A], [S], [D]" />
-		<input type="button" id="butRemoveEvent" 
-			onClick="removeSelectedEvent()" 
-			value="&#x2716;" title="Remove selected event [Delete]" />
-		<input type="button" id="butAddEvent" 
-			onClick="addEvent()" 
-			value="&#x2B24;" title="Add new event on the right [.]" />
-		<br/>
-		<input type="button" id="butMoveUDown" 
-			onClick="moveU( -1 )" 
-			value="&#x25E3;" title="Move down in u-direction [Shift]+[A]" />
-		<input type="button" id="butMoveVDown" 
-			onClick="moveV( -1 )" 
-			value="&#x25E2;" title="Move down in v-direction [Shift]+[S]" />
-		<br />
-		<input type="button" id="butOpposite" 
-			onClick="turnOpposite()" 
-			value="&#x2B0D; Opposite" title="Turn into opposite poset" />
-		<input type="button" id="butReflect" 
-			onClick="reflect()" 
-			value="&#x2B0C; Reflect" title="Reflect horizontally" />
+	
+	<!--#######################################################################-->
+	<a name="import"><h2>Import</h2></a>
+	<form>
+		<div class="form-group">
+			<div class="form-group">
+				<label for="selInputType">
+					Generate a diagram of a finite partially ordered set from a
+				</label>
+				<select class="form-control" id="selInputType" onChange="selectInputType()">
+					<option value="predefined">predefined type</option>
+					<option value="pcauset">permutation (for a 2D-order)</option>
+					<option value="rcauset" hidden>permutation and list of removed links</option>
+					<option value="causet" hidden>permutation and list of links</option>
+					<option value="latex" hidden>LaTeX macro</option>
+					<option value="matrix" hidden>causal matrix</option>
+				</select>
+			</div>
+			<div class="form-group" id="frmInputPredefined">
+				<label for="selInputPredefinedType">Predefined type:</label>
+				<div class="form-row">
+					<div class="col-8">
+						<select class="form-control" id="selInputPredefinedType">
+							<option value="chain">n-chain</option>
+							<option value="antichain">n-antichain</option value="chain">
+							<option value="random">random 2D-order with n elements</option>
+							<option value="fence">n-fence</option>
+							<option value="polygon" hidden>(regular) n-sided polygon poset</option>
+							<option value="simplex" hidden>n-simplex</option>
+						</select>
+					</div>
+					<div class="col">
+						<div class="input-group-text" 
+							id="lblInputOrder" onClick="txtInputOrder.focus()">n =</div>
+					</div>
+					<div class="col">
+						<input type="number" class="form-control" id="txtInputOrder"
+							 value="1" min="1" max="50" />
+					</div>
+				</div>
+			</div>
+			<div class="form-group" id="frmInputPermutation">
+				<label for="txtInputPermutation">Permutation:</label>
+				<input type="text" class="form-control" id="txtInputPermutation" 
+					value="1,2,3"/>
+			</div>
+			<div class="form-group" id="frmInputLinks" hidden>
+				<label for="txtInputLinks">Links:</label>
+				<input type="text" class="form-control" id="txtInputLinks" />
+			</div>
+			<div class="form-group" id="frmInputLatex" hidden>
+				<label for="txtInputLatex">LaTeX macro:</label>
+				<input type="text" class="form-control" id="txtInputLatex" />
+			</div>
+			<div class="form-group" id="frmInputMatrix" hidden>
+				<label for="txtInputMatrix">Causal matrix</label>
+				<textarea class="form-control" id="txtInputMatrix" rows="5"></textarea>
+			</div>
+			<button type="button" class="btn btn-primary mb-2"
+				id="butGenerate" onClick="generate()">Generate</button>
+		</div>
+	</form>
+	<div class="alert alert-warning" role="alert" id="msgInputError" hidden></div>
+	
+	
+	<!--#######################################################################-->
+	<a name="edit"><h2>Edit</h2></a>
+	<div class="btn-toolbar" role="toolbar" aria-label="Edit toolbar">
+		<div class="btn-group mr-2" role="group" aria-label="Global actions">
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Copy the poset back to the input and revise manually" 
+				id="butCopyToInput" onClick="copyToInput( 'txtPermutation' )">
+				&#x2336; <span class="sr-only">Revise</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Mirror the diagram horizontally" 
+				id="butReflect" onClick="reflect()">
+				&#x21C4; <span class="sr-only">Reflect</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Mirror the diagram vertically to get the opposite poset" 
+				id="butOpposite" onClick="turnOpposite()">
+				&#x21C5; <span class="sr-only">Opposite</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Increase all labels by 1" 
+				id="butRaiseOffset" onClick="changeOffset( 1 )">
+				&#x2390; <span class="sr-only">Raise labels</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Decrease all labels by 1" 
+				id="butLowerOffset" onClick="changeOffset( -1 )">
+				&#x238F; <span class="sr-only">Lower labels</span>
+			</button>
+		</div>
+		<div class="input-group mr-2">
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Delete the (primary) selected element" 
+				id="butRemoveEvent" onClick="removeSelectedEvent()">
+				&#x2715; <span class="sr-only">Delete</span>
+			</button>
+			<div class="input-group-prepend">
+				<div class="input-group-text" 
+					id="lblSelection" onClick="txtSelection.focus()">Sel.:</div>
+			</div>
+			<input type="number" class="form-control" width="auto" 
+				aria-label="Selected element" aria-describedby="lblSelection" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Selected element" 
+				id="txtSelection" onChange="redrawPoset()" value="" min="0" max="10"/>
+			<div class="btn-group input-group btn-group-toggle" data-toggle="buttons">
+				<label class="btn btn-light" id="lblLinked">
+					<input type="checkbox" id="chbLinked" 
+						data-toggle="tooltip" data-placement="bottom" 
+						title="Link/unlink the selected elements" onClick="changeLink()">
+						&#x2A52; <span class="sr-only">Linked</span>
+				</label>
+			</div>
+			<input type="number" class="form-control" width="auto" 
+				aria-label="Linked element" aria-describedby="lblLinked" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Selected linked/unlinked element" onChange="redrawPoset()" 
+				id="txtLinked" value="" min="0" max="10"/>
+		</div>
+	</div>
+	<div class="posetcontainer" id="cnvPosetContainer">
+		<canvas id="cnvPoset" width="500" height="500"></canvas>
+	</div>
+	<div class="form-group">
+		<div class="input-group mr-2" role="toolbar" aria-label="Settings toolbar">
+			<div class="btn-group input-group btn-group-toggle" data-toggle="buttons">
+				<label class="btn btn-light" id="lblShowLabels">
+					<input type="checkbox" id="chbShowLabels" 
+						data-toggle="tooltip" data-placement="top" 
+						title="Show element labels" 
+						onClick="updateSettingsButton( 'ShowLabels', true )">
+						Labels
+				</label>
+				<label class="btn btn-light active" id="lblShowCross">
+					<input type="checkbox" id="chbShowCross" value="1" 
+						data-toggle="tooltip" data-placement="top" 
+						title="Show selection cross" 
+						onClick="updateSettingsButton( 'ShowCross', true )">
+						Cross
+				</label>
+				<label class="btn btn-light" id="lblShowGrid">
+					<input type="checkbox" id="chbShowGrid" 
+						title="Show poset element grid" 
+						onClick="updateSettingsButton( 'ShowGrid', true )">
+						Grid
+				</labe>
+			</div>
+		</div>
+		<div class="input-group input-group-sm">
+			<div class="input-group-prepend">
+				<div class="input-group-text">Permutation:</div>
+			</div>
+			<input type="text" class="form-control" id="txtPermutation" readonly />
+			<button type="button" class="btn btn-sm btn-light"
+				id="butCopyPermutation" onClick="copyToClipboard( 'txtPermutation' )">
+				&#x23CD; <span class="sr-only">Copy permutation</span>
+			</button>
+		</div>
+		<div class="input-group input-group-sm">
+			<div class="input-group-prepend">
+				<div class="input-group-text">Links:</div>
+			</div>
+			<input type="text" class="form-control" id="txtLinks" readonly />
+			<button type="button" class="btn btn-sm btn-light"
+				id="butCopyLinks" onClick="copyToClipboard( 'txtLinks' )">
+				&#x23CD; <span class="sr-only">Copy links</span>
+			</button>
+		</div>
+		<div class="input-group input-group-sm">
+			<div class="input-group-prepend">
+				<div class="input-group-text">Removed links:</div>
+			</div>
+			<input type="text" class="form-control" id="txtRemlinks" readonly />
+			<button type="button" class="btn btn-sm btn-light"
+				id="butCopyUnlinks" onClick="copyToClipboard( 'txtRemlinks' )">
+				&#x23CD; <span class="sr-only">Copy removed links</span>
+			</button>
+		</div>
 	</div>
 	
-	<div id="editor_settings">
-		<h2>Settings</h2>
-		<input type="checkbox" id="chbShowLabels" 
-			onClick="redrawPoset()" 
-			value="0"/>
-		<label for="chbShowLabels" id="lblShowLabels">
-			Show labels
-		</label>
-		<br />
-		<input type="checkbox" id="chbShowCross" 
-			onClick="redrawPoset()" 
-			value="1" />
-		<label for="chbShowCross" id="lblShowCross">
-			Show selection cross
-		</label>
-		<br />
-		<input type="checkbox" id="chbShowGrid" 
-			onClick="redrawPoset()" 
-			value="0" />
-		<label for="chbShowGrid" id="lblShowGrid">
-				Show permutation grid
-		</label>
+	
+	<!--#######################################################################-->
+	<a name="export"><h2>Export</h2></a>
+	<a name="export_latex"><h3>LaTeX macros</h3></a>
+	<p>
+		To use the diagram in a LaTeX document (in math or text mode), load the 
+		package 'causets' with <code>\usepackage{causets}</code> and use one of the 
+		following macros.
+	</p>
+	<div class="form-group" id="frmExportLatex">
+		<div class="form-group">
+			<label for="selExportLatexStyle">
+				Export the LaTeX macros 
+			</label>
+			<select class="form-control" id="selExportLatexStyle" 
+				onChange="updateExport()">
+				<option value="">without labels.</option>
+				<option value="L">with labels.</option>
+				<option value="P">with permutation grid.</option>
+				<option value="X">with permutation grid and labels.</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="txtExport_pcauset">
+				Diagram where the links are automatically generated from the 
+				permutation:
+			</label>
+			<div class="input-group">
+				<input type="text" class="form-control" id="txtExport_pcauset" readonly />
+				<button type="button" class="btn btn-sm btn-light"
+					id="butCopyExportPcauset" onClick="copyToClipboard( 'txtExportPcauset' )">
+					&#x23CD; <span class="sr-only">Copy pcauset macro</span>
+				</button>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="txtExport_rcauset">
+				Diagram where the links are added as generated from the permutation 
+				except for a given list of links to be excluded:
+			</label>
+			<div class="input-group">
+				<input type="text" class="form-control" id="txtExport_rcauset" readonly />
+				<button type="button" class="btn btn-sm btn-light"
+					id="butCopyExportRcauset" onClick="copyToClipboard( 'txtExportRcauset' )">
+					&#x23CD; <span class="sr-only">Copy rcauset macro</span>
+				</button>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="txtExport_causet">
+				Diagram where the elements are positioned by the permutation and all 
+				links are specified in the second argument:
+			</label>
+			<div class="input-group">
+				<input type="text" class="form-control" id="txtExport_causet" readonly />
+				<button type="button" class="btn btn-sm btn-light"
+					id="butCopyExportCauset" onClick="copyToClipboard( 'txtExportCauset' )">
+					&#x23CD; <span class="sr-only">Copy causet macro</span>
+				</button>
+			</div>
+		</div>
 	</div>
 	
-	<div id="editor_output">
-		<h2>Export</h2>
-		<p>
-			If you want to include a graphic of the poset in a LaTeX document, then 
-			import the
-			<a href="https://ctan.org/pkg/causets" target="_blank">
-				package causets
-			</a>
-			with the macro <span class="keyboard">\usepackage{causets}</span> in the 
-			preample. Copy and paste the code from below. It can be used as inline 
-			text or in a mathematical expression. 
-		</p>
-		<label for="txtOutputLatex" id="lblOutputLatex">
-			LaTeX code
-		</label>
+	
+	<!--#######################################################################-->
+	<a name="help"><h2>Help</h2></a>
+	<a name="help_import"><h3>Import options</h3></a>
+	<p>
+		Diagrams are imported or generated from any of the following input types. 
+		Note that the number of elements of a diagram is limited. 
+		<div class="container">
+			<div class="row">
+				<div class="col">predefined type</div>
+				<div class="col-8">
+					Select a predefined type and the cardinality (or order). The numeric 
+					input for n is bounded from above, but a larger value could be 
+					entered via keyboard.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">permutation (for a 2D-order)</div>
+				<div class="col-8">
+					Enter a permutation of consecutive integers as a comma-separated list.
+				</div>
+			</div>
+			<div class="row" hidden>
+				<div class="col">permutation and list of removed links</div>
+				<div class="col-8">
+					Additionally to a permutation, enter a comma-separated list of link 
+					pairs in the format 'number/number' to be excluded when drawing the 
+					automatic links from the permuation.
+				</div>
+			</div>
+			<div class="row" hidden>
+				<div class="col">permutation and list of links</div>
+				<div class="col-8">
+					The permutation is only used to position the elements. A comma-
+					separated list of link pairs (in the format 'number/number') is used 
+					to draw links between the elements.
+				</div>
+			</div>
+			<div class="row" hidden>
+				<div class="col">LaTeX macro</div>
+				<div class="col-8">
+					Paste a macro from the LaTeX code. The permutation and link list is 
+					extracted from this macro.
+				</div>
+			</div>
+			<div class="row" hidden>
+				<div class="col">causal matrix</div>
+				<div class="col-8">
+					Paste a causal matrix, where each row is a comma-separated list of 
+					values 0 and 1, and the rows are separeted by a line break.
+				</div>
+			</div>
+		</div>
+	</p>
+	
+	<a name="help_toolbar"><h3>Toolbar functions</h3></a>
+	<p>
+		<div class="container">
+			<div class="row">
+				<div class="col">&#x232B;</div>
+				<div class="col-10">
+					Copy the poset back to the input and revise manually.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x21C4;</div>
+				<div class="col-10">
+					Mirror the diagram horizontally, which yields an equivalent diagram.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x21C5;</div>
+				<div class="col-10">
+					Mirror the diagram vertically, which yields a diagram of the opposite 
+					poset.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2390;</div>
+				<div class="col-10">
+					Increase all element labels by 1.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x238F;</div>
+				<div class="col-10">
+					Decrease all element labels by 1.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2715;</div>
+				<div class="col-10">
+					Delete the selected element.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2A52;</div>
+				<div class="col-10">
+					Link/unlink the selected elements.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x23CD;</div>
+				<div class="col-10">
+					Copy the value of the field to the clipboard.
+				</div>
+			</div>
+		</div>
+	</p>
+	
+	<a name="help_mouse"><h3>Mouse and touchscreen functions</h3></a>
+	<p>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					Click on an element to select it.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					Click along the 45 degree rays from the selected element to move the 
+					it.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					Click on an empty area to unselect.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					Double click on an element to replace it by a 2-antichain.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					Double click on an element while holding the shift key to replace it 
+					by a 2-chain.
+				</div>
+			</div>
+		</div>
+	</p>
+	
+	<a name="help_keyboard"><h3>Keyboard functions</h3></a>
+	<p>
+		<div class="container">
+			<div class="row">
+				<div class="col">W</div>
+				<div class="col-10">
+					Select the next element in north-west direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">A</div>
+				<div class="col-10">
+					Select the next element in south-east direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">S</div>
+				<div class="col-10">
+					Select the next element in south-west direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">D</div>
+				<div class="col-10">
+					Select the next element in north-east direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x21E7; W</div>
+				<div class="col-10">
+					Move the selected element in north-west direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x21E7; A</div>
+				<div class="col-10">
+					Move the selected element in south-east direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x21E7; S</div>
+				<div class="col-10">
+					Move the selected element in south-west direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x21E7; D</div>
+				<div class="col-10">
+					Move the selected element in north-east direction.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">Del</div>
+				<div class="col-10">
+					Delete the selected element.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">.</div>
+				<div class="col-10">
+					Add a new element parallel to the right and select it.
+				</div>
+			</div>
+		</div>
+	</p>
+	
+	<a name="help_about"><h3>About</h3></a>
+	<p>
+		This editor is to visualise and modify finite partially ordered sets 
+		(posets) represented by their Hasse diagrams. 
+		It was developed as a tool for a research project and is built on the same 
+		methods as the <a href="https://ctan.org/pkg/causets" target="_blank">LaTeX 
+		package causets</a>, but the online editor has less functionality. The LaTeX 
+		package offers many more options to draw, style and modify Hasse diagrams. 
+		More information are given in the package manual.
+	</p>
+	
+	<a name="help_disclaimer"><h3>Disclaimer</h3></a>
+	<p>
+		This web tool has been tested, but I do not take responsibility for 
+		incorrectly represented data. Please send me a comprehensive problem 
+		description and information of your browser (name and version) if you 
+		encounter an error. 
 		<br />
-		<input type="text" id="txtOutputLatex" />
-		<input type="button" id="butCopyLatex" 
-			onClick="copyToClipboard( 'txtOutputLatex' )" 
-			value="&#x23CD;" title="Copy to clipboard" />
-	</div>
-	
-</form>
-
-<div id="editor_help">
-	<h2>Help</h2>
-	Enter a permutation of consecutive positive integers starting from 1 in the 
-	input field and press "Generate" to create the Hasse diagram. Elements of the 
-	diagram can be selected and moved with the button controls or using the 
-	keyboard:
-	<br />
-	<span class="keyboard">[W]</span> / 
-	<span class="keyboard">[S]</span> to select the next element NW / SE,<br />
-	<span class="keyboard">[A]</span> / 
-	<span class="keyboard">[D]</span> to select the next element SW / NE,<br />
-	<span class="keyboard">[Shift]+[W]</span> / 
-	<span class="keyboard">[Shift]+[S]</span> to move the element NW / SE,<br />
-	<span class="keyboard">[Shift]+[A]</span> / 
-	<span class="keyboard">[Shift]+[D]</span> to move the element SW / NE,<br />
-	<span class="keyboard">[Delete]</span> / 
-	<span class="keyboard">[.]</span> to remove the element / add an element.
-</div>
-
-<div id="editor_about">
-	<h2>About</h2>
-	This editor was developed as a tool for a research project and is built on 
-	the same methods as the 
-	<a href="https://ctan.org/pkg/causets" target="_blank">LaTeX package causets</a>, 
-	but this editor has less functionality. The LaTeX package offers many more 
-	options to draw, style and modify Hasse diagrams, including diagrams for 
-	higher dimensional posets. More information are given in the package manual.
-	
-	<h2>Disclaimer</h2>
-	This web tool has been tested, but I do not take responsibility of 
-	incorrectly represented data. Please send me a comprehensive problem 
-	description and information of your browser (name and version) if you 
-	encounter an error. 
-	<br />
-	I also welcome any suggestions to improve the tool.
-	
+		I also welcome any suggestions to improve the tool.
+	</p>
 	<p id="editor_copyright">
 		Copyright 2024 by <a href="https://c-minz.github.io">Christoph Minz</a>.
-		Version v0.1 (revision 2024-05-26).
+		Version v1.0 (revision 2024-07-22).
 		<a href="https://c-minz.github.io/impressum">Impressum</a>.
 	</p>
+</div>
 </div>
 
 </body>

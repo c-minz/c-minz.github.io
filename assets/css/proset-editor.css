@@ -1,0 +1,18 @@
+#subtitle {
+	text-align: left;
+	font-style: italic;
+	font-size: 15px;
+	color: rgb(0, 123, 255);
+	background-color: rgb(248, 249, 250);
+	padding-top: 0px;
+	margin-top: 0px;
+}
+
+.posetcontainer {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: center;
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgb(248, 249, 250);
+}
