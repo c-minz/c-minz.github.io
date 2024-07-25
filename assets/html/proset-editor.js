@@ -5,15 +5,31 @@
 // #############################################################################
 // Editor initialization and main class definition
 
+/* 
+	try {
+		...
+	} catch ( e ) {
+		document.getElementById( "msgInputError" ).innerText = e.toString();
+		document.getElementById( "msgInputError" ).hidden = false;
+	}
+*/
+
 function initializeEditor() {
 	/* Initialize input type, editor canvas size, and settings bottons. */
 	// hide active JavaScript alert:
 	document.getElementById( "msgJavascript" ).hidden = true;
 	selectInputType();
 	updateWidth();
+	const butRemoveEvent = document.getElementById( "butRemoveEvent" );
+	butRemoveEvent.disabled = true;
+	butRemoveEvent.className = "btn btn-secondary";
 	document.getElementById( "txtSelection" ).value = "";
-	document.getElementById( "txtLinked" ).value = "";
+	const butLink = document.getElementById( "butLink" );
+	butLink.disabled = true;
+	butLink.className = "btn btn-secondary";
+	document.getElementById( "txtLinking" ).value = "";
 	updateSettingsButton( "ShowLabels", false );
+	document.getElementById( "chbShowCross" ).checked = true;
 	updateSettingsButton( "ShowCross", false );
 	updateSettingsButton( "ShowGrid", false );
 	document.getElementById( "txtPermutation" ).value = "";
@@ -33,6 +49,11 @@ function selectInputType() {
 		( !input_type.endsWith( "causet" ) );
 	document.getElementById( "frmInputLinks" ).hidden = 
 		( input_type != "rcauset" && input_type != "causet" );
+	if ( input_type == "rcauset" )
+		document.getElementById( "lblInputLinks" ).innerHTML = 
+			"Links removed from the automatic links:";
+	else if ( input_type == "causet" )
+		document.getElementById( "lblInputLinks" ).innerHTML = "Links:";
 	document.getElementById( "frmInputLatex" ).hidden = 
 		( input_type != "latex" );
 	document.getElementById( "frmInputMatrix" ).hidden = 
@@ -244,13 +265,15 @@ class Poset {
 	}
 	
 	isLinkable( i, j ) {
-		/* Check if it is possible to have a link from the element with index `i` 
-		to the element with index `j`. */
+		/* Returns -1 if the elements with indices `i` and `j` are linked and the 
+		link can be removed. Returns 1 if the elements are not linked, but can be 
+		linked. Returns 0 otherwise. */
 		for ( let l = 0; l < this.permlinks.length; l++ ) {
-			if ( this.permlinks[l][0] === i && this.permlinks[l][1] === j )
-				return true;
+			if ( ( this.permlinks[l][0] === i && this.permlinks[l][1] === j )
+					|| ( this.permlinks[l][0] === j && this.permlinks[l][1] === i ) )
+				return -1;
 		}
-		return false;
+		return 0;
 	}
 	
 	getElementString( i ) {
@@ -302,10 +325,8 @@ class Poset {
 // Generation from import data
 
 let poset;
-let hover = [];
 
 function generate() {
-	try {
 	let input_type = document.getElementById( "selInputType" ).value;
 	let new_poset;
 	if ( input_type === "predefined" )
@@ -322,10 +343,6 @@ function generate() {
 	poset = new_poset;
 	updateSelectionBounds();
 	setSelection( NaN );
-	} catch ( e ) {
-		document.getElementById( "msgInputError" ).innerText = e.toString();
-		document.getElementById( "msgInputError" ).hidden = false;
-	}
 }
 
 function getPredefined() {
@@ -383,13 +400,14 @@ function getPermutation_fence( n ) {
 // #############################################################################
 // Initialize editor and handle input/import data
 
+let hover = [];
+let linkable = 0;
+
 function updateSelectionBounds() {
 	let lower = poset.offset;
 	let upper = poset.card() - 1 + poset.offset;
 	document.getElementById( "txtSelection" ).min = lower.toString();
 	document.getElementById( "txtSelection" ).max = upper.toString();
-	document.getElementById( "txtLinked" ).min = lower.toString();
-	document.getElementById( "txtLinked" ).max = upper.toString();
 }
 
 function getSelection() {
@@ -405,8 +423,45 @@ function setSelection( new_sel ) {
 	let strSel = "";
 	if ( new_sel >= 0 && new_sel < poset.card() )
 		strSel = String( new_sel + poset.offset );
+	const butRemoveEvent = document.getElementById( "butRemoveEvent" );
+	butRemoveEvent.disabled = ( strSel == "" ) || ( poset.card() === 1 );
+	if ( butRemoveEvent.disabled )
+		butRemoveEvent.className="btn btn-secondary";
+	else
+		butRemoveEvent.className="btn btn-outline-danger";
 	document.getElementById( "txtSelection" ).value = strSel;
-	document.getElementById( "txtLinked" ).value = "";
+	document.getElementById( "txtLinking" ).value = "";
+	const butLink = document.getElementById( "butLink" );
+	butLink.className="btn btn-secondary";
+	butLink.disabled = true;
+	linkable = false;
+	redrawPoset();
+}
+
+function resetSelection() {
+	setSelection( getSelection() );
+}
+
+function getLinkingSelection() {
+	let sel = document.getElementById( "txtLinking" ).value;
+	let sel_int = parseInt( sel.trim(), 10 ) - poset.offset;
+	if ( ( sel_int >= 0 ) && ( sel_int < poset.card() ) ) {
+		return sel_int;
+	}
+	return NaN;
+}
+
+function setLinkingSelection( new_sel ) {
+	let strSel = "";
+	if ( new_sel >= 0 && new_sel < poset.card() )
+		strSel = String( new_sel + poset.offset );
+	document.getElementById( "txtLinking" ).value = strSel;
+	const butLink = document.getElementById( "butLink" );
+	butLink.disabled = ( strSel == "" );
+	if ( butLink.disabled )
+		butLink.className="btn btn-secondary";
+	else
+		butLink.className="btn btn-outline-primary";
 	redrawPoset();
 }
 
@@ -436,15 +491,21 @@ function drawGrid( context, n ) {
 }
 
 const event_size = 0.25;
-const event_hover_size = 0.35;
 const link_width = 0.08;
-const selection_cross_color = "#ffe8e8";
+const linking_width = 0.14;
+const event_hover_size = 0.33;
+const event_linking_size = 0.17;
+const selection_cross_color = "#ffe8e8"; // #e9ecef";
 const relocation_color = "#90b030";
+const event_hover_color = "#703030";
+const event_linking_color = "#007bff";
 
 function redrawPoset() {
 	let canvas = document.getElementById( "cnvPoset" );
 	let context = canvas.getContext( "2d" );
 	let sel = getSelection();
+	let linksel = getLinkingSelection();
+	let linksel_v = poset.permutation.indexOf( linksel );
 	let n = poset.card();
 	initCanvas( context, n );  // setup canvas
 	// draw selection cross
@@ -490,11 +551,20 @@ function redrawPoset() {
 	if ( document.getElementById( "chbShowGrid" ).checked )
 		drawGrid( context, n );
 	// draw links
-	context.strokeStyle = "black";
-	context.lineWidth = link_width;
 	for ( let l = 0; l < poset.permlinks.length; l++ ) {
 		let i = poset.permlinks[l][0];
 		let j = poset.permlinks[l][1];
+		context.lineWidth = link_width;
+		if ( ( sel === i && linksel === j ) || ( sel === j && linksel === i ) ) {
+			if ( linkable === -1 ) {
+				context.lineWidth = linking_width;
+				context.strokeStyle = event_linking_color;
+			} else {
+				context.strokeStyle = "black dotted";
+			}
+		} else {
+			context.strokeStyle = "black";
+		}
 		context.beginPath();
 		context.moveTo( i + 0.5, poset.permutation.indexOf( i ) + 0.5 );
 		context.lineTo( j + 0.5, poset.permutation.indexOf( j ) + 0.5 );
@@ -505,14 +575,24 @@ function redrawPoset() {
 		let p = poset.permutation[i];
 		context.fillStyle = "black";
 		if ( hovered_event != sel && hovered_event === p )
-			context.fillStyle = "#703030";
+			context.fillStyle = event_hover_color;
 		else if ( is_hovering && hovered_event === -1 && p === sel )
 			context.fillStyle = selection_cross_color;
+		else if ( p === linksel )
+			context.fillStyle = event_linking_color;
 		else if ( p === sel )
 			context.fillStyle = "red";
 		context.beginPath();
 		context.ellipse( p + 0.5, i + 0.5, 
 			event_size, event_size, 0, 0, 2 * Math.PI );
+		context.fill();
+	}
+	if ( !isNaN( linksel )
+			&& ( !is_hovering || linksel != hover[0] || linksel_v != hover[1] ) ) {
+		context.fillStyle = "black";
+		context.beginPath();
+		context.ellipse( linksel + 0.5, linksel_v + 0.5, 
+			event_linking_size, event_linking_size, 0, 0, 2 * Math.PI );
 		context.fill();
 	}
 	// draw element labels
@@ -672,11 +752,12 @@ function dublicateEvent( shift ) {
 	}
 	poset.permutation.splice( sel_v + shift, 0, sel );
 	poset.reset_permlinks();
+	hover = [];
 	updateSelectionBounds();
 	setSelection( sel );
 }
 
-function removeSelectedEvent() {
+function removeEvent() {
 	let sel = getSelection();
 	let n = poset.card();
 	if ( isNaN( sel ) || sel < 0 || n === 1 ) return;
@@ -688,6 +769,7 @@ function removeSelectedEvent() {
 		}
 	}
 	poset.reset_permlinks();
+	hover = [];
 	updateSelectionBounds();
 	setSelection( Math.min( sel, n - 1 ) );
 }
@@ -705,6 +787,7 @@ function turnOpposite() {
 	}
 	poset.permutation = opposite;
 	poset.reset_permlinks();
+	hover = [];
 	setSelection( new_sel );
 }
 
@@ -722,14 +805,33 @@ function reflect() {
 	}
 	poset.permutation = reflected;
 	poset.reset_permlinks();
+	hover = [];
 	setSelection( new_sel );
 }
 
-function copyToInput( textbox ) {
-	let text = document.getElementById( textbox ).value;
-	const input_textbox = document.getElementById( "txtInputPermutation" );
-	input_textbox.value = text;
-	input_textbox.focus();
+function revise() {
+	const txtInputPermutation = document.getElementById( "txtInputPermutation" );
+	txtInputPermutation.value = document.getElementById( "txtPermutation" ).value;
+	let strLinks;
+	let strInputType;
+	if ( poset.autolinking ) {
+		let strLinks = poset.getRemovedLinksString();
+		if ( strLinks.length === 0 ) {
+			strInputType = "pcauset";
+		} else {
+			strInputType = "rcauset";
+			let strAddlinks = poset.getAddedLinksString();
+			if ( strAddlinks.length > 0 )
+				strLinks = strLinks + "," + strAddlinks;
+		}
+	} else {
+		strInputType = "causet";
+		strLinks = document.getElementById( "txtLinks" ).value;
+	}
+	document.getElementById( "selInputType" ).value = strInputType;
+	document.getElementById( "txtInputLinks" ).value = strLinks;
+	selectInputType();
+	txtInputPermutation.focus();
 }
 
 function copyToClipboard( textbox ) {
@@ -750,12 +852,15 @@ function updateExport() {
 	let option = document.getElementById( "selExportLatexStyle" ).value;
 	let strPerm = poset.getPermutationString();
 	let strRemlinks = poset.getRemovedLinksString();
+	let strAddlinks = poset.getAddedLinksString();
 	let strLinks = poset.getLinksString();
 	document.getElementById( "txtPermutation" ).value = strPerm;
 	document.getElementById( "txtLinks" ).value = strLinks;
 	document.getElementById( "txtRemlinks" ).value = strRemlinks;
 	document.getElementById( "txtExport_pcauset" ).value = 
 		"\\pcauset" + option + "{" + strPerm + "}";
+	if ( strAddlinks.length > 0 )
+		strRemlinks = strRemlinks + "," + strAddlinks;
 	document.getElementById( "txtExport_rcauset" ).value = 
 		"\\rcauset" + option + "{" + strPerm + "}{" + strRemlinks + "}";
 	document.getElementById( "txtExport_causet" ).value = 
@@ -783,6 +888,7 @@ function handleClick( e ) {
 	let y = e.clientY;
 	updateHoveredTile( x, y );
 	if ( hover.length == 0 ) {
+		// clicked neither on an element nor on a moving position:
 		let canvas = document.getElementById( "cnvPoset" );
 		let canvas_border = canvas.getBoundingClientRect();
 		if ( canvas_border.left < x && x < canvas_border.right 
@@ -792,12 +898,23 @@ function handleClick( e ) {
 	}
 	let u = hover[0];
 	let p = poset.permutation[hover[1]];
+	let sel = getSelection();
+	let linksel = getLinkingSelection();
 	if ( u === p ) {
+		// clicked on an element:
+		if ( !isNaN( sel ) ) {
+			linkable = poset.isLinkable( sel, u );
+			if ( linkable != 0 && ( isNaN( linksel ) || linksel != u ) ) {
+				document.getElementById( "butLink" ).disabled = false;
+				setLinkingSelection( u );
+				return;
+			}
+		}
 		setSelection( u );
 		return;
 	}
-	let sel = getSelection();
 	if ( isNaN( sel ) ) return;
+	// clicked on a moving position:
 	if ( sel != u ) {
 		moveU( u - sel );
 		return;
@@ -843,7 +960,7 @@ function handleKeyDown( e ) {
 				selectV( 1 );
 			break;
 		case "Delete":
-			removeSelectedEvent();
+			removeEvent();
 			break;
 		case "Period":
 			addEvent();

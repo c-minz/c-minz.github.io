@@ -47,7 +47,7 @@
 
 <div class="container mt-5" role="main">
 <div class="post">
-	<h1>The PrOSET Editor</h1>
+	<h1>The P<i>r</i>OSET Editor</h1>
 	<p id="subtitle">
 		The <b>p</b>artially (<b>r</b>e)<b>o</b>rdered <b>set</b> editor v1.0
 	</p>
@@ -65,10 +65,10 @@
 					Generate a diagram of a finite partially ordered set from a
 				</label>
 				<select class="form-control" id="selInputType" onChange="selectInputType()">
-					<option value="predefined">predefined type</option>
+					<option value="predefined" selected>predefined type</option>
 					<option value="pcauset">permutation (for a 2D-order)</option>
-					<option value="rcauset" hidden>permutation and list of removed links</option>
-					<option value="causet" hidden>permutation and list of links</option>
+					<option value="rcauset">permutation and list of removed links</option>
+					<option value="causet">permutation and list of links</option>
 					<option value="latex" hidden>LaTeX macro</option>
 					<option value="matrix" hidden>causal matrix</option>
 				</select>
@@ -76,9 +76,9 @@
 			<div class="form-group" id="frmInputPredefined">
 				<label for="selInputPredefinedType">Predefined type:</label>
 				<div class="form-row">
-					<div class="col-8">
+					<div class="col-7">
 						<select class="form-control" id="selInputPredefinedType">
-							<option value="chain">n-chain</option>
+							<option value="chain" selected>n-chain</option>
 							<option value="antichain">n-antichain</option value="chain">
 							<option value="random">random 2D-order with n elements</option>
 							<option value="fence">n-fence</option>
@@ -86,11 +86,11 @@
 							<option value="simplex" hidden>n-simplex</option>
 						</select>
 					</div>
-					<div class="col">
+					<div class="col-2">
 						<div class="input-group-text" 
 							id="lblInputOrder" onClick="txtInputOrder.focus()">n =</div>
 					</div>
-					<div class="col">
+					<div class="col-3">
 						<input type="number" class="form-control" id="txtInputOrder"
 							 value="1" min="1" max="50" />
 					</div>
@@ -102,7 +102,7 @@
 					value="1,2,3"/>
 			</div>
 			<div class="form-group" id="frmInputLinks" hidden>
-				<label for="txtInputLinks">Links:</label>
+				<label id="lblInputLinks" for="txtInputLinks">Links:</label>
 				<input type="text" class="form-control" id="txtInputLinks" />
 			</div>
 			<div class="form-group" id="frmInputLatex" hidden>
@@ -126,8 +126,20 @@
 		<div class="btn-group mr-2" role="group" aria-label="Global actions">
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
+				title="Undo the last action (generate, remove/add element/link)" 
+				id="butUndo" onClick="" disabled>
+				&#x2B8C; <span class="sr-only">Undo</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Redo the last action (generate, remove/add element/link)" 
+				id="butRedo" onClick="" disabled>
+				&#x2B8E; <span class="sr-only">Redo</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
 				title="Copy the poset back to the input and revise manually" 
-				id="butCopyToInput" onClick="copyToInput( 'txtPermutation' )">
+				id="butRevise" onClick="revise()">
 				&#x2336; <span class="sr-only">Revise</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
@@ -156,34 +168,36 @@
 			</button>
 		</div>
 		<div class="input-group mr-2">
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Delete the (primary) selected element" 
-				id="butRemoveEvent" onClick="removeSelectedEvent()">
-				&#x2715; <span class="sr-only">Delete</span>
-			</button>
+			<div class="input-group-prepend">
+				<button type="button" class="btn btn-secondary" 
+					data-toggle="tooltip" data-placement="bottom" 
+					title="Delete the selected element" 
+					id="butRemoveEvent" onClick="removeEvent()" disabled>
+					&#x2715; <span class="sr-only">Delete</span>
+				</button>
+			</div>
 			<div class="input-group-prepend">
 				<div class="input-group-text" 
-					id="lblSelection" onClick="txtSelection.focus()">Sel.:</div>
+					id="lblSelection" onClick="txtSelection.focus()">Selection:</div>
 			</div>
-			<input type="number" class="form-control" width="auto" 
+			<input type="number" class="form-control" width="auto" style="width: 80px;"
 				aria-label="Selected element" aria-describedby="lblSelection" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected element" 
-				id="txtSelection" onChange="redrawPoset()" value="" min="0" max="10"/>
-			<div class="btn-group input-group btn-group-toggle" data-toggle="buttons">
-				<label class="btn btn-light" id="lblLinked">
-					<input type="checkbox" id="chbLinked" 
-						data-toggle="tooltip" data-placement="bottom" 
-						title="Link/unlink the selected elements" onClick="changeLink()">
-						&#x2A52; <span class="sr-only">Linked</span>
-				</label>
+				id="txtSelection" onChange="resetSelection()" value="" min="0" max="10"/>
+			<div class="input-group-prepend">
+				<button type="button" class="btn btn-secondary" 
+					data-toggle="tooltip" data-placement="bottom" 
+					title="Link/unlink the selected elements" 
+					id="butLink" onClick="changeLink()" disabled>
+					&#x2A52; <span class="sr-only">Link/unlink</span>
+				</button>
 			</div>
-			<input type="number" class="form-control" width="auto" 
+			<input type="text" class="form-control" width="auto" style="width: 60px;"
 				aria-label="Linked element" aria-describedby="lblLinked" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected linked/unlinked element" onChange="redrawPoset()" 
-				id="txtLinked" value="" min="0" max="10"/>
+				id="txtLinking" readonly/>
 		</div>
 	</div>
 	<div class="posetcontainer" id="cnvPosetContainer">
@@ -368,7 +382,21 @@
 	<p>
 		<div class="container">
 			<div class="row">
-				<div class="col">&#x232B;</div>
+				<div class="col">&#x2B8C;</div>
+				<div class="col-10">
+					Undo the last actions if it was one of the following: generate, 
+					remove/add element, remove/add link.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2B8E;</div>
+				<div class="col-10">
+					Redo the last actions if it was one of the following: generate, 
+					remove/add element, remove/add link.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2336;</div>
 				<div class="col-10">
 					Copy the poset back to the input and revise manually.
 				</div>
@@ -413,7 +441,7 @@
 			<div class="row">
 				<div class="col">&#x23CD;</div>
 				<div class="col-10">
-					Copy the value of the field to the clipboard.
+					Copy the value of a text field to the clipboard.
 				</div>
 			</div>
 		</div>
