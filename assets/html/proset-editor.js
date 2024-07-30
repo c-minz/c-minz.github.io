@@ -20,10 +20,13 @@ function initializeEditor() {
 	document.getElementById( "msgJavascript" ).hidden = true;
 	selectInputType();
 	updateWidth();
-	const butRemoveEvent = document.getElementById( "butRemoveEvent" );
-	butRemoveEvent.disabled = true;
-	butRemoveEvent.className = "btn btn-secondary";
-	document.getElementById( "txtSelection" ).value = "";
+	const butRemoveElement = document.getElementById( "butRemoveElement" );
+	butRemoveElement.disabled = true;
+	butRemoveElement.className = "btn btn-secondary";
+	const txtSelection = document.getElementById( "txtSelection" );
+	txtSelection.value = "";
+	document.getElementById( "butUndo" ).disabled = true;
+	document.getElementById( "butRedo" ).disabled = true;
 	const butLink = document.getElementById( "butLink" );
 	butLink.disabled = true;
 	butLink.className = "btn btn-secondary";
@@ -32,12 +35,15 @@ function initializeEditor() {
 	document.getElementById( "chbShowCross" ).checked = true;
 	updateSettingsButton( "ShowCross", false );
 	updateSettingsButton( "ShowGrid", false );
-	document.getElementById( "txtPermutation" ).value = "";
-	document.getElementById( "txtLinks" ).value = "";
-	document.getElementById( "txtRemlinks" ).value = "";
-	document.getElementById( "txtExport_pcauset" ).value = "";
-	document.getElementById( "txtExport_rcauset" ).value = "";
-	document.getElementById( "txtExport_causet" ).value = "";
+	document.getElementById( "lblCard" ).innerHTML = "";
+	const strStatusBars = [ "txtPermutation", "txtLinks", "txtRemovedLinks" ];
+	for ( let i = 0; i < strStatusBars.length; i++ )
+		document.getElementById( strStatusBars[i] ).value = "";
+	const frmExports = [ "pcauset", "rcauset", "causet" ];
+	for ( let i = 0; i < frmExports.length; i++ ) {
+		document.getElementById( "txtExport_" + frmExports[i] ).value = "";
+		document.getElementById( "frmExport_" + frmExports[i] ).hidden = true;
+	}
 }
 
 function selectInputType() {
@@ -47,13 +53,10 @@ function selectInputType() {
 		( input_type != "predefined" );
 	document.getElementById( "frmInputPermutation" ).hidden = 
 		( !input_type.endsWith( "causet" ) );
+	document.getElementById( "frmInputRemovedLinks" ).hidden = 
+		( input_type != "rcauset" );
 	document.getElementById( "frmInputLinks" ).hidden = 
-		( input_type != "rcauset" && input_type != "causet" );
-	if ( input_type == "rcauset" )
-		document.getElementById( "lblInputLinks" ).innerHTML = 
-			"Links removed from the automatic links:";
-	else if ( input_type == "causet" )
-		document.getElementById( "lblInputLinks" ).innerHTML = "Links:";
+		( input_type != "causet" );
 	document.getElementById( "frmInputLatex" ).hidden = 
 		( input_type != "latex" );
 	document.getElementById( "frmInputMatrix" ).hidden = 
@@ -189,24 +192,44 @@ function parseLinks( value, offset, max_element ) {
 	input and a second one for links that had link options in the input (options 
 	are dropped). */
 	if ( value.length == 0 ) return [ [], [] ];
-	let link_list;
+	let linklist;
 	if ( typeof value == "string" )
-		link_list = value.split( "," ).map( parseLink );
+		linklist = value.split( "," ).map( parseLink );
 	else
-		link_list = value;
-	const link_list_nopt = [];
-	const link_list_opt = [];
-	for ( let i = 0; i < link_list.length; i++ ) {
-		let from = link_list[i][0] - offset;
-		let to = link_list[i][1] - offset;
+		linklist = value;
+	const linklist_nooptions = [];
+	const linklist_withoptions = [];
+	for ( let i = 0; i < linklist.length; i++ ) {
+		let from = linklist[i][0] - offset;
+		let to = linklist[i][1] - offset;
 		if ( from < 0 || to > max_element )
 			continue;
-		if ( link_list[i].length > 2 )
-			link_list_opt.push( [ from, to ] );
+		if ( linklist[i].length > 2 )
+			linklist_withoptions.push( [ from, to ] );
 		else
-			link_list_nopt.push( [ from, to ] );
+			linklist_nooptions.push( [ from, to ] );
 	}
-	return [ link_list_nopt, link_list_opt ];
+	return [ linklist_nooptions, linklist_withoptions ];
+}
+
+function initializeLinkList( n ) {
+	const linklist = new Array( n );
+	for ( let i = 0; i < n; i++ )
+		linklist[i] = [];
+	return linklist;
+}
+
+function raiseLinkedElements( linkedelements, e, offset, addLinksTo ) {
+	/* Offsets all elements larger than `e` in `linkedelements` by `offset`. If 
+	`e` is in the list, the elements of the array `addLinksTo` are added to the 
+	list as well. */
+	for ( let j = 0; j < linkedelements.length; j++ ) {
+		if ( linkedelements[j] > e )
+			linkedelements[j] = linkedelements[j] + offset;
+	}
+	if ( !linkedelements.includes( e ) ) return;
+	for ( let l = 0; l < addLinksTo.length; l++ )
+		linkedelements.push( addLinksTo[l] );
 }
 
 class Poset {
@@ -218,45 +241,34 @@ class Poset {
 		this.error = "";  // holds an input error message (if any)
 		// parse permutation for the element positions:
 		try {
-			const parseReturn = parsePermutation( permutation );
-			this.permutation = parseReturn[0];
-			this.offset = parseReturn[1];
+			const parsed_permutation = parsePermutation( permutation );
+			this.permutation = parsed_permutation[0];
+			this.offset = parsed_permutation[1];
 		} catch ( e ) {
 			this.error = e.toString();
 			return;
 		}
 		// parse links:
-		this.autolinking = autolinking;
-		this.reset_permlinks();
+		this.resetLinks( autolinking );
 		try {
-			const link_lists = parseLinks( links, this.offset, this.card() - 1 );
+			const parsed_links = parseLinks( links, this.offset, this.card() - 1 );
+			let linkpairs = parsed_links[0];
 			if ( autolinking ) {
-				this.remlinks = link_lists[0];  // holds element pairs for removed links
-				this.addlinks = link_lists[1];  // holds element pairs for manual links
+				for ( let l = 0; l < linkpairs.length; l++ ) {
+					this.removeLink( linkpairs[l][0], linkpairs[l][1] );
+				}
 			} else {
-				this.remlinks = [];
-				this.addlinks = link_lists[0].concat( link_lists[1] );
+				for ( let l = 0; l < linkpairs.length; l++ ) {
+					this.addLink( linkpairs[l][0], linkpairs[l][1] );
+				}
+			}
+			linkpairs = parsed_links[1];
+			for ( let l = 0; l < linkpairs.length; l++ ) {
+				this.addLink( linkpairs[l][0], linkpairs[l][1] );
 			}
 		} catch ( e ) {
 			this.error = e.toString();
 			return;
-		}
-	}
-	
-	reset_permlinks() {
-		/* Calculate the links from the permutation. */
-		this.permlinks = [];
-		let n = this.card();
-		for ( let i = 0; i < n; i++ ) {
-			let p = this.permutation[i];
-			let bound = n;
-			for ( let j = i + 1; j < n; j++ ) {
-				let q = this.permutation[j];
-				if ( p < q && q < bound ) {
-					this.permlinks.push( [ p, q ] );
-					bound = q;
-				}
-			}
 		}
 	}
 	
@@ -264,60 +276,242 @@ class Poset {
 		return this.permutation.length;
 	}
 	
+	resetLinks( autolinking ) {
+		/* Resets the list of links and auto links from the permutation if 
+		`autolinking = true`. */
+		this.autolinks = initializeLinkList( this.card() );
+		this.removedlinks = initializeLinkList( this.card() );
+		this.addedlinks = initializeLinkList( this.card() );
+		this.links = initializeLinkList( this.card() );
+		// find auto links:
+		let n = this.card();
+		for ( let i = 0; i < n; i++ ) {
+			let p = this.permutation[i];
+			let bound = n;
+			for ( let j = i + 1; j < n; j++ ) {
+				let q = this.permutation[j];
+				if ( p < q && q < bound ) {
+					this.autolinks[p].push( q );
+					if ( autolinking )
+						this.links[p].push( q );
+					else
+						this.removedlinks[p].push( q );
+					bound = q;
+				}
+			}
+		}
+	}
+	
+	removeLink( i, j, ignoreerrors = false ) {
+		/* Removes a link from element `i` to `j` (or `j` to `i` if `i > j`). If 
+		`ignoreerrors` and both arguments are the same or there is no link between 
+		the elements, then an error is raised. */
+		if ( i > j ) {
+			this.removeLink( j, i, ignoreerrors );
+			return;
+		}
+		if ( i === j ) {
+			if ( ignoreerrors ) return;
+			throw Error( "An element cannot be unlinked from itself." );
+		}
+		let l = this.links[i].indexOf( j );
+		if ( l === -1 ) {
+			if ( ignoreerrors ) return;
+			throw Error( "The element " + i.toString() + " is not linked to " 
+				+ j.toString() + "." );
+		}
+		this.links[i].splice( l, 1 );
+		l = this.addedlinks[i].indexOf( j );
+		if ( l > -1 )
+			this.addedlinks[i].splice( l, 1 );
+		if ( this.autolinks[i].includes( j ) )
+			this.removedlinks[i].push( j );
+	}
+	
+	addLink( i, j, ignoreerrors = false ) {
+		/* Adds a link from element `i` to `j` (or `j` to `i` if `i > j`). An 
+		error is raised if both arguments are the same or they are already related. 
+		*/
+		if ( i > j ) {
+			this.addLink( j, i, ignoreerrors );
+			return;
+		}
+		if ( i === j ) {
+			if ( ignoreerrors ) return;
+			throw Error( "An element cannot be linked to itself." );
+		}
+		if ( this.links[i].includes( j ) ) {
+			if ( ignoreerrors ) return;
+			throw Error( "The element " + i.toString() + " already precedes " 
+				+ j.toString() + "." )
+		}
+		this.links[i].push( j );
+		let l = this.removedlinks[i].indexOf( j );
+		if ( l > -1 )
+			this.removedlinks[i].splice( l, 1 );
+		const addedlinksto = this.addedlinks[i].slice();
+		for ( let a = 0; a < addedlinksto.length; a++ ) {
+			let k = addedlinksto[a];
+			if ( k > j && this.isOrdered( j, k ) )
+				this.removeLink( i, k, true );
+		}
+		if ( !this.autolinks[i].includes( j ) )
+			this.addedlinks[i].push( j );
+	}
+	
+	isOrdered( i, j ) {
+		/* Returns true if `i < j` (full partial order relation, not only links). */
+		if ( this.links[i].includes( j ) ) return true;
+		const ordered = new Array( j - i + 1 );
+		ordered[0] = true;
+		ordered[j - i] = false;
+		for ( let o = i; o < j; o++ ) {
+			if ( !ordered[o - i] ) continue;
+			let links = this.links[o];
+			for ( let l = 0; l < links.length; l++ ) {
+				if ( links[l] < o || links[l] > j ) continue;
+				ordered[links[l] - i] = true;
+			}
+		}
+		return ordered[j - i];
+	}
+	
 	isLinkable( i, j ) {
 		/* Returns -1 if the elements with indices `i` and `j` are linked and the 
 		link can be removed. Returns 1 if the elements are not linked, but can be 
 		linked. Returns 0 otherwise. */
-		for ( let l = 0; l < this.permlinks.length; l++ ) {
-			if ( ( this.permlinks[l][0] === i && this.permlinks[l][1] === j )
-					|| ( this.permlinks[l][0] === j && this.permlinks[l][1] === i ) )
-				return -1;
+		if ( j <= i ) return 0;
+		let iv = this.permutation.indexOf( i );
+		let jv = this.permutation.indexOf( j );
+		if ( jv <= iv ) return 0;
+		if ( this.links[i].includes( j ) ) {
+			if ( this.links[i].length <= 1 ) return 0;
+			if ( this.findCoveredElements( this.links, j ).length <= 1 ) return 0;
+			return -1;  // can unlink
 		}
-		return 0;
+		if ( this.isOrdered( i, j ) ) return 0;
+		return 1;
 	}
 	
-	getElementString( i ) {
-		return String( i + poset.offset );
+	findCoveredElements( linklist, j ) {
+		/* Returns the list of links that go from any element to `j`. Returns an 
+		empty array if `j` does not cover any elements or if `j` is out of bounds. 
+		*/
+		const covered = [];
+		if ( j >= this.card() ) return covered;
+		for ( let i = 0; i < j; i++ ) {
+			if ( linklist[i].includes( j ) )
+				covered.push( i );
+		}
+		return covered;
 	}
 	
-	getLinkString( link ) {
-		return String( link[0] + poset.offset ) + "/" 
-			+ String( link[1] + poset.offset );
+	pushNewElement() {
+		/* Adds new element to the right of the diagram. */
+		let i = this.card();
+		this.permutation.unshift( i );
+		this.autolinks.push( [] );
+		this.removedlinks.push( [] );
+		this.addedlinks.push( [] );
+		this.links.push( [] );
 	}
 	
-	getAddedLinkString( link ) {
-		return String( link[0] + poset.offset ) + "/" 
-			+ String( link[1] + poset.offset ) + "/";
+	dublicateElement( e, related ) {
+		/* Dublicates the element `e` into a 2-antichain or a 2-chain (if `related` 
+		is true). Raises an error if `e` is out of bounds. */
+		let n = poset.card();
+		if ( e < 0 || e >= n )
+			throw Error( "There is no element " + getElementString( e ) + "." );
+		let v = poset.permutation.indexOf( e );
+		for ( let i = 0; i < n; i++ ) {
+			if ( poset.permutation[i] >= e )
+				poset.permutation[i] += 1;
+		}
+		poset.permutation.splice( v + Number( !related ), 0, e );
+		let addLinksTo = related ? [] : [ e + 1 ];
+		for ( let i = 0; i < n; i++ ) {
+			raiseLinkedElements( poset.autolinks[i], e, 1, addLinksTo );
+			raiseLinkedElements( poset.removedlinks[i], e, 1, addLinksTo );
+			raiseLinkedElements( poset.addedlinks[i], e, 1, addLinksTo );
+			raiseLinkedElements( poset.links[i], e, 1, addLinksTo );
+		}
+		if ( related ) {
+			poset.autolinks.splice( e, 0, [ e + 1 ] );
+			poset.removedlinks.splice( e, 0, [] );
+			poset.addedlinks.splice( e, 0, [] );
+			poset.links.splice( e, 0, [ e + 1 ] );
+		} else {
+			poset.autolinks.splice( e + 1, 0, poset.autolinks[e].slice() );
+			poset.removedlinks.splice( e + 1, 0, poset.removedlinks[e].slice() );
+			poset.addedlinks.splice( e + 1, 0, poset.addedlinks[e].slice() );
+			poset.links.splice( e + 1, 0, poset.links[e].slice() );
+		}
+	}
+	
+	removeElement( e ) {
+		let n = poset.card();
+		if ( e < 0 || e >= n )
+			throw Error( "There is no element " + getElementString( e ) + "." );
+		let v = this.permutation.indexOf( e );
+		this.permutation.splice( v, 1 );
+		for ( let i = 0; i < n; i++ ) {
+			if ( this.permutation[i] > e )
+				this.permutation[i] = this.permutation[i] - 1;
+		}
+		this.resetLinks( true );
+		/*const removedlinks = this.removedlinks;
+		const addedlinks = this.addedlinks;*/
+		/*const removedcovering = this.findCoveredElements( removedlinks, e );
+		const addedcovering = this.findCoveredElements( addedlinks, e );
+		const removedcoveredby = this.removedlinks[e];
+		for ( let i = 0; i < coveredby.length; i++ )
+			coveredby[i] = coveredby[i] - 1;
+		this.resetLinks();
+		for ( let i = 0; i < coveredby.length; i++ ) {
+			for ( let j = 0; j < removedcovering.length; j++ )
+				this.removeLink( i, j, true );
+		}*/
 	}
 	
 	getPermutationString() {
-		return this.permutation.map( this.getElementString ).join( "," );
+		return this.permutation.map( getElementString ).join( "," );
+	}
+	
+	get_LinksString( linklist, targetmap ) {
+		/* This method is class private. It converts the nested array `linklist` 
+		into a comma-separated string. Each item is formatted as number/(*) where 
+		(*) stands for the return of `targetmap` for the target element of the 
+		links. */
+		let s = "";
+		for ( let i = 0; i < linklist.length; i++ ) {
+			if ( linklist[i].length === 0 ) continue;
+			let from = getElementString( i ) + "/";
+			if ( s.length > 0 ) s = s + ",";
+			s = s + from + linklist[i].map( targetmap ).join( "," + from );
+		}
+		return s;
 	}
 	
 	getRemovedLinksString() {
-		return this.remlinks.map( this.getLinkString ).join( "," );
+		return this.get_LinksString( this.removedlinks, getElementString );
 	}
 	
 	getAddedLinksString() {
-		return this.addlinks.map( this.getAddedLinkString ).join( "," );
+		return this.get_LinksString( this.addedlinks, getAddedLinkTargetString );
 	}
 	
 	getLinksString() {
-		let links = [];
-		for ( let l = 0; l < this.permlinks.length; l++ ) {
-			let skip = false;
-			for ( let r = 0; r < this.remlinks.length; r++ ) {
-				skip = ( this.permlinks[l][0] === this.remlinks[r][0] 
-						|| this.permlinks[l][1] === this.remlinks[r][1] ) 
-				if ( skip ) break;
-			}
-			if ( ~skip )
-				links.push( this.permlinks[l] );
-		}
-		links = links.concat( this.addlinks );
-		return links.map( this.getLinkString ).join( "," );
+		return this.get_LinksString( this.links, getElementString );
 	}
 	
+}
+	
+function getElementString( e ) {
+	return String( e + poset.offset );
+}
+	
+function getAddedLinkTargetString( e ) {
+	return getElementString( e ) + "/";
 }
 
 
@@ -329,20 +523,30 @@ let poset;
 function generate() {
 	let input_type = document.getElementById( "selInputType" ).value;
 	let new_poset;
-	if ( input_type === "predefined" )
+	if ( input_type === "predefined" ) {
 		new_poset = new Poset( getPredefined(), "", true );
-	else if ( input_type === "pcauset" )
-		new_poset = new Poset( 
-			document.getElementById( "txtInputPermutation" ).value, "", true );
-	document.getElementById( "msgInputError" ).hidden = true;
+	} else {
+		let input_perm = document.getElementById( "txtInputPermutation" ).value;
+		if ( input_type === "pcauset" )
+			new_poset = new Poset( input_perm, "", true );
+		else if ( input_type === "rcauset" )
+			new_poset = new Poset( input_perm, 
+				document.getElementById( "txtInputRemovedLinks" ).value, true );
+		else if ( input_type === "causet" )
+			new_poset = new Poset( input_perm, 
+				document.getElementById( "txtInputLinks" ).value, false );
+	}
+	const msgInputError = document.getElementById( "msgInputError" );
 	if ( new_poset.error ) {
-		document.getElementById( "msgInputError" ).innerText = new_poset.error;
-		document.getElementById( "msgInputError" ).hidden = false;
+		msgInputError.innerText = new_poset.error;
+		msgInputError.hidden = false;
 		return;
 	}
+	msgInputError.hidden = true;
 	poset = new_poset;
 	updateSelectionBounds();
 	setSelection( NaN );
+	addUndoStep();
 }
 
 function getPredefined() {
@@ -423,13 +627,14 @@ function setSelection( new_sel ) {
 	let strSel = "";
 	if ( new_sel >= 0 && new_sel < poset.card() )
 		strSel = String( new_sel + poset.offset );
-	const butRemoveEvent = document.getElementById( "butRemoveEvent" );
-	butRemoveEvent.disabled = ( strSel == "" ) || ( poset.card() === 1 );
-	if ( butRemoveEvent.disabled )
-		butRemoveEvent.className="btn btn-secondary";
+	const butRemoveElement = document.getElementById( "butRemoveElement" );
+	butRemoveElement.disabled = ( strSel == "" ) || ( poset.card() === 1 );
+	if ( butRemoveElement.disabled )
+		butRemoveElement.className="btn btn-secondary";
 	else
-		butRemoveEvent.className="btn btn-outline-danger";
-	document.getElementById( "txtSelection" ).value = strSel;
+		butRemoveElement.className="btn btn-outline-danger";
+	const txtSelection = document.getElementById( "txtSelection" );
+	txtSelection.value = strSel;
 	document.getElementById( "txtLinking" ).value = "";
 	const butLink = document.getElementById( "butLink" );
 	butLink.className="btn btn-secondary";
@@ -465,7 +670,7 @@ function setLinkingSelection( new_sel ) {
 	redrawPoset();
 }
 
-function initCanvas( context, n ) {
+function initializeCanvas( context, n ) {
 	context.setTransform( 1, 0, 0, 1, 0, 0 );
 	context.clearRect( 0, 0, context.canvas.width, context.canvas.height );
 	context.beginPath();
@@ -495,19 +700,24 @@ const link_width = 0.08;
 const linking_width = 0.14;
 const event_hover_size = 0.33;
 const event_linking_size = 0.17;
-const selection_cross_color = "#ffe8e8"; // #e9ecef";
+const selection_color = "red";
+const selection_cross_color = "#ffe6e2"; // #e9ecef";
 const relocation_color = "#90b030";
+const event_color = "black";
 const event_hover_color = "#703030";
 const event_linking_color = "#007bff";
+const unlinked_color = "#d0ebff";
+const link_color = "#646464";
 
 function redrawPoset() {
 	let canvas = document.getElementById( "cnvPoset" );
 	let context = canvas.getContext( "2d" );
 	let sel = getSelection();
+	let sel_v = poset.permutation.indexOf( sel );
 	let linksel = getLinkingSelection();
 	let linksel_v = poset.permutation.indexOf( linksel );
 	let n = poset.card();
-	initCanvas( context, n );  // setup canvas
+	initializeCanvas( context, n );  // setup canvas
 	// draw selection cross
 	if ( document.getElementById( "chbShowCross" ).checked ) {
 		context.strokeStyle = selection_cross_color;
@@ -536,11 +746,11 @@ function redrawPoset() {
 			context.beginPath();
 			context.ellipse( u + 0.5, v + 0.5, 
 				event_hover_size, event_hover_size, 0, 0, 2 * Math.PI );
-			context.ellipse( sel + 0.5, poset.permutation.indexOf( sel ) + 0.5, 
+			context.ellipse( sel + 0.5, sel_v + 0.5, 
 				event_hover_size, event_hover_size, 0, 0, 2 * Math.PI );
 			context.fill();
 		} else if ( hovered_event != sel ) {
-			context.fillStyle = "red";
+			context.fillStyle = selection_color;
 			context.beginPath();
 			context.ellipse( u + 0.5, v + 0.5, 
 				event_hover_size, event_hover_size, 0, 0, 2 * Math.PI );
@@ -551,29 +761,37 @@ function redrawPoset() {
 	if ( document.getElementById( "chbShowGrid" ).checked )
 		drawGrid( context, n );
 	// draw links
-	for ( let l = 0; l < poset.permlinks.length; l++ ) {
-		let i = poset.permlinks[l][0];
-		let j = poset.permlinks[l][1];
-		context.lineWidth = link_width;
-		if ( ( sel === i && linksel === j ) || ( sel === j && linksel === i ) ) {
-			if ( linkable === -1 ) {
-				context.lineWidth = linking_width;
-				context.strokeStyle = event_linking_color;
-			} else {
-				context.strokeStyle = "black dotted";
+	for ( let i = 0; i < n; i++ ) {
+		let linked_elements = poset.links[i];
+		for ( let l = 0; l < linked_elements.length; l++ ) {
+			let j = linked_elements[l];
+			context.lineWidth = link_width;
+			context.strokeStyle = link_color;
+			if ( ( sel === i && linksel === j ) ) {
+				if ( linkable === -1 ) {
+					context.lineWidth = linking_width;
+					context.strokeStyle = event_linking_color;
+				}
 			}
-		} else {
-			context.strokeStyle = "black";
+			context.beginPath();
+			context.moveTo( i + 0.5, poset.permutation.indexOf( i ) + 0.5 );
+			context.lineTo( j + 0.5, poset.permutation.indexOf( j ) + 0.5 );
+			context.stroke();
 		}
+	}
+	if ( !isNaN( sel ) && !isNaN( linksel ) 
+			&& !poset.links[sel].includes( linksel ) ) {
+		context.lineWidth = link_width;
+		context.strokeStyle = unlinked_color;
 		context.beginPath();
-		context.moveTo( i + 0.5, poset.permutation.indexOf( i ) + 0.5 );
-		context.lineTo( j + 0.5, poset.permutation.indexOf( j ) + 0.5 );
+		context.moveTo( sel + 0.5, sel_v + 0.5 );
+		context.lineTo( linksel + 0.5, linksel_v + 0.5 );
 		context.stroke();
 	}
 	// draw poset elements (events)
 	for ( let i = 0; i < n; i++ ) {
 		let p = poset.permutation[i];
-		context.fillStyle = "black";
+		context.fillStyle = event_color;
 		if ( hovered_event != sel && hovered_event === p )
 			context.fillStyle = event_hover_color;
 		else if ( is_hovering && hovered_event === -1 && p === sel )
@@ -581,7 +799,7 @@ function redrawPoset() {
 		else if ( p === linksel )
 			context.fillStyle = event_linking_color;
 		else if ( p === sel )
-			context.fillStyle = "red";
+			context.fillStyle = selection_color;
 		context.beginPath();
 		context.ellipse( p + 0.5, i + 0.5, 
 			event_size, event_size, 0, 0, 2 * Math.PI );
@@ -589,7 +807,7 @@ function redrawPoset() {
 	}
 	if ( !isNaN( linksel )
 			&& ( !is_hovering || linksel != hover[0] || linksel_v != hover[1] ) ) {
-		context.fillStyle = "black";
+		context.fillStyle = event_color;
 		context.beginPath();
 		context.ellipse( linksel + 0.5, linksel_v + 0.5, 
 			event_linking_size, event_linking_size, 0, 0, 2 * Math.PI );
@@ -608,9 +826,9 @@ function redrawPoset() {
 			let p = poset.permutation[i];
 			let x = ( p - i - 0.5 ) * scaling;
 			let y = ( p + i + 0.2 ) * scaling;
-			context.fillStyle = "black";
+			context.fillStyle = event_color;
 			if ( p === sel )
-				context.fillStyle = "red";
+				context.fillStyle = selection_color;
 			context.beginPath();
 			context.fillText( p + poset.offset, x, -y );
 		}
@@ -622,6 +840,51 @@ function redrawPoset() {
 
 // #############################################################################
 // Toolbar and input functionality
+
+const undosteps_max = 50;
+let undosteps = [];
+let undoindex = -1;
+
+function addUndoStep() {
+	if ( undoindex < undosteps.length - 1 )
+		// delete undo steps that are larger than `undoindex`
+		undosteps.splice( undoindex + 1, undosteps.length - undoindex - 1 );
+	const strPerm = document.getElementById( "txtPermutation" ).value;
+	if ( strPerm.length > 0 ) {
+		const strLinks = document.getElementById( "txtLinks" ).value;
+		if ( undosteps.length >= undosteps_max )
+			undosteps.splice( 0, undosteps_max - undosteps.length + 1 );
+		undosteps.push( [ strPerm, strLinks ] );
+	}
+	undoindex = undosteps.length - 1;
+	document.getElementById( "butUndo" ).disabled = ( undoindex <= 0 );
+	document.getElementById( "butRedo" ).disabled = true;
+}
+
+function resetToUndoStep( dir ) {
+	let new_undoindex = undoindex + dir;
+	if ( new_undoindex < 0 || new_undoindex >= undosteps.length ) return;
+	let new_poset = new Poset(
+		undosteps[new_undoindex][0],
+		undosteps[new_undoindex][1],
+		undosteps[new_undoindex][1].length === 0
+	);
+	const msgInputError = document.getElementById( "msgInputError" );
+	if ( new_poset.error ) {
+		msgInputError.innerText = new_poset.error;
+		msgInputError.hidden = false;
+		return;
+	}
+	msgInputError.hidden = true;
+	poset = new_poset;
+	undoindex = new_undoindex;
+	document.getElementById( "butUndo" ).disabled = 
+		( undoindex <= 0 );
+	document.getElementById( "butRedo" ).disabled = 
+		( undoindex >= undosteps.length - 1 );
+	updateSelectionBounds();
+	setSelection( NaN );
+}
 
 function updateHoveredTile( x, y ) {
 	let canvas = document.getElementById( "cnvPoset" );
@@ -646,7 +909,7 @@ function updateHoveredTile( x, y ) {
 	let ignoreTile = ( u != p );
 	let sel = getSelection();
 	let sel_v = poset.permutation.indexOf( sel );
-	if ( ~isNaN( sel ) && ( sel_v >= 0 ) && 
+	if ( !isNaN( sel ) && ( sel_v >= 0 ) && 
 		( u === sel || p === poset.permutation[sel_v] ) ) {
 		ignoreTile = false;
 	}
@@ -704,8 +967,9 @@ function moveU( moves ) {
 		poset.permutation[j] = i - dir;
 	}
 	poset.permutation[sel_v] = new_pos;
-	poset.reset_permlinks();
+	poset.resetLinks( true );
 	setSelection( new_pos );
+	addUndoStep();
 }
 
 function moveV( moves ) {
@@ -717,8 +981,9 @@ function moveV( moves ) {
 	if ( new_sel_v < 0 || new_sel_v >= poset.card() ) return;
 	poset.permutation.splice(
 		new_sel_v, 0, poset.permutation.splice( sel_v, 1 )[0] );
-	poset.reset_permlinks();
+	poset.resetLinks( true );
 	redrawPoset();
+	addUndoStep();
 }
 
 function changeOffset( increase ) {
@@ -732,46 +997,46 @@ function changeOffset( increase ) {
 		setSelection( sel );
 }
 
-function addEvent() {
-	let new_event = poset.card();
-	poset.permutation.unshift( new_event );
-	poset.reset_permlinks();
+function addElement() {
+	poset.pushNewElement();
 	hover = [];
 	updateSelectionBounds();
-	setSelection( new_event );
+	setSelection( poset.card() - 1 );
+	addUndoStep();
 }
 
-function dublicateEvent( shift ) {
+function dublicateElement( shift ) {
 	let sel = getSelection();
 	if ( isNaN( sel ) ) return;
-	let sel_v = poset.permutation.indexOf( sel );
-	let n = poset.card();
-	for ( i = 0; i < n; i++ ) {
-		if ( poset.permutation[i] >= sel )
-			poset.permutation[i] += 1;
-	}
-	poset.permutation.splice( sel_v + shift, 0, sel );
-	poset.reset_permlinks();
+	poset.dublicateElement( sel, shift );
 	hover = [];
 	updateSelectionBounds();
-	setSelection( sel );
+	setSelection( sel + 1 );
+	addUndoStep();
 }
 
-function removeEvent() {
+function removeElement() {
 	let sel = getSelection();
 	let n = poset.card();
 	if ( isNaN( sel ) || sel < 0 || n === 1 ) return;
-	let sel_v = poset.permutation.indexOf( sel );
-	poset.permutation.splice( sel_v, 1 );
-	for ( let i = 0; i < n; i++ ) {
-		if ( poset.permutation[i] > sel ) {
-			poset.permutation[i] = poset.permutation[i] - 1;
-		}
-	}
-	poset.reset_permlinks();
+	poset.removeElement( sel );
 	hover = [];
 	updateSelectionBounds();
 	setSelection( Math.min( sel, n - 1 ) );
+	addUndoStep();
+}
+
+function changeLink() {
+	let sel = getSelection();
+	let linksel = getLinkingSelection();
+	if ( isNaN( sel ) || isNaN( linksel ) ) return;
+	if ( poset.links[sel].includes( linksel ) )
+		poset.removeLink( sel, linksel );
+	else if ( poset.isLinkable( sel, linksel ) )
+		poset.addLink( sel, linksel );
+	linkable = poset.isLinkable( sel, linksel );
+	redrawPoset();
+	addUndoStep();
 }
 
 function turnOpposite() {
@@ -786,7 +1051,7 @@ function turnOpposite() {
 			new_sel = i - 1;
 	}
 	poset.permutation = opposite;
-	poset.reset_permlinks();
+	poset.resetLinks( true );
 	hover = [];
 	setSelection( new_sel );
 }
@@ -804,7 +1069,7 @@ function reflect() {
 		}
 	}
 	poset.permutation = reflected;
-	poset.reset_permlinks();
+	poset.resetLinks( true );
 	hover = [];
 	setSelection( new_sel );
 }
@@ -812,24 +1077,20 @@ function reflect() {
 function revise() {
 	const txtInputPermutation = document.getElementById( "txtInputPermutation" );
 	txtInputPermutation.value = document.getElementById( "txtPermutation" ).value;
-	let strLinks;
 	let strInputType;
-	if ( poset.autolinking ) {
-		let strLinks = poset.getRemovedLinksString();
-		if ( strLinks.length === 0 ) {
-			strInputType = "pcauset";
-		} else {
-			strInputType = "rcauset";
-			let strAddlinks = poset.getAddedLinksString();
-			if ( strAddlinks.length > 0 )
-				strLinks = strLinks + "," + strAddlinks;
-		}
+	let strRemovedLinks = poset.getRemovedLinksString();
+	if ( strRemovedLinks.length === 0 ) {
+		strInputType = "pcauset";
 	} else {
-		strInputType = "causet";
-		strLinks = document.getElementById( "txtLinks" ).value;
+		strInputType = "rcauset";
+		let strAddlinks = poset.getAddedLinksString();
+		if ( strAddlinks.length > 0 )
+			strRemovedLinks = strRemovedLinks + "," + strAddlinks;
 	}
 	document.getElementById( "selInputType" ).value = strInputType;
-	document.getElementById( "txtInputLinks" ).value = strLinks;
+	document.getElementById( "txtInputRemovedLinks" ).value = strRemovedLinks;
+	document.getElementById( "txtInputLinks" ).value = 
+		document.getElementById( "txtLinks" ).value;
 	selectInputType();
 	txtInputPermutation.focus();
 }
@@ -851,20 +1112,25 @@ function updateSettingsButton( name, redraw ) {
 function updateExport() {
 	let option = document.getElementById( "selExportLatexStyle" ).value;
 	let strPerm = poset.getPermutationString();
-	let strRemlinks = poset.getRemovedLinksString();
+	let strRemovedLinks = poset.getRemovedLinksString();
 	let strAddlinks = poset.getAddedLinksString();
 	let strLinks = poset.getLinksString();
+	document.getElementById( "lblCard" ).innerHTML = poset.card().toString();
 	document.getElementById( "txtPermutation" ).value = strPerm;
 	document.getElementById( "txtLinks" ).value = strLinks;
-	document.getElementById( "txtRemlinks" ).value = strRemlinks;
+	document.getElementById( "txtRemovedLinks" ).value = strRemovedLinks;
 	document.getElementById( "txtExport_pcauset" ).value = 
 		"\\pcauset" + option + "{" + strPerm + "}";
 	if ( strAddlinks.length > 0 )
-		strRemlinks = strRemlinks + "," + strAddlinks;
+		strRemovedLinks = strRemovedLinks + "," + strAddlinks;
 	document.getElementById( "txtExport_rcauset" ).value = 
-		"\\rcauset" + option + "{" + strPerm + "}{" + strRemlinks + "}";
+		"\\rcauset" + option + "{" + strPerm + "}{" + strRemovedLinks + "}";
 	document.getElementById( "txtExport_causet" ).value = 
 		"\\causet" + option + "{" + strPerm + "}{" + strLinks + "}";
+	let export_pcauset = ( strRemovedLinks.length === 0 );
+	document.getElementById( "frmExport_pcauset" ).hidden = !export_pcauset;
+	document.getElementById( "frmExport_rcauset" ).hidden = export_pcauset;
+	document.getElementById( "frmExport_causet" ).hidden = export_pcauset;
 }
 
 
@@ -929,7 +1195,7 @@ function handleDoubleClick( e ) {
 	let u = hover[0];
 	let p = poset.permutation[hover[1]];
 	if ( u === p ) {
-		dublicateEvent( e.shiftKey ? 0 : 1 );
+		dublicateElement( e.shiftKey );
 	}
 }
 
@@ -960,10 +1226,10 @@ function handleKeyDown( e ) {
 				selectV( 1 );
 			break;
 		case "Delete":
-			removeEvent();
+			removeElement();
 			break;
 		case "Period":
-			addEvent();
+			addElement();
 			break;
 	}
 }

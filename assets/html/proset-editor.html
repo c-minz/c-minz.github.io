@@ -101,6 +101,12 @@
 				<input type="text" class="form-control" id="txtInputPermutation" 
 					value="1,2,3"/>
 			</div>
+			<div class="form-group" id="frmInputRemovedLinks" hidden>
+				<label id="lblInputRemovedLinks" for="txtInputRemovedLinks">
+					Links removed from the automatic links:
+				</label>
+				<input type="text" class="form-control" id="txtInputRemovedLinks" />
+			</div>
 			<div class="form-group" id="frmInputLinks" hidden>
 				<label id="lblInputLinks" for="txtInputLinks">Links:</label>
 				<input type="text" class="form-control" id="txtInputLinks" />
@@ -110,7 +116,7 @@
 				<input type="text" class="form-control" id="txtInputLatex" />
 			</div>
 			<div class="form-group" id="frmInputMatrix" hidden>
-				<label for="txtInputMatrix">Causal matrix</label>
+				<label for="txtInputMatrix">Order matrix</label>
 				<textarea class="form-control" id="txtInputMatrix" rows="5"></textarea>
 			</div>
 			<button type="button" class="btn btn-primary mb-2"
@@ -126,21 +132,21 @@
 		<div class="btn-group mr-2" role="group" aria-label="Global actions">
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Undo the last action (generate, remove/add element/link)" 
-				id="butUndo" onClick="" disabled>
+				title="Copy the poset back to the input and revise manually" 
+				id="butRevise" onClick="revise()">
+				&#x2336; <span class="sr-only">Revise</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Undo the last action (generate, move/remove/add element/link)" 
+				id="butUndo" onClick="resetToUndoStep( -1 )" disabled>
 				&#x2B8C; <span class="sr-only">Undo</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Redo the last action (generate, remove/add element/link)" 
-				id="butRedo" onClick="" disabled>
+				title="Redo the last action (generate, move/remove/add element/link)" 
+				id="butRedo" onClick="resetToUndoStep( 1 )" disabled>
 				&#x2B8E; <span class="sr-only">Redo</span>
-			</button>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Copy the poset back to the input and revise manually" 
-				id="butRevise" onClick="revise()">
-				&#x2336; <span class="sr-only">Revise</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -172,7 +178,7 @@
 				<button type="button" class="btn btn-secondary" 
 					data-toggle="tooltip" data-placement="bottom" 
 					title="Delete the selected element" 
-					id="butRemoveEvent" onClick="removeEvent()" disabled>
+					id="butRemoveElement" onClick="removeElement()" disabled>
 					&#x2715; <span class="sr-only">Delete</span>
 				</button>
 			</div>
@@ -184,7 +190,8 @@
 				aria-label="Selected element" aria-describedby="lblSelection" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected element" 
-				id="txtSelection" onChange="resetSelection()" value="" min="0" max="10"/>
+				id="txtSelection" onChange="resetSelection()"
+				value="" min="0" max="10"/>
 			<div class="input-group-prepend">
 				<button type="button" class="btn btn-secondary" 
 					data-toggle="tooltip" data-placement="bottom" 
@@ -230,6 +237,8 @@
 		</div>
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
+				<div class="input-group-text">Cardinality:</div>
+				<div class="input-group-text" id="lblCard"></div>
 				<div class="input-group-text">Permutation:</div>
 			</div>
 			<input type="text" class="form-control" id="txtPermutation" readonly />
@@ -252,9 +261,9 @@
 			<div class="input-group-prepend">
 				<div class="input-group-text">Removed links:</div>
 			</div>
-			<input type="text" class="form-control" id="txtRemlinks" readonly />
+			<input type="text" class="form-control" id="txtRemovedLinks" readonly />
 			<button type="button" class="btn btn-sm btn-light"
-				id="butCopyUnlinks" onClick="copyToClipboard( 'txtRemlinks' )">
+				id="butCopyUnlinks" onClick="copyToClipboard( 'txtRemovedLinks' )">
 				&#x23CD; <span class="sr-only">Copy removed links</span>
 			</button>
 		</div>
@@ -269,66 +278,100 @@
 		package 'causets' with <code>\usepackage{causets}</code> and use one of the 
 		following macros.
 	</p>
-	<div class="form-group" id="frmExportLatex">
-		<div class="form-group">
-			<label for="selExportLatexStyle">
-				Export the LaTeX macros 
-			</label>
-			<select class="form-control" id="selExportLatexStyle" 
-				onChange="updateExport()">
-				<option value="">without labels.</option>
-				<option value="L">with labels.</option>
-				<option value="P">with permutation grid.</option>
-				<option value="X">with permutation grid and labels.</option>
-			</select>
+	<p>
+		<div class="form-group" id="frmExportLatex">
+			<div class="form-group">
+				<label for="selExportLatexStyle">
+					Export the LaTeX macros 
+				</label>
+				<select class="form-control" id="selExportLatexStyle" 
+					onChange="updateExport()">
+					<option value="">without labels.</option>
+					<option value="L">with labels.</option>
+					<option value="P">with permutation grid.</option>
+					<option value="X">with permutation grid and labels.</option>
+				</select>
+			</div>
+			<div class="form-group" id="frmExport_pcauset" hidden>
+				<label for="txtExport_pcauset">
+					Diagram where the links are generated from the permutation (single 
+					argument):
+				</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtExport_pcauset" readonly />
+					<button type="button" class="btn btn-sm btn-light"
+						id="butCopyExportPcauset" onClick="copyToClipboard( 'txtExportPcauset' )">
+						&#x23CD; <span class="sr-only">Copy pcauset macro</span>
+					</button>
+				</div>
+			</div>
+			<div class="form-group" id="frmExport_rcauset" hidden>
+				<label for="txtExport_rcauset">
+					Diagram where the links are generated from the permutation (first 
+					argument) except for the list of links given in the second argument:
+				</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtExport_rcauset" readonly />
+					<button type="button" class="btn btn-sm btn-light"
+						id="butCopyExportRcauset" onClick="copyToClipboard( 'txtExportRcauset' )">
+						&#x23CD; <span class="sr-only">Copy rcauset macro</span>
+					</button>
+				</div>
+			</div>
+			<div class="form-group" id="frmExport_causet" hidden>
+				<label for="txtExport_causet">
+					Diagram where the elements are positioned by the permutation (first 
+					argument) and all links are specified explicitly (second argument):
+				</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtExport_causet" readonly />
+					<button type="button" class="btn btn-sm btn-light"
+						id="butCopyExportCauset" onClick="copyToClipboard( 'txtExportCauset' )">
+						&#x23CD; <span class="sr-only">Copy causet macro</span>
+					</button>
+				</div>
+			</div>
 		</div>
-		<div class="form-group">
-			<label for="txtExport_pcauset">
-				Diagram where the links are automatically generated from the 
-				permutation:
-			</label>
+	</p>
+	
+	<a name="export_matrix"><h3>Matrices</h3></a>
+	<p>
+		<div class="form-group" id="frmExportLatex">
 			<div class="input-group">
-				<input type="text" class="form-control" id="txtExport_pcauset" readonly />
+				<select class="form-control" id="selExportMatrixType" 
+					onChange="updateExport()">
+					<option value="order">Order matrix</option>
+					<option value="link">Link matrix</option>
+				</select>
+				<button type="button" class="btn btn-secondary mb-2"
+					id="butExportMatrix" onClick="getExportMatrix()" width="auto">
+					Compute
+				</button>
+			</div>
+			<div class="input-group">
+				<textarea class="form-control" id="txtExportMatrix" rows="5" readonly>
+				</textarea>
 				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportPcauset" onClick="copyToClipboard( 'txtExportPcauset' )">
-					&#x23CD; <span class="sr-only">Copy pcauset macro</span>
+					id="butCopyExportMatrix" onClick="copyToClipboard( 'txtExportMatrix' )">
+					&#x23CD; <span class="sr-only">Copy matrix</span>
 				</button>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="txtExport_rcauset">
-				Diagram where the links are added as generated from the permutation 
-				except for a given list of links to be excluded:
-			</label>
-			<div class="input-group">
-				<input type="text" class="form-control" id="txtExport_rcauset" readonly />
-				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportRcauset" onClick="copyToClipboard( 'txtExportRcauset' )">
-					&#x23CD; <span class="sr-only">Copy rcauset macro</span>
-				</button>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="txtExport_causet">
-				Diagram where the elements are positioned by the permutation and all 
-				links are specified in the second argument:
-			</label>
-			<div class="input-group">
-				<input type="text" class="form-control" id="txtExport_causet" readonly />
-				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportCauset" onClick="copyToClipboard( 'txtExportCauset' )">
-					&#x23CD; <span class="sr-only">Copy causet macro</span>
-				</button>
-			</div>
-		</div>
-	</div>
+	</p>
 	
 	
 	<!--#######################################################################-->
 	<a name="help"><h2>Help</h2></a>
+	<p>
+		<b>Tipp</b>: In general, a poset does not have a unique diagram. The best 
+		diagrams are obtained by having as few "removed links" as possible. For 
+		example, if the poset is 2-dimensional, there exists a diagram with no 
+		"removed links".
+	</p>
+	
 	<a name="help_import"><h3>Import options</h3></a>
 	<p>
-		Diagrams are imported or generated from any of the following input types. 
+		You can import or generate a diagram from any of the following input types. 
 		Note that the number of elements of a diagram is limited. 
 		<div class="container">
 			<div class="row">
@@ -345,7 +388,7 @@
 					Enter a permutation of consecutive integers as a comma-separated list.
 				</div>
 			</div>
-			<div class="row" hidden>
+			<div class="row">
 				<div class="col">permutation and list of removed links</div>
 				<div class="col-8">
 					Additionally to a permutation, enter a comma-separated list of link 
@@ -353,7 +396,7 @@
 					automatic links from the permuation.
 				</div>
 			</div>
-			<div class="row" hidden>
+			<div class="row">
 				<div class="col">permutation and list of links</div>
 				<div class="col-8">
 					The permutation is only used to position the elements. A comma-
@@ -361,15 +404,15 @@
 					to draw links between the elements.
 				</div>
 			</div>
-			<div class="row" hidden>
+			<div class="row">
 				<div class="col">LaTeX macro</div>
 				<div class="col-8">
 					Paste a macro from the LaTeX code. The permutation and link list is 
 					extracted from this macro.
 				</div>
 			</div>
-			<div class="row" hidden>
-				<div class="col">causal matrix</div>
+			<div class="row">
+				<div class="col">order matrix</div>
 				<div class="col-8">
 					Paste a causal matrix, where each row is a comma-separated list of 
 					values 0 and 1, and the rows are separeted by a line break.
@@ -382,23 +425,23 @@
 	<p>
 		<div class="container">
 			<div class="row">
+				<div class="col">&#x2336;</div>
+				<div class="col-10">
+					Copy the poset back to the input and revise manually.
+				</div>
+			</div>
+			<div class="row">
 				<div class="col">&#x2B8C;</div>
 				<div class="col-10">
 					Undo the last actions if it was one of the following: generate, 
-					remove/add element, remove/add link.
+					move/remove/add element, remove/add link.
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">&#x2B8E;</div>
 				<div class="col-10">
 					Redo the last actions if it was one of the following: generate, 
-					remove/add element, remove/add link.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">&#x2336;</div>
-				<div class="col-10">
-					Copy the poset back to the input and revise manually.
+					move/remove/add element, remove/add link.
 				</div>
 			</div>
 			<div class="row">
@@ -540,7 +583,7 @@
 			<div class="row">
 				<div class="col">.</div>
 				<div class="col-10">
-					Add a new element parallel to the right and select it.
+					Add a new element to the right of the diagram and select it.
 				</div>
 			</div>
 		</div>
@@ -568,7 +611,7 @@
 	</p>
 	<p id="editor_copyright">
 		Copyright 2024 by <a href="https://c-minz.github.io">Christoph Minz</a>.
-		Version v1.0 (revision 2024-07-22).
+		Version v1.0 (revision 2024-07-30).
 		<a href="https://c-minz.github.io/impressum">Impressum</a>.
 	</p>
 </div>
