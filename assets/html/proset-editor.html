@@ -2,11 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Editor for diagrams of partially ordered sets" />
-<meta name="author" content="Christoph Minz" />
-<meta name="keywords" content="partial order, partially ordered set, poset, causal set, causet" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0" />
+<meta name="description"
+	content="Editor for diagrams of partially ordered sets" />
+<meta name="author"
+	content="Christoph Minz" />
+<meta name="keywords"
+	content="partial order, partially ordered set, poset, causal set, causet" />
 <title>The PrOSET Editor</title>
 
 <link rel="stylesheet" href="../css/proset-editor.css">
@@ -82,7 +86,8 @@
 							<option value="antichain">n-antichain</option value="chain">
 							<option value="random">random 2D-order with n elements</option>
 							<option value="fence">n-fence</option>
-							<option value="polygon" hidden>(regular) n-sided polygon poset</option>
+							<option value="polygon">(regular) n-sided polygon poset</option>
+							<option value="crown">n-crown poset</option>
 							<option value="simplex" hidden>n-simplex</option>
 						</select>
 					</div>
@@ -172,6 +177,18 @@
 				id="butLowerOffset" onClick="changeOffset( -1 )">
 				&#x238F; <span class="sr-only">Lower labels</span>
 			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Reset links to automatic links (2D-order)" 
+				id="butAutoLink" onClick="autoLink()" disabled>
+				&#x1F7A0; <span class="sr-only">Auto-link</span>
+			</button>
+			<!--<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="See how to use the editor" 
+				id="butGotoHelp" href="#help">
+				?? <span class="sr-only">Help</span>
+			</button>-->
 		</div>
 		<div class="input-group mr-2">
 			<div class="input-group-prepend">
@@ -182,10 +199,10 @@
 					&#x2715; <span class="sr-only">Delete</span>
 				</button>
 			</div>
-			<div class="input-group-prepend">
+			<!--<div class="input-group-prepend">
 				<div class="input-group-text" 
 					id="lblSelection" onClick="txtSelection.focus()">Selection:</div>
-			</div>
+			</div>-->
 			<input type="number" class="form-control" width="auto" style="width: 80px;"
 				aria-label="Selected element" aria-describedby="lblSelection" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -238,7 +255,49 @@
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
 				<div class="input-group-text">Cardinality:</div>
-				<div class="input-group-text" id="lblCard"></div>
+			</div>
+			<input type="text" class="form-control" id="txtCard" readonly />
+			<div class="input-group-prepend">
+				<div class="input-group-text">Canvas size:</div>
+			</div>
+			<select class="form-control" id="selRelativeCanvasSize"
+				style="background-color: #e9ecef;" onChange="handleResize()">
+				<option value="fill">fill</option>
+				<option value="25">25%</option>
+				<option value="50">50%</option>
+				<option value="75">75%</option>
+				<option value="100" selected>100%</option>
+				<option value="150">150%</option>
+				<option value="200">200%</option>
+				<option value="300">300%</option>
+				<option value="500">500%</option>
+				<option value="750">750%</option>
+				<option value="1000">1000%</option>
+			</select>
+			<div class="input-group-prepend">
+				<div class="input-group-text">up to</div>
+			</div>
+			<select class="form-control" id="selAbsoluteCanvasSize"
+				style="background-color: #e9ecef;" onChange="handleResize()">
+				<option value="unbounded">unbounded</option>
+				<option value="200">200px</option>
+				<option value="320">320px</option>
+				<option value="480">480px (VGA)</option>
+				<option value="720">720px (HD)</option>
+				<option value="800" selected>800px</option>
+				<option value="960">960px</option>
+				<option value="1080">1080px (Full HD)</option>
+				<option value="1200">1200px</option>
+				<option value="1440">1440px</option>
+				<option value="1600">1600px</option>
+				<option value="2160">2160px (4K UHD)</option>
+				<option value="2400">2400px</option>
+				<option value="2880">2880px (5K UHD)</option>
+				<option value="4320">4320px (8K UHD)</option>
+			</select>
+		</div>
+		<div class="input-group input-group-sm">
+			<div class="input-group-prepend">
 				<div class="input-group-text">Permutation:</div>
 			</div>
 			<input type="text" class="form-control" id="txtPermutation" readonly />
@@ -272,7 +331,7 @@
 	
 	<!--#######################################################################-->
 	<a name="export"><h2>Export</h2></a>
-	<a name="export_latex"><h3>LaTeX macros</h3></a>
+	<a name="export_latex"><h4>LaTeX macros</h4></a>
 	<p>
 		To use the diagram in a LaTeX document (in math or text mode), load the 
 		package 'causets' with <code>\usepackage{causets}</code> and use one of the 
@@ -334,7 +393,7 @@
 		</div>
 	</p>
 	
-	<a name="export_matrix"><h3>Matrices</h3></a>
+	<a name="export_matrix"><h4>Matrices</h4></a>
 	<p>
 		<div class="form-group" id="frmExportLatex">
 			<div class="input-group">
@@ -362,14 +421,50 @@
 	
 	<!--#######################################################################-->
 	<a name="help"><h2>Help</h2></a>
+	<div class="alert alert-info" role="alert">
+		<b>Note that most posets do not have a unique diagram.</b> The best 
+		diagrams are obtained by having as few manually added links and "removed 
+		links" as possible. For example, if the poset is 2-dimensional, there exists 
+		a diagram with no "removed links". All posets with up to 5 elements and all 
+		but 3 posets with 6 elements are 2-dimensional.
+	</div>
+	
+	<a name="help_howto"><h4>Steps to create a diagram of a poset</h4></a>
 	<p>
-		<b>Tipp</b>: In general, a poset does not have a unique diagram. The best 
-		diagrams are obtained by having as few "removed links" as possible. For 
-		example, if the poset is 2-dimensional, there exists a diagram with no 
-		"removed links".
+		<ol>
+			<li>
+				Generate a predefined poset with the desired cardinality &mdash; or 
+				add/remove elements to/from some imported poset to get the desired 
+				number of elements.
+			</li>
+			<li>
+				Auto-link the elements with the button &#x1F7A0; if the imported poset 
+				was higher dimensional (otherwise the button is disabled).
+			</li>
+			<li>
+				Rearrange the elements until (almost) all of the automatic links 
+				coincide with the links of the desired diagram.
+			</li>
+			<li>
+				Shuffle the elements to see if there is another similar configuration 
+				where all links are already matched by the auto-links.
+			</li>
+			<li>
+				Remove unwanted links. This is only necessary if the dimension of the 
+				poset is more than 2 &mdash; or if it is a causal set that cannot be 
+				embedded in (1+1)-dimensional Minkowski spacetime.
+			</li>
+			<li>
+				Lastly if required, add new links to your diagram. Again this step is 
+				not necessary for 2-dimensional posets.
+			</li>
+		</ol>
+		All these actions can be done with the <a href="#help_toolbar">toolbar</a> 
+		and by using a <a href="#help_mouse">mouse/touchpad</a> or 
+		<a href="#help_keyboard">keyboard</a>.
 	</p>
 	
-	<a name="help_import"><h3>Import options</h3></a>
+	<a name="help_import"><h4>Import options</h4></a>
 	<p>
 		You can import or generate a diagram from any of the following input types. 
 		Note that the number of elements of a diagram is limited. 
@@ -411,7 +506,7 @@
 					extracted from this macro.
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" hidden>
 				<div class="col">order matrix</div>
 				<div class="col-8">
 					Paste a causal matrix, where each row is a comma-separated list of 
@@ -421,7 +516,7 @@
 		</div>
 	</p>
 	
-	<a name="help_toolbar"><h3>Toolbar functions</h3></a>
+	<a name="help_toolbar"><h4>Toolbar functions</h4></a>
 	<p>
 		<div class="container">
 			<div class="row">
@@ -482,6 +577,13 @@
 				</div>
 			</div>
 			<div class="row">
+				<div class="col">&#x1F7A0;</div>
+				<div class="col-10">
+					Reset all links to the automatic links (the links of the underlying 
+					2D-order).
+				</div>
+			</div>
+			<div class="row">
 				<div class="col">&#x23CD;</div>
 				<div class="col-10">
 					Copy the value of a text field to the clipboard.
@@ -490,7 +592,7 @@
 		</div>
 	</p>
 	
-	<a name="help_mouse"><h3>Mouse and touchscreen functions</h3></a>
+	<a name="help_mouse"><h4>Mouse and touchscreen functions</h4></a>
 	<p>
 		<div class="container">
 			<div class="row">
@@ -523,7 +625,7 @@
 		</div>
 	</p>
 	
-	<a name="help_keyboard"><h3>Keyboard functions</h3></a>
+	<a name="help_keyboard"><h4>Keyboard functions</h4></a>
 	<p>
 		<div class="container">
 			<div class="row">
@@ -589,7 +691,7 @@
 		</div>
 	</p>
 	
-	<a name="help_about"><h3>About</h3></a>
+	<a name="help_about"><h4>About</h4></a>
 	<p>
 		This editor is to visualise and modify finite partially ordered sets 
 		(posets) represented by their Hasse diagrams. 
@@ -600,20 +702,26 @@
 		More information are given in the package manual.
 	</p>
 	
-	<a name="help_disclaimer"><h3>Disclaimer</h3></a>
+	<a name="help_disclaimer"><h4>Disclaimer</h4></a>
 	<p>
 		This web tool has been tested, but I do not take responsibility for 
-		incorrectly represented data. Please send me a comprehensive problem 
-		description and information of your browser (name and version) if you 
-		encounter an error. 
-		<br />
-		I also welcome any suggestions to improve the tool.
+		incorrectly represented data.
 	</p>
-	<p id="editor_copyright">
-		Copyright 2024 by <a href="https://c-minz.github.io">Christoph Minz</a>.
-		Version v1.0 (revision 2024-07-30).
-		<a href="https://c-minz.github.io/impressum">Impressum</a>.
+	<p>
+		<b>Report a problem or make a suggestion:</b>
+		Please send me a comprehensive problem description and information of your 
+		browser (name and version) if you encounter an error. 
+		I also welcome any suggestions to improve the tool. 
+		My <a href="https://c-minz.github.io">contact details</a> are on my main 
+		page.
 	</p>
+	<footer class="sticky-bottom mt-5" role="contentinfo">
+		<div class="container">
+			&copy; Copyright 2024 Christoph Minz.
+			Version v1.0 (revision 2024-07-30).
+			<a href="https://c-minz.github.io/impressum">Impressum</a>.
+		</div>
+	</footer>
 </div>
 </div>
 
