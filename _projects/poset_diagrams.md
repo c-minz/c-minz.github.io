@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Hasse diagrams
-description: Online editor (PrOSET) and LaTeX package (causets) for Hasse diagrams of posets and causal sets.
+description: Tools to draw Hasse diagrams of posets and causal sets: the LaTeX package 'causets', the PrOSET editor, and a catalogue of diagrams
 img: assets/img/PosetCatalogue_3Crown.png
 importance: 1
 category: side
@@ -9,22 +9,30 @@ related_publications: true
 ---
 
 
-In the quantum gravity approach of causal set theory, a spacetime manifold is assumed to be the macroscopic counterpart to ensembles of fundamentally discrete structures that are mathematically described by a collection of spacetime points (events or elements) and their causal relations (a partial ordering). 
-These partially ordered sets are, especially for a finite number of elements, represented with Hasse diagrams. 
-Since partial orders are a fairly common structure in many areas of mathematics, Hasse diagrams are also useful in contexts other than causal set theory.
+A [Hasse diagram](https://en.wikipedia.org/wiki/Hasse_diagram) is a graphical representation of a partially ordered set (a set with a transitive, reflexive, antisymmetric ordering), where all elements are drawn as vertices and edges (directed towards the top of the page) connect pairs of vertices $$x$$ and $$y$$ if $$x < y$$ and there is no other element $$z$$ such that $$x < z < y$$.
+Partially ordered sets (or posets for short) appear as an abstract structure in many areas of mathematics, though Hasse diagrams are mostly useful for finite posets.
+
+Apart from pure maths, posets find many applications, for example, spacetime manifolds in physics are equipped with a causal structure that partially orders the elements referred to as spacetime events. 
+One may also take discrete spacetime models, like lattices or causal sets. 
+A causal set is a poset that is locally finite (where every interval or set of elements $$z$$ between a pair of events $$x < z < y$$ is finite).
+Such structures are not only used for discrete spacetime models, but are also the central objects in the quantum gravity approach of causal set theory, where a spacetime manifold is assumed to be the macroscopic counterpart to ensembles of causal sets (or causets for short).
+
+Below I give a brief introduction to some tools to create Hasse diagrams for posets and causal sets.
 
 
 ## LaTeX package: causets
 
-The LaTeX package `causets` {% cite Minz:2020 %} provides macros to draw Hasse diagrams of partially ordered sets (posets) and causal sets (causets). It is available through [CTAN](https://ctan.org/pkg/causets) and it comes with a full LaTeX installation and is ready to use on Overleaf. Just load the package with
+The LaTeX package `causets` {% cite Minz:2020 %} provides macros to draw Hasse diagrams of partially ordered sets (posets) and causal sets (causets). It is available through [CTAN](https://ctan.org/pkg/causets), but if you have a recent full LaTeX installation, then it might be already installed on your system. 
+For example, it is ready to use on Overleaf.
+Just load the package with
 ```tex
 \usepackage{causets}
 ```
 
-The package is build on three main commands that can be used in text and math mode. 
+The package provides three main commands to show a diagram in text and math mode.
 The macros are 
-- `\pcauset{..,i,..}` to insert a Hasse diagram of a 2D-order using a permutation consecutive integers,
-- `\rcauset{..,i,..}{..,i/j,..}` to print a diagram based on a permutation as before (first argument) but with the links `i/j` listed in the second argument removed, 
+- `\pcauset{..,i,..}` to insert a Hasse diagram of a 2D-order using a permutation of consecutive integers,
+- `\rcauset{..,i,..}{..,i/j,..}` to print a diagram based on a permutation as before (first argument) but with those links `i/j` that listed in the second argument removed, 
 - `\causet{..,i,..}{..,i/j,..}` to place a diagram where the vertices are arranged according to a 2D-order permutation (first argument) but the links are added only between the element pairs `i/j` given in the second argument. 
 
 For example, use
@@ -40,14 +48,16 @@ You may find more information in the [package manual on CTAN](https://ctan.org/p
 ## Online editor: PrOSET
 
 The macros of the LaTeX package are built on integer permutations that determine the positions of the elements in the diagrams. 
-To find a suitable permutation for a poset diagram while getting a live preview, I have developed an online tool, the PrOSET editor.
+To find a suitable permutation for a poset diagram while getting a live preview, I have developed the 'PrOSET editor':
 
 **[Go to the PrOSET editor](/assets/html/proset-editor.html)**
 
 
 ## Catalogue of finite posets
 
-The diagrams in this catalogue are generated with the LaTeX package and the symmetry properties annotated in the catalogue are defined in {% cite Minz:2024 %}.
+The following catalogue lists diagrams for all posets up to cardinality 7.
+The total number of distinct partial orders on sets of $$n$$ elements (corresponding to the total page number of each part of the catalogue) is recorded in the OEIS as sequence [A000112](https://oeis.org/A000112).
+All diagrams in the catalogue below are generated with the LaTeX package and the symmetry properties annotated in the catalogue are defined in {% cite Minz:2024 %}.
 
 Each file of the catalogue contains all partial orders on a given number of elements, one poset per page including the annotated properties:
 - upper left `d`: dimension of the order (as primary page order, descending)
