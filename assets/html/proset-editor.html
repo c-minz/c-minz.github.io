@@ -127,13 +127,13 @@
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Undo the last action (generate, move/remove/add element/link)" 
 				id="butUndo" onClick="resetToUndoStep( -1 )" disabled>
-				&#x2B8C; <span class="sr-only">Undo</span>
+				&#x21B6; <span class="sr-only">Undo</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Redo the last action (generate, move/remove/add element/link)" 
 				id="butRedo" onClick="resetToUndoStep( 1 )" disabled>
-				&#x2B8E; <span class="sr-only">Redo</span>
+				&#x21B7; <span class="sr-only">Redo</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -158,12 +158,6 @@
 				title="Decrease all labels by 1" 
 				id="butLowerOffset" onClick="changeOffset( -1 )">
 				&#x238F; <span class="sr-only">Lower labels</span>
-			</button>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Reset links to automatic links (2D-order)" 
-				id="butAutoLink" onClick="autoLink()" disabled>
-				&#x1F7A0; <span class="sr-only">Auto-link</span>
 			</button>
 		</div>
 		<div class="input-group mr-2">
@@ -193,6 +187,12 @@
 				aria-label="Linked element" aria-describedby="lblLinked" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected linked/unlinked element" id="txtLinking" readonly/>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Reset links to automatic links (2D-order)" 
+				id="butAutoLink" onClick="autoLink()" disabled>
+				&#x27D0; <span class="sr-only">Auto-link</span>
+			</button>
 		</div>
 	</div>
 	<div class="posetcontainer" id="cnvPosetContainer">
@@ -416,7 +416,7 @@
 				number of elements.
 			</li>
 			<li>
-				Auto-link the elements with the button &#x1F7A0; if the imported poset 
+				Auto-link the elements with the button &#x27D0; if the imported poset 
 				was higher dimensional (otherwise the button is disabled).
 			</li>
 			<li>
@@ -504,14 +504,14 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x2B8C;</div>
+				<div class="col">&#x21B6;</div>
 				<div class="col-10">
 					Undo the last actions if it was one of the following: generate, 
 					move/remove/add element, remove/add link.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x2B8E;</div>
+				<div class="col">&#x21B7;</div>
 				<div class="col-10">
 					Redo the last actions if it was one of the following: generate, 
 					move/remove/add element, remove/add link.
@@ -555,7 +555,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x1F7A0;</div>
+				<div class="col">&#x27D0;</div>
 				<div class="col-10">
 					Reset all links to the automatic links (the links of the underlying 
 					2D-order).
