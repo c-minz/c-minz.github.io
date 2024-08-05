@@ -18,42 +18,26 @@
 <link rel="stylesheet" href="../css/bootstrap.min.css">
 <link defer="" rel="stylesheet" href="../css/academicons.min.css">
 <script type="text/javascript" src="proset-editor.js"></script>
-
 </head>
 
 <body class="fixed-top-nav sticky-bottom-footer" style="padding-top: 57px;" 
 	onload="initializeEditor()">
 <header>
-<nav class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation" 
-	id="navbar">
-	<div class="container">
-		<button class="navbar-toggler collapsed ml-auto" type="button" 
-			data-toggle="collapse" data-target="#navbarNav" 
-			aria-controls="navbarNav" aria-expanded="false" 
-			aria-label="Toggle navigation">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar top-bar"></span>
-			<span class="icon-bar middle-bar"></span>
-			<span class="icon-bar bottom-bar"></span>
-		</button>
-		<div class="navbar-collapse text-right" id="navbarNav">
-			<ul class="navbar-nav ml-auto flex-nowrap" 
-				style="background-color: white;">
-				<li class="nav-item"><a class="nav-link" href="#import">Import</a></li>
-				<li class="nav-item"><a class="nav-link" href="#edit">Edit</a></li>
-				<li class="nav-item"><a class="nav-link" href="#export">Export</a></li>
-				<li class="nav-item"><a class="nav-link" href="#help">Help</a></li>
-			</ul>
-		</div>
-	</div>
+<nav class="nav container fixed-top justify-content-end bg-light" role="navigation">
+	<ul class="nav">
+		<li class="nav-item"><a class="nav-link" href="#import">Import</a></li>
+		<li class="nav-item"><a class="nav-link" href="#edit">Edit</a></li>
+		<li class="nav-item"><a class="nav-link" href="#export">Export</a></li>
+		<li class="nav-item"><a class="nav-link" href="#help">Help</a></li>
+	</ul>
 </nav>
 </header>
 
 <div class="container mt-5" role="main">
 <div class="post">
-	<h1>The P<i>r</i>OSET Editor</h1>
+	<h1>P&#x2277;OSET Editor</h1>
 	<p id="subtitle">
-		The <b>p</b>artially (<b>r</b>e)<b>o</b>rdered <b>set</b> editor v1.0
+		<b>p</b>artially (<b>r</b>e)<b>o</b>rdered <b>set</b> editor v1.0
 	</p>
 	<div class="alert alert-danger" role="alert" id="msgJavascript">
 		This editor uses JavaScript. Please activated it.
@@ -66,14 +50,14 @@
 		<div class="form-group">
 			<div class="form-group">
 				<label for="selInputType">
-					Generate a diagram of a finite partially ordered set from a
+					Generate a diagram of a partially ordered set from a
 				</label>
 				<select class="form-control" id="selInputType" onChange="selectInputType()">
 					<option value="predefined" selected>predefined type</option>
 					<option value="pcauset">permutation (for a 2D-order)</option>
 					<option value="rcauset">permutation and list of removed links</option>
 					<option value="causet">permutation and list of links</option>
-					<option value="latex" hidden>LaTeX macro</option>
+					<option value="latex">LaTeX macro</option>
 					<option value="matrix" hidden>causal matrix</option>
 				</select>
 			</div>
@@ -86,8 +70,8 @@
 							<option value="antichain">n-antichain</option value="chain">
 							<option value="random">random 2D-order with n elements</option>
 							<option value="fence">n-fence</option>
-							<option value="polygon">(regular) n-sided polygon poset</option>
 							<option value="crown">n-crown poset</option>
+							<option value="polygon">(regular) n-sided polygon poset</option>
 							<option value="simplex" hidden>n-simplex</option>
 						</select>
 					</div>
@@ -97,7 +81,7 @@
 					</div>
 					<div class="col-3">
 						<input type="number" class="form-control" id="txtInputOrder"
-							 value="1" min="1" max="50" />
+							 value="5" min="1" max="50" />
 					</div>
 				</div>
 			</div>
@@ -183,12 +167,6 @@
 				id="butAutoLink" onClick="autoLink()" disabled>
 				&#x1F7A0; <span class="sr-only">Auto-link</span>
 			</button>
-			<!--<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="See how to use the editor" 
-				id="butGotoHelp" href="#help">
-				?? <span class="sr-only">Help</span>
-			</button>-->
 		</div>
 		<div class="input-group mr-2">
 			<div class="input-group-prepend">
@@ -199,10 +177,6 @@
 					&#x2715; <span class="sr-only">Delete</span>
 				</button>
 			</div>
-			<!--<div class="input-group-prepend">
-				<div class="input-group-text" 
-					id="lblSelection" onClick="txtSelection.focus()">Selection:</div>
-			</div>-->
 			<input type="number" class="form-control" width="auto" style="width: 80px;"
 				aria-label="Selected element" aria-describedby="lblSelection" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -220,16 +194,16 @@
 			<input type="text" class="form-control" width="auto" style="width: 60px;"
 				aria-label="Linked element" aria-describedby="lblLinked" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Selected linked/unlinked element" onChange="redrawPoset()" 
-				id="txtLinking" readonly/>
+				title="Selected linked/unlinked element" id="txtLinking" readonly/>
 		</div>
 	</div>
 	<div class="posetcontainer" id="cnvPosetContainer">
-		<canvas id="cnvPoset" width="500" height="500"></canvas>
+		<canvas id="cnvPoset" width="720" height="720"></canvas>
 	</div>
 	<div class="form-group">
 		<div class="input-group mr-2" role="toolbar" aria-label="Settings toolbar">
-			<div class="btn-group input-group btn-group-toggle" data-toggle="buttons">
+			<div class="btn-group btn-group-sm input-group btn-group-toggle"
+				data-toggle="buttons">
 				<label class="btn btn-light" id="lblShowLabels">
 					<input type="checkbox" id="chbShowLabels" 
 						data-toggle="tooltip" data-placement="top" 
@@ -283,8 +257,8 @@
 				<option value="200">200px</option>
 				<option value="320">320px</option>
 				<option value="480">480px (VGA)</option>
-				<option value="720">720px (HD)</option>
-				<option value="800" selected>800px</option>
+				<option value="720" selected>720px (HD)</option>
+				<option value="800">800px</option>
 				<option value="960">960px</option>
 				<option value="1080">1080px (Full HD)</option>
 				<option value="1200">1200px</option>
@@ -322,7 +296,7 @@
 			</div>
 			<input type="text" class="form-control" id="txtRemovedLinks" readonly />
 			<button type="button" class="btn btn-sm btn-light"
-				id="butCopyUnlinks" onClick="copyToClipboard( 'txtRemovedLinks' )">
+				id="butCopyRemovedLinks" onClick="copyToClipboard( 'txtRemovedLinks' )">
 				&#x23CD; <span class="sr-only">Copy removed links</span>
 			</button>
 		</div>
@@ -357,9 +331,11 @@
 					argument):
 				</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="txtExport_pcauset" readonly />
+					<input type="text" class="form-control"
+						id="txtExport_pcauset" readonly />
 					<button type="button" class="btn btn-sm btn-light"
-						id="butCopyExportPcauset" onClick="copyToClipboard( 'txtExportPcauset' )">
+						id="butCopyExportPcauset"
+						onClick="copyToClipboard( 'txtExport_pcauset' )">
 						&#x23CD; <span class="sr-only">Copy pcauset macro</span>
 					</button>
 				</div>
@@ -370,9 +346,11 @@
 					argument) except for the list of links given in the second argument:
 				</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="txtExport_rcauset" readonly />
+					<input type="text" class="form-control"
+						id="txtExport_rcauset" readonly />
 					<button type="button" class="btn btn-sm btn-light"
-						id="butCopyExportRcauset" onClick="copyToClipboard( 'txtExportRcauset' )">
+						id="butCopyExportRcauset"
+						onClick="copyToClipboard( 'txtExport_rcauset' )">
 						&#x23CD; <span class="sr-only">Copy rcauset macro</span>
 					</button>
 				</div>
@@ -383,9 +361,11 @@
 					argument) and all links are specified explicitly (second argument):
 				</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="txtExport_causet" readonly />
+					<input type="text" class="form-control"
+						id="txtExport_causet" readonly />
 					<button type="button" class="btn btn-sm btn-light"
-						id="butCopyExportCauset" onClick="copyToClipboard( 'txtExportCauset' )">
+						id="butCopyExportCauset"
+						onClick="copyToClipboard( 'txtExport_causet' )">
 						&#x23CD; <span class="sr-only">Copy causet macro</span>
 					</button>
 				</div>
@@ -397,8 +377,7 @@
 	<p>
 		<div class="form-group" id="frmExportLatex">
 			<div class="input-group">
-				<select class="form-control" id="selExportMatrixType" 
-					onChange="updateExport()">
+				<select class="form-control" id="selExportMatrixType">
 					<option value="order">Order matrix</option>
 					<option value="link">Link matrix</option>
 				</select>
@@ -411,7 +390,8 @@
 				<textarea class="form-control" id="txtExportMatrix" rows="5" readonly>
 				</textarea>
 				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportMatrix" onClick="copyToClipboard( 'txtExportMatrix' )">
+					id="butCopyExportMatrix"
+					onClick="copyToClipboard( 'txtExportMatrix' )">
 					&#x23CD; <span class="sr-only">Copy matrix</span>
 				</button>
 			</div>
@@ -693,13 +673,13 @@
 	
 	<a name="help_about"><h4>About</h4></a>
 	<p>
-		This editor is to visualise and modify finite partially ordered sets 
-		(posets) represented by their Hasse diagrams. 
-		It was developed as a tool for a research project and is built on the same 
-		methods as the <a href="https://ctan.org/pkg/causets" target="_blank">LaTeX 
-		package causets</a>, but the online editor has less functionality. The LaTeX 
-		package offers many more options to draw, style and modify Hasse diagrams. 
-		More information are given in the package manual.
+		The purpose of this editor is the visualisation of finite partially ordered 
+		sets (posets) with Hasse diagrams. Its development started from a research 
+		project and it uses the same principle as the 
+		<a href="https://ctan.org/pkg/causets" target="_blank">LaTeX package 
+		causets</a>. This editor shall serve as a tool to help drawing diagrams 
+		with the package, while the package offers many more options to draw, style 
+		and modify Hasse diagrams. More information are given in the package manual.
 	</p>
 	
 	<a name="help_disclaimer"><h4>Disclaimer</h4></a>
@@ -715,13 +695,16 @@
 		My <a href="https://c-minz.github.io">contact details</a> are on my main 
 		page.
 	</p>
-	<footer class="sticky-bottom mt-5" role="contentinfo">
-		<div class="container">
-			&copy; Copyright 2024 Christoph Minz.
-			Version v1.0 (revision 2024-07-30).
-			<a href="https://c-minz.github.io/impressum">Impressum</a>.
-		</div>
-	</footer>
+	<p class="sticky-bottom mt-5" role="contentinfo">
+		&copy; Copyright 2024 Christoph Minz.
+		Styled with <a href="https://getbootstrap.com/" target="_blank"
+		rel="external nofollow noopener">Bootstrap</a>.
+		Hosted by <a href="https://pages.github.com/" target="_blank"
+		rel="external nofollow noopener">GitHub Pages</a>.
+		<br />
+		Version v1.0 (revision 2024-08-05).
+		<a href="https://c-minz.github.io/impressum">Impressum</a>.
+	</p>
 </div>
 </div>
 

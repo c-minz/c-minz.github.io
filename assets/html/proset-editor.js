@@ -597,8 +597,15 @@ class Poset {
 	toOrderMatrix() {
 		/* Returns the poset as an n times n, upper-triangular, boolean matrix `M` 
 		where `M[i][j]` is true iff element `i` is strictly ordered before `j`. */
+		let n = this.card();
 		let matrix = this.toLinkMatrix();
-		// TODO
+		for ( let i = 0; i < n; i++ ) {
+			for ( let j = i + 1; j < n; j++ ) {
+				if ( !matrix[i][j] ) continue;
+				for ( let k = j + 1; k < n; k++ )
+					matrix[i][k] = matrix[i][k] || matrix[j][k];
+			}
+		}
 		return matrix;
 	}
 	
@@ -651,21 +658,23 @@ function getAddedLinkTargetString( e ) {
 
 function generate() {
 	let input_type = document.getElementById( "selInputType" ).value;
+	let input_perm = document.getElementById( "txtInputPermutation" ).value;
 	let error = "";
 	let new_poset;
 	try {
-		if ( input_type === "predefined" ) {
+		if ( input_type === "predefined" )
 			new_poset = getPredefined();
-		} else {
-			let input_perm = document.getElementById( "txtInputPermutation" ).value;
-			if ( input_type === "pcauset" )
-				new_poset = new Poset( input_perm, "", true );
-			else if ( input_type === "rcauset" )
-				new_poset = new Poset( input_perm, 
-					document.getElementById( "txtInputRemovedLinks" ).value, true );
-			else if ( input_type === "causet" )
-				new_poset = new Poset( input_perm, 
-					document.getElementById( "txtInputLinks" ).value, false );
+		else if ( input_type === "pcauset" )
+			new_poset = new Poset( input_perm, "", true );
+		else if ( input_type === "rcauset" )
+			new_poset = new Poset( input_perm, 
+				document.getElementById( "txtInputRemovedLinks" ).value, true );
+		else if ( input_type === "causet" )
+			new_poset = new Poset( input_perm, 
+				document.getElementById( "txtInputLinks" ).value, false );
+		else if ( input_type === "latex" ) {
+			new_poset = getFromLatexMacro(
+				document.getElementById( "txtInputLatex" ).value );
 		}
 		error = new_poset.error;
 	} catch ( e ) {
@@ -681,13 +690,16 @@ function generate() {
 	poset = new_poset;
 	updateSelectionBounds();
 	setSelection( NaN );
+	updateExport();
 	addUndoStep();
+	window.location.href = "#edit";
 }
 
 function getPredefined() {
 	let input_type = document.getElementById( "selInputPredefinedType" ).value;
 	let n = parseInt( document.getElementById( "txtInputOrder" ).value, 10 );
-	if ( isNaN( n ) || n < 1 || n > 1000 ) return [];
+	if ( isNaN( n ) || n < 1 || n > 1000 )
+		throw Error( "The value for 'n' has to be a strictly positive integer." )
 	if ( input_type === "chain" )
 		return getPredefined_chain( n );
 	if ( input_type === "antichain" )
@@ -740,16 +752,78 @@ function getPredefined_fence( n ) {
 	return new Poset( permutation, [], true );
 }
 
+function getPredefined_crown( n ) {
+	if ( n === 1 ) throw Error( "Crown posets only exist for n > 1." );
+	const permutation = [ n + 1 ];
+	for ( let i = n - 1; i >= 2; i-- )
+		permutation.push( i );
+	permutation.push( 2 * n, 1 );
+	for ( let i = 2 * n - 1; i >= 2 + n; i-- )
+		permutation.push( i );
+	permutation.push( n );
+	const removedlinks = [];
+	for ( let i = 2; i < n; i++ )
+		removedlinks.push( [ i, 2 * n - i + 1 ] );
+	return new Poset( permutation, removedlinks, true );
+}
+
 function getPredefined_polygon( n ) {
 	if ( n === 1 ) return new Poset( [ 0, 1, 2, 3 ], [], true );
 	if ( n === 2 ) return new Poset( [ 0, 2, 1, 4, 3, 5 ], [], true );
-	throw Error( "Polygons for n > 2 are not implemented." );  // TODO
+	const permutation = [ 0, 2 * ( n - 1 ), 2 * ( n - 2 ), 2 * n ];
+	for ( let i = 3; i < n; i++ )
+		permutation.push( 2 * ( n - i ), 2 * ( n - i + 3 ) - 1 );
+	permutation.push( 1, 5, 3, 2 * n + 1 );
+	const removedlinks = [];
+	let max = 2 * n - 4;
+	for ( let i = 2; i <= max; i = i + 2 )
+		removedlinks.push( [ i, i + 3 ] );
+	return new Poset( permutation, removedlinks, true );
 }
 
-function getPredefined_crown( n ) {
-	if ( n === 1 ) throw Error( "Crown posets only exist for n > 1." );
-	if ( n === 2 ) return new Poset( [ 3, 4, 1, 2 ], [], true );
-	throw Error( "Crown posets for n > 2 are not implemented." );  // TODO
+function getFromLatexMacro_find_endgroup( macro, start ) {
+	let endgroup = macro.indexOf( "}", start );
+	if ( endgroup < 0 ) return -1;
+	let begingroup = macro.indexOf( "{", start );
+	if ( begingroup < start || begingroup > endgroup )
+		return endgroup;
+	endgroup = getFromLatexMacro_find_endgroup( macro, begingroup + 1 );
+	if ( endgroup < 0 ) return -1;
+	return getFromLatexMacro_find_endgroup( macro, endgroup + 1 );
+}
+
+function getFromLatexMacro( macro ) {
+	macro = macro.trim();
+	let is_pcauset = macro.startsWith( "\\pcauset{" )
+		|| macro.startsWith( "\\pcauset[" ) || macro.startsWith( "\\pcauset " );
+	let is_rcauset = macro.startsWith( "\\rcauset{" )
+		|| macro.startsWith( "\\rcauset[" ) || macro.startsWith( "\\rcauset " );
+	let is_causet = macro.startsWith( "\\causet{" )
+		|| macro.startsWith( "\\causet[" ) || macro.startsWith( "\\causet " );
+	if ( !is_pcauset && !is_rcauset && !is_causet )
+		throw Error( "This value cannot be processed. Supported macros are: " + 
+			"\\pcauset, \\rcauset, \\causet." );
+	let begingroup = macro.indexOf( "{" ) + 1;
+	if ( begingroup < 1 )
+		throw Error( "The LaTeX macro has to have a first argument starting " + 
+			"with an opening brace {." );
+	let endgroup = getFromLatexMacro_find_endgroup( macro, begingroup );
+	if ( endgroup < begingroup )
+		throw Error( "The first argument has no closing brace }." );
+	if ( is_pcauset )
+		return new Poset( macro.slice( begingroup, endgroup ), [], true );
+	let begingroup2 = macro.indexOf( "{", endgroup ) + 1;
+	if ( begingroup2 < 1 )
+		throw Error( "The LaTeX macro has to have an second argument starting " + 
+			"with an opening brace {." );
+	let endgroup2 = getFromLatexMacro_find_endgroup( macro, begingroup2 );
+	if ( endgroup2 < begingroup2 )
+		throw Error( "The second argument has no closing brace }." );
+	return new Poset(
+		macro.substring( begingroup, endgroup ),
+		macro.substring( begingroup2, endgroup2 ),
+		is_rcauset
+	);
 }
 
 
@@ -986,14 +1060,13 @@ function redrawPoset() {
 		}
 		// context.restore();
 	}
-	updateExport();
 }
 
 
 // #############################################################################
 // Editor (toolbar) functions
 
-const undosteps_max = 50;
+const undosteps_max = 100;
 let undosteps = [];
 let undoindex = -1;
 
@@ -1036,6 +1109,7 @@ function resetToUndoStep( dir ) {
 		( undoindex >= undosteps.length - 1 );
 	updateSelectionBounds();
 	setSelection( NaN );
+	updateExport();
 }
 
 function updateHoveredTile( x, y ) {
@@ -1109,28 +1183,20 @@ function moveU( moves ) {
 	if ( moves === 0 ) return;
 	let sel = getSelection();
 	if ( isNaN( sel ) ) return;
-	try {
-		let u = poset.moveU( sel, moves );
-		setSelection( u );
-		addUndoStep();
-	} catch ( e ) {
-		document.getElementById( "msgInputError" ).innerText = e.toString();
-		document.getElementById( "msgInputError" ).hidden = false;
-	}
+	let u = poset.moveU( sel, moves );
+	setSelection( u );
+	updateExport();
+	addUndoStep();
 }
 
 function moveV( moves ) {
 	if ( moves === 0 ) return;
 	let sel = getSelection();
 	if ( isNaN( sel ) ) return;
-	try {
-		poset.moveV( sel, moves );
-		redrawPoset();
-		addUndoStep();
-	} catch ( e ) {
-		document.getElementById( "msgInputError" ).innerText = e.toString();
-		document.getElementById( "msgInputError" ).hidden = false;
-	}
+	poset.moveV( sel, moves );
+	redrawPoset();
+	updateExport();
+	addUndoStep();
 }
 
 function changeOffset( increase ) {
@@ -1142,6 +1208,7 @@ function changeOffset( increase ) {
 		redrawPoset();
 	else
 		setSelection( sel );
+	updateExport();
 }
 
 function addElement() {
@@ -1149,6 +1216,7 @@ function addElement() {
 	hover = [];
 	updateSelectionBounds();
 	setSelection( poset.card() - 1 );
+	updateExport();
 	addUndoStep();
 }
 
@@ -1159,6 +1227,7 @@ function dublicateElement( shift ) {
 	hover = [];
 	updateSelectionBounds();
 	setSelection( sel + 1 );
+	updateExport();
 	addUndoStep();
 }
 
@@ -1170,6 +1239,7 @@ function removeElement() {
 	hover = [];
 	updateSelectionBounds();
 	setSelection( Math.min( sel, n - 1 ) );
+	updateExport();
 	addUndoStep();
 }
 
@@ -1183,6 +1253,7 @@ function changeLink() {
 		poset.addLink( sel, linksel );
 	linkable = poset.isLinkable( sel, linksel );
 	redrawPoset();
+	updateExport();
 	addUndoStep();
 }
 
@@ -1190,6 +1261,7 @@ function autoLink() {
 	if ( !document.getElementById( "frmExport_pcauset" ).hidden ) return;
 	poset.resetLinks( true );
 	setLinkingSelection( NaN );
+	updateExport();
 	addUndoStep();
 }
 
@@ -1208,6 +1280,7 @@ function turnOpposite() {
 	poset.remapLinks( opposite.toReversed() );
 	hover = [];
 	setSelection( new_sel );
+	updateExport();
 }
 
 function reflect() {
@@ -1226,6 +1299,7 @@ function reflect() {
 	poset.remapLinks( reflected );
 	hover = [];
 	setSelection( new_sel );
+	updateExport();
 }
 
 function revise() {
@@ -1244,6 +1318,7 @@ function revise() {
 	document.getElementById( "txtInputLinks" ).value = 
 		document.getElementById( "txtLinks" ).value;
 	selectInputType();
+	window.location.href = "#import";
 	txtInputPermutation.focus();
 }
 
