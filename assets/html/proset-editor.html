@@ -466,22 +466,24 @@
 				<div class="col-8">
 					Additionally to a permutation, enter a comma-separated list of link 
 					pairs in the format 'number/number' to be excluded when drawing the 
-					automatic links from the permuation.
+					automatic links from the permutation.
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">permutation and list of links</div>
 				<div class="col-8">
-					The permutation is only used to position the elements. A comma-
-					separated list of link pairs (in the format 'number/number') is used 
-					to draw links between the elements.
+					The permutation is only used to position the elements. A 
+					comma-separated list of link pairs (in the format 'number/number') is 
+					used to draw links between the elements.
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">LaTeX macro</div>
 				<div class="col-8">
-					Paste a macro from the LaTeX code. The permutation and link list is 
-					extracted from this macro.
+					Paste a LaTeX macro <code>\pcauset</code>, <code>\rcauset</code>, or 
+					<code>\causet</code> followed by (an optional argument enclosed in 
+					square brackets <code>[]</code> and) one or two arguments for the 
+					permutation and links enclosed in braces <code>{}</code>.
 				</div>
 			</div>
 			<div class="row" hidden>
@@ -496,6 +498,7 @@
 	
 	<a name="help_toolbar"><h4>Toolbar functions</h4></a>
 	<p>
+		Above the canvas:
 		<div class="container">
 			<div class="row">
 				<div class="col">&#x2336;</div>
@@ -561,9 +564,45 @@
 					2D-order).
 				</div>
 			</div>
+		</div>
+		Below the canvas:
+		<div class="container">
+			<div class="row">
+				<div class="col">Labels</div>
+				<div class="col-9">
+					Show/hide the element labels.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">Cross</div>
+				<div class="col-9">
+					Show/hide the selection cross.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">Grid</div>
+				<div class="col-9">
+					Show/hide the element grid.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">Canvas size</div>
+				<div class="col-9">
+					Set the relative canvas size as percentage of the page width. Use 
+					'fill' to size the canvas to the maximal value.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">up to</div>
+				<div class="col-9">
+					Set the maximal canvas size. Use 'unbounded' to resize the canvas 
+					to the relative size. If 'fill' and 'unbounded' is selected, the 
+					canvas is sized to 100% of the page width. 
+				</div>
+			</div>
 			<div class="row">
 				<div class="col">&#x23CD;</div>
-				<div class="col-10">
+				<div class="col-9">
 					Copy the value of a text field to the clipboard.
 				</div>
 			</div>
@@ -575,13 +614,16 @@
 		<div class="container">
 			<div class="row">
 				<div class="col">
-					Click on an element to select it.
+					Click on an element (highlighted with a red mark on hover) to select 
+					it. If another element is already selected, clicking on a succeeding 
+					element that can be linked (connected by an edge) in the diagram, the 
+					(possible) link will be selected.
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					Click along the 45 degree rays from the selected element to move the 
-					it.
+					Click along the row/column going in 45 degree angles away from the 
+					selected element to move it there.
 				</div>
 			</div>
 			<div class="row">
@@ -690,18 +732,18 @@
 		Please send me a comprehensive problem description and information of your 
 		browser (name and version) if you encounter an error. 
 		I also welcome any suggestions to improve the tool. 
-		My <a href="https://c-minz.github.io">contact details</a> are on my main 
-		page.
+		My contact details are on my <a href="https://c-minz.github.io">main 
+		page</a>.
 	</p>
 	<p class="sticky-bottom mt-5" role="contentinfo">
-		&copy; Copyright 2024 Christoph Minz.
+		&copy; Copyright 2024, Christoph Minz.
+		PrOSET editor version v1.0 (revision 2024-08-06).
+		<br />
 		Styled with <a href="https://getbootstrap.com/" target="_blank"
 		rel="external nofollow noopener">Bootstrap</a>.
 		Hosted by <a href="https://pages.github.com/" target="_blank"
 		rel="external nofollow noopener">GitHub Pages</a>.
-		<br />
-		Version v1.0 (revision 2024-08-05).
-		<a href="https://c-minz.github.io/impressum">Impressum</a>.
+		Go to the page <a href="https://c-minz.github.io/impressum">impressum</a>.
 	</p>
 </div>
 </div>
