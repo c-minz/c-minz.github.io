@@ -59,7 +59,7 @@
 					<option value="matrix" hidden>causal matrix</option>
 				</select>
 			</div>
-			<div class="form-group" id="frmInputPredefined">
+			<div class="form-group" id="frmInputPredefined" onChange="hideLastError()">
 				<label for="selInputPredefinedType">Predefined type:</label>
 				<div class="form-row">
 					<div class="col-7">
@@ -110,7 +110,7 @@
 				id="butGenerate" onClick="generate()">Generate</button>
 		</div>
 	</form>
-	<div class="alert alert-warning" role="alert" id="msgInputError" hidden></div>
+	<div class="alert alert-warning" role="alert" id="msgError" hidden></div>
 	
 	
 	<!--#######################################################################-->
@@ -737,7 +737,7 @@
 	</p>
 	<p class="sticky-bottom mt-5" role="contentinfo">
 		&copy; Copyright 2024, Christoph Minz.
-		PrOSET editor version v1.0 (revision 2024-08-06).
+		PrOSET editor version v1.0 (revision 2024-08-10).
 		<br />
 		Styled with <a href="https://getbootstrap.com/" target="_blank"
 		rel="external nofollow noopener">Bootstrap</a>.
