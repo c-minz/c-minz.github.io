@@ -23,12 +23,12 @@ class WarningError extends Error {
 
 class LargePosetWarningError extends WarningError {
 	
-	constructor( links = false ) {
-		let message = "You are about to generate a poset with more than ";
+	constructor( value, links = false ) {
+		let message = "You are about to generate a poset with " + value;
 		if ( links )
-			message = message + LargePosetWarning_links + " links. ";
+			message = message + " links. ";
 		else
-			message = message + LargePosetWarning_elements + " elements. ";
+			message = message + " elements. ";
 		super( message + "Handling large posets can slow down your system!" );
 		LargePosetWarningError_isShowing = true;
 	}
@@ -200,8 +200,9 @@ function parsePermutation( value ) {
 	}
 	// get intended number of elements:
 	let n_target = Math.max( n, max_element - min_element + 1 );
-	if ( n_target > LargePosetWarning_elements && !LargePosetWarningError_isShowing )
-		throw new LargePosetWarningError();
+	if ( n_target > LargePosetWarning_elements
+			&& !LargePosetWarningError_isShowing )
+		throw new LargePosetWarningError( n_target );
 	// check for repeated and missing elements:
 	const checkedInput = new Array( n_target ).fill( 0 );
 	for ( let i = 0; i < n; i++ ) {
@@ -338,9 +339,10 @@ class Poset {
 			for ( let l = 0; l < linkpairs.length; l++ ) {
 				this.addLink( linkpairs[l][0], linkpairs[l][1] );
 			}
-			if ( this.countLinks() > LargePosetWarning_links
+			let link_count = this.countLinks();
+			if ( link_count > LargePosetWarning_links
 					&& !LargePosetWarningError_isShowing )
-				throw new LargePosetWarningError( true );
+				throw new LargePosetWarningError( link_count, true );
 		} catch ( e ) {
 			this.error = e.toString();
 			this.hasWarning = ( e instanceof WarningError );
@@ -509,7 +511,7 @@ class Poset {
 		/* Adds a new element to the right of the diagram. */
 		let i = this.card();
 		if ( i === LargePosetWarning_elements && !LargePosetWarningError_isShowing )
-			throw new LargePosetWarningError();
+			throw new LargePosetWarningError( i + 1 );
 		this.permutation.unshift( i );
 		this.autolinks.push( [] );
 		this.removedlinks.push( [] );
@@ -524,7 +526,7 @@ class Poset {
 		if ( e < 0 || e >= n )
 			throw new RangeError( "There is no element " + getElementString( e ) + "." );
 		if ( n === LargePosetWarning_elements && !LargePosetWarningError_isShowing )
-			throw new LargePosetWarningError();
+			throw new LargePosetWarningError( n + 1 );
 		let v = this.permutation.indexOf( e );
 		for ( let i = 0; i < n; i++ ) {
 			if ( this.permutation[i] >= e )
