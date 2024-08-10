@@ -5,6 +5,50 @@
 // #############################################################################
 // Editor initialization and main class definition
 
+const LargePosetWarning_elements = 250;
+const LargePosetWarning_links = 2000;
+let WarningError_isShowing = false;
+let LargePosetWarningError_isShowing = false;
+
+class WarningError extends Error {
+	
+	constructor( message ) {
+		super( message );
+		WarningError_isShowing = true;
+		this.name = "Warning";
+		this.message = message + " \nRepeat the action to ignore this warning.";
+	}
+	
+}
+
+class LargePosetWarningError extends WarningError {
+	
+	constructor( links = false ) {
+		let message = "You are about to generate a poset with more than ";
+		if ( links )
+			message = message + LargePosetWarning_links + " links. ";
+		else
+			message = message + LargePosetWarning_elements + " elements. ";
+		super( message + "Handling large posets can slow down your system!" );
+		LargePosetWarningError_isShowing = true;
+	}
+	
+}
+
+function showError( message, isWarning ) {
+	const msgError = document.getElementById( "msgError" );
+	msgError.innerText = message;
+	msgError.className = isWarning ? "alert alert-danger" : "alert alert-warning";
+	msgError.hidden = false;
+	msgError.focus();
+}
+
+function hideLastError() {
+	document.getElementById( "msgError" ).hidden = true;
+	WarningError_isShowing = false;
+	LargePosetWarningError_isShowing = false;
+}
+
 function initializeEditor() {
 	/* Initialize input type, editor canvas size, and settings bottons. */
 	// hide active JavaScript alert:
@@ -41,6 +85,7 @@ function initializeEditor() {
 
 function selectInputType() {
 	/* Hide/show the input controls for the currently selected import type. */
+	hideLastError();
 	let input_type = document.getElementById( "selInputType" ).value;
 	document.getElementById( "frmInputPredefined" ).hidden = 
 		( input_type != "predefined" );
@@ -88,7 +133,7 @@ function parseIntNotNaN( value ) {
 	if ( isNaN( int_value ) ) {
 		if ( value.length == 0 )
 			value = "(empty)";
-		throw new TypeError(
+		throw new SyntaxError(
 			"The value " + value + " cannot be converted to an integer!" );
 	}
 	return int_value;
@@ -103,7 +148,8 @@ function parseLink( value ) {
 	options. */
 	let sep0 = value.indexOf( "/" );
 	if ( sep0 < 0 )
-		throw Error( "Each link has to be of the format 'number/number'." );
+		throw new SyntaxError(
+			"Each link has to be of the format 'number/number'." );
 	let sep1 = value.indexOf( "/", sep0 + 1 );
 	let from = parseIntNotNaN( value.substr( 0, sep0 ) );
 	let to;
@@ -117,7 +163,7 @@ function parseLink( value ) {
 		options = value.substr( sep1 + 1 );
 	}
 	if ( from === to )
-		throw Error( "An element cannot be linked to itself." );
+		throw new SyntaxError( "An element cannot be linked to itself." );
 	if ( to < from ) {
 		if ( has_options )
 			return [ to, from, options ];
@@ -140,7 +186,7 @@ function parsePermutation( value ) {
 	// find min and max labels:
 	let n = permutation.length;
 	if ( n < 1 )
-		throw Error( "The poset has to have at least one element!" );
+		throw new RangeError( "The poset has to have at least one element!" );
 	let min_element = permutation[0];
 	let max_element = permutation[0];
 	for ( let i = 1; i < n; i++ ) {
@@ -154,8 +200,8 @@ function parsePermutation( value ) {
 	}
 	// get intended number of elements:
 	let n_target = Math.max( n, max_element - min_element + 1 );
-	if ( n_target > 1000 )
-		throw Error( "The editor does not support more than 1000 elements!" );
+	if ( n_target > LargePosetWarning_elements && !LargePosetWarningError_isShowing )
+		throw new LargePosetWarningError();
 	// check for repeated and missing elements:
 	const checkedInput = new Array( n_target ).fill( 0 );
 	for ( let i = 0; i < n; i++ ) {
@@ -182,7 +228,7 @@ function parsePermutation( value ) {
 		if ( error_count > 3 ) {
 			error = error + " And more errors ..."
 		}
-		throw Error( error );
+		throw new RangeError( error );
 	}
 	// remove offset and return:
 	for ( let i = 0; i < n; i++ )
@@ -263,6 +309,7 @@ class Poset {
 	
 	constructor( permutation, links, autolinking ){
 		this.error = "";  // holds an input error message (if any)
+		this.hasWarning = false;
 		// parse permutation for the element positions:
 		try {
 			const parsed_permutation = parsePermutation( permutation );
@@ -270,6 +317,7 @@ class Poset {
 			this.offset = parsed_permutation[1];
 		} catch ( e ) {
 			this.error = e.toString();
+			this.hasWarning = ( e instanceof WarningError );
 			return;
 		}
 		// parse links:
@@ -290,8 +338,12 @@ class Poset {
 			for ( let l = 0; l < linkpairs.length; l++ ) {
 				this.addLink( linkpairs[l][0], linkpairs[l][1] );
 			}
+			if ( this.countLinks() > LargePosetWarning_links
+					&& !LargePosetWarningError_isShowing )
+				throw new LargePosetWarningError( true );
 		} catch ( e ) {
 			this.error = e.toString();
+			this.hasWarning = ( e instanceof WarningError );
 			return;
 		}
 	}
@@ -351,6 +403,15 @@ class Poset {
 		return ordered[j - i];
 	}
 	
+	countLinks() {
+		/* Returns the number of links in the poset. */
+		let count = 0;
+		let n = this.card();
+		for ( let i = 0; i < n; i++ )
+			count = count + this.links[i].length;
+		return count;
+	}
+	
 	removeLink( i, j, ignoreerrors = false ) {
 		/* Removes a link from element `i` to `j` (or `j` to `i` if `i > j`). If 
 		`ignoreerrors` and both arguments are the same or there is no link between 
@@ -361,13 +422,13 @@ class Poset {
 		}
 		if ( i === j ) {
 			if ( ignoreerrors ) return;
-			throw Error( "An element cannot be unlinked from itself." );
+			throw new ReferenceError( "An element cannot be unlinked from itself." );
 		}
 		let l = this.links[i].indexOf( j );
 		if ( l === -1 ) {
 			if ( ignoreerrors ) return;
-			throw Error( "The element " + i.toString() + " is not linked to " 
-				+ j.toString() + "." );
+			throw new ReferenceError( "The element " + i.toString()
+				+ " is not linked to " + j.toString() + "." );
 		}
 		this.links[i].splice( l, 1 );
 		l = this.addedlinks[i].indexOf( j );
@@ -387,12 +448,12 @@ class Poset {
 		}
 		if ( i === j ) {
 			if ( ignoreerrors ) return;
-			throw Error( "An element cannot be linked to itself." );
+			throw new ReferenceError( "An element cannot be linked to itself." );
 		}
 		if ( this.links[i].includes( j ) ) {
 			if ( ignoreerrors ) return;
-			throw Error( "The element " + i.toString() + " already precedes " 
-				+ j.toString() + "." )
+			throw new ReferenceError( "The element " + i.toString()
+				+ " already precedes " + j.toString() + "." )
 		}
 		// remove links from an element `a <= i` to an element `b >= j`:
 		for ( let a = 0; a <= i; a++ ) {
@@ -447,6 +508,8 @@ class Poset {
 	pushNewElement() {
 		/* Adds a new element to the right of the diagram. */
 		let i = this.card();
+		if ( i === LargePosetWarning_elements && !LargePosetWarningError_isShowing )
+			throw new LargePosetWarningError();
 		this.permutation.unshift( i );
 		this.autolinks.push( [] );
 		this.removedlinks.push( [] );
@@ -459,7 +522,9 @@ class Poset {
 		is true). Raises an error if `e` is out of bounds. */
 		let n = this.card();
 		if ( e < 0 || e >= n )
-			throw Error( "There is no element " + getElementString( e ) + "." );
+			throw new RangeError( "There is no element " + getElementString( e ) + "." );
+		if ( n === LargePosetWarning_elements && !LargePosetWarningError_isShowing )
+			throw new LargePosetWarningError();
 		let v = this.permutation.indexOf( e );
 		for ( let i = 0; i < n; i++ ) {
 			if ( this.permutation[i] >= e )
@@ -525,7 +590,8 @@ class Poset {
 		/* Remove the element `e`. Raises an error if it is out of bounds. */
 		let n = this.card();
 		if ( e < 0 || e >= n )
-			throw Error( "There is no element " + getElementString( e ) + "." );
+			throw new RangeError(
+				"There is no element " + getElementString( e ) + "." );
 		let v = this.permutation.indexOf( e );
 		this.permutation.splice( v, 1 );
 		for ( let i = 0; i < n; i++ ) {
@@ -543,10 +609,11 @@ class Poset {
 		if ( moves === 0 ) return e;
 		let n = this.card();
 		if ( e < 0 || e >= n )
-			throw Error( "There is no element " + getElementString( e ) + "." );
+			throw new RangeError(
+				"There is no element " + getElementString( e ) + "." );
 		let e_new = e + moves;
 		if ( e_new < 0 || e_new >= n )
-			throw Error( "The new position lies outside the diagram." );
+			throw new RangeError( "The new position lies outside the diagram." );
 		let dir = ( moves > 0 ) ? 1 : -1;
 		for ( let i = e + dir; dir * ( e_new - i ) >= 0; i = i + dir ) {
 			let j = this.permutation.indexOf( i );
@@ -565,10 +632,11 @@ class Poset {
 		if ( moves === 0 ) return v;
 		let n = this.card();
 		if ( e < 0 || e >= n )
-			throw Error( "There is no element " + getElementString( e ) + "." );
+			throw new RangeError(
+				"There is no element " + getElementString( e ) + "." );
 		let v_new = v + moves;
 		if ( v_new < 0 || v_new >= n )
-			throw Error( "The new position lies outside the diagram." );
+			throw new RangeError( "The new position lies outside the diagram." );
 		let e_new = this.permutation[v_new];
 		this.permutation.splice(
 			v_new, 0, this.permutation.splice( v, 1 )[0] );
@@ -660,6 +728,7 @@ function generate() {
 	let input_type = document.getElementById( "selInputType" ).value;
 	let input_perm = document.getElementById( "txtInputPermutation" ).value;
 	let error = "";
+	let hasWarning = false;
 	let new_poset;
 	try {
 		if ( input_type === "predefined" )
@@ -677,16 +746,15 @@ function generate() {
 				document.getElementById( "txtInputLatex" ).value );
 		}
 		error = new_poset.error;
+		hasWarning = new_poset.hasWarning;
 	} catch ( e ) {
 		error = e.toString();
+		hasWarning = ( e instanceof WarningError );
 	}
-	const msgInputError = document.getElementById( "msgInputError" );
 	if ( error ) {
-		msgInputError.innerText = error;
-		msgInputError.hidden = false;
+		showError( error, hasWarning );
 		return;
 	}
-	msgInputError.hidden = true;
 	poset = new_poset;
 	updateSelectionBounds();
 	setSelection( NaN );
@@ -698,8 +766,9 @@ function generate() {
 function getPredefined() {
 	let input_type = document.getElementById( "selInputPredefinedType" ).value;
 	let n = parseInt( document.getElementById( "txtInputOrder" ).value, 10 );
-	if ( isNaN( n ) || n < 1 || n > 1000 )
-		throw Error( "The value for 'n' has to be a strictly positive integer." )
+	if ( isNaN( n ) || n < 1 )
+		throw new RangeError(
+			"The value for 'n' has to be a strictly positive integer." )
 	if ( input_type === "chain" )
 		return getPredefined_chain( n );
 	if ( input_type === "antichain" )
@@ -712,7 +781,8 @@ function getPredefined() {
 		return getPredefined_polygon( n );
 	if ( input_type === "crown" )
 		return getPredefined_crown( n );
-	throw Error( "The poset type '" + input_type + "' is not implemented." );
+	throw new TypeError(
+		"The poset type '" + input_type + "' is not implemented." );
 }
 
 function getPredefined_chain( n ) {
@@ -753,7 +823,7 @@ function getPredefined_fence( n ) {
 }
 
 function getPredefined_crown( n ) {
-	if ( n === 1 ) throw Error( "Crown posets only exist for n > 1." );
+	if ( n === 1 ) throw new RangeError( "Crown posets only exist for n > 1." );
 	const permutation = [ n + 1 ];
 	for ( let i = n - 1; i >= 2; i-- )
 		permutation.push( i );
@@ -801,24 +871,24 @@ function getFromLatexMacro( macro ) {
 	let is_causet = macro.startsWith( "\\causet{" )
 		|| macro.startsWith( "\\causet[" ) || macro.startsWith( "\\causet " );
 	if ( !is_pcauset && !is_rcauset && !is_causet )
-		throw Error( "This value cannot be processed. Supported macros are: " + 
-			"\\pcauset, \\rcauset, \\causet." );
+		throw new SyntaxError( "This value cannot be processed. " + 
+			"Supported macros are: \\pcauset, \\rcauset, \\causet." );
 	let begingroup = macro.indexOf( "{" ) + 1;
 	if ( begingroup < 1 )
-		throw Error( "The LaTeX macro has to have a first argument starting " + 
-			"with an opening brace {." );
+		throw new SyntaxError( "The LaTeX macro has to have a first argument " + 
+			"starting with an opening brace {." );
 	let endgroup = getFromLatexMacro_find_endgroup( macro, begingroup );
 	if ( endgroup < begingroup )
-		throw Error( "The first argument has no closing brace }." );
+		throw new SyntaxError( "The first argument has no closing brace }." );
 	if ( is_pcauset )
 		return new Poset( macro.slice( begingroup, endgroup ), [], true );
 	let begingroup2 = macro.indexOf( "{", endgroup ) + 1;
 	if ( begingroup2 < 1 )
-		throw Error( "The LaTeX macro has to have an second argument starting " + 
-			"with an opening brace {." );
+		throw new SyntaxError( "The LaTeX macro has to have an second argument " + 
+			"starting with an opening brace {." );
 	let endgroup2 = getFromLatexMacro_find_endgroup( macro, begingroup2 );
 	if ( endgroup2 < begingroup2 )
-		throw Error( "The second argument has no closing brace }." );
+		throw new SyntaxError( "The second argument has no closing brace }." );
 	return new Poset(
 		macro.substring( begingroup, endgroup ),
 		macro.substring( begingroup2, endgroup2 ),
@@ -1094,13 +1164,10 @@ function resetToUndoStep( dir ) {
 		undosteps[new_undoindex][1],
 		undosteps[new_undoindex][1].length === 0
 	);
-	const msgInputError = document.getElementById( "msgInputError" );
 	if ( new_poset.error ) {
-		msgInputError.innerText = new_poset.error;
-		msgInputError.hidden = false;
+		showError( new_poset.error, new_poset.hasWarning );
 		return;
 	}
-	msgInputError.hidden = true;
 	poset = new_poset;
 	undoindex = new_undoindex;
 	document.getElementById( "butUndo" ).disabled = 
@@ -1180,23 +1247,31 @@ function selectV( dir ) {
 }
 
 function moveU( moves ) {
-	if ( moves === 0 ) return;
-	let sel = getSelection();
-	if ( isNaN( sel ) ) return;
-	let u = poset.moveU( sel, moves );
-	setSelection( u );
-	updateExport();
-	addUndoStep();
+	try {
+		if ( moves === 0 ) return;
+		let sel = getSelection();
+		if ( isNaN( sel ) ) return;
+		let u = poset.moveU( sel, moves );
+		setSelection( u );
+		updateExport();
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
 }
 
 function moveV( moves ) {
-	if ( moves === 0 ) return;
-	let sel = getSelection();
-	if ( isNaN( sel ) ) return;
-	poset.moveV( sel, moves );
-	redrawPoset();
-	updateExport();
-	addUndoStep();
+	try {
+		if ( moves === 0 ) return;
+		let sel = getSelection();
+		if ( isNaN( sel ) ) return;
+		poset.moveV( sel, moves );
+		redrawPoset();
+		updateExport();
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
 }
 
 function changeOffset( increase ) {
@@ -1212,49 +1287,65 @@ function changeOffset( increase ) {
 }
 
 function addElement() {
-	poset.pushNewElement();
-	hover = [];
-	updateSelectionBounds();
-	setSelection( poset.card() - 1 );
-	updateExport();
-	addUndoStep();
+	try {
+		poset.pushNewElement();
+		hover = [];
+		updateSelectionBounds();
+		setSelection( poset.card() - 1 );
+		updateExport();
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
 }
 
 function dublicateElement( shift ) {
-	let sel = getSelection();
-	if ( isNaN( sel ) ) return;
-	poset.dublicateElement( sel, shift );
-	hover = [];
-	updateSelectionBounds();
-	setSelection( sel + 1 );
-	updateExport();
-	addUndoStep();
+	try {
+		let sel = getSelection();
+		if ( isNaN( sel ) ) return;
+		poset.dublicateElement( sel, shift );
+		hover = [];
+		updateSelectionBounds();
+		setSelection( sel + 1 );
+		updateExport();
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
 }
 
 function removeElement() {
-	let sel = getSelection();
-	let n = poset.card();
-	if ( isNaN( sel ) || sel < 0 || n === 1 ) return;
-	poset.removeElement( sel );
-	hover = [];
-	updateSelectionBounds();
-	setSelection( Math.min( sel, n - 1 ) );
-	updateExport();
-	addUndoStep();
+	try {
+		let sel = getSelection();
+		let n = poset.card();
+		if ( isNaN( sel ) || sel < 0 || n === 1 ) return;
+		poset.removeElement( sel );
+		hover = [];
+		updateSelectionBounds();
+		setSelection( Math.min( sel, n - 1 ) );
+		updateExport();
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
 }
 
 function changeLink() {
-	let sel = getSelection();
-	let linksel = getLinkingSelection();
-	if ( isNaN( sel ) || isNaN( linksel ) ) return;
-	if ( poset.links[sel].includes( linksel ) )
-		poset.removeLink( sel, linksel );
-	else if ( poset.isLinkable( sel, linksel ) )
-		poset.addLink( sel, linksel );
-	linkable = poset.isLinkable( sel, linksel );
-	redrawPoset();
-	updateExport();
-	addUndoStep();
+	try {
+		let sel = getSelection();
+		let linksel = getLinkingSelection();
+		if ( isNaN( sel ) || isNaN( linksel ) ) return;
+		if ( poset.links[sel].includes( linksel ) )
+			poset.removeLink( sel, linksel );
+		else if ( poset.isLinkable( sel, linksel ) )
+			poset.addLink( sel, linksel );
+		linkable = poset.isLinkable( sel, linksel );
+		redrawPoset();
+		updateExport();
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
 }
 
 function autoLink() {
@@ -1337,6 +1428,7 @@ function updateSettingsButton( name, redraw ) {
 }
 
 function updateExport() {
+	hideLastError();
 	let style = document.getElementById( "selExportLatexStyle" ).value;
 	let strPerm = poset.getPermutationString();
 	let strRemovedLinks = poset.getRemovedLinksString();
