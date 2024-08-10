@@ -108,7 +108,7 @@ function updateWidth() {
 	let new_width = document.getElementById( "cnvPosetContainer" ).clientWidth;
 	let rel_size = document.getElementById( "selRelativeCanvasSize" ).value;
 	let abs_size = document.getElementById( "selAbsoluteCanvasSize" ).value;
-	if ( rel_size === "fill" ) {
+	if ( rel_size == "fill" ) {
 		if ( abs_size != "unbounded" )
 			new_width = parseInt( abs_size, 10 );
 		else
@@ -264,6 +264,33 @@ function parseLinks( value, offset, max_element ) {
 	return [ linklist_nooptions, linklist_withoptions ];
 }
 
+function findEndgroup( value, start, begingroup = "{", endgroup = "}" ) {
+	/* Searches the string `value` for the position of the next `endgoup` 
+	character (default: "}") from the `start` position. If there is a `begingroup` 
+	character (default: "{") before the `endgoup` character, the matching 
+	endgroup is found first. It returns the position of `endgroup` of -1 if there 
+	is no (matching) `endgroup` character */
+	let end = value.indexOf( endgroup, start );
+	if ( endgroup < 0 ) return -1;
+	let begin = value.indexOf( begingroup, start );
+	if ( begin < start || begin > end )
+		return end;
+	end = findEndgroup( value, begin + 1, begingroup, endgroup );
+	if ( end < 0 ) return -1;
+	return findEndgroup( value, end + 1, begingroup, endgroup );
+}
+
+function removeGroups( value, begingroup = "{", endgroup = "}" ) {
+	/* Returns the string `value` with all substrings that start with 
+	`begingroup` and end in a matching `endgroup` character removed. */
+	let begin = value.indexOf( begingroup );
+	if ( begin < 0 ) return value;
+	let end = findEndgroup( value, begin + 1, begingroup, endgroup );
+	if ( end < 0 ) return value;
+	value = value.substring( 0, begin ) + value.substring( end + 1 );
+	return removeGroups( value, begingroup, endgroup );
+}
+
 function initializeLinkList( n ) {
 	/* Returns an array of length `n`, where each element is an empty array. */
 	const linklist = new Array( n );
@@ -327,18 +354,15 @@ class Poset {
 			const parsed_links = parseLinks( links, this.offset, this.card() - 1 );
 			let linkpairs = parsed_links[0];
 			if ( autolinking ) {
-				for ( let l = 0; l < linkpairs.length; l++ ) {
+				for ( let l = 0; l < linkpairs.length; l++ )
 					this.removeLink( linkpairs[l][0], linkpairs[l][1] );
-				}
 			} else {
-				for ( let l = 0; l < linkpairs.length; l++ ) {
+				for ( let l = 0; l < linkpairs.length; l++ )
 					this.addLink( linkpairs[l][0], linkpairs[l][1] );
-				}
 			}
 			linkpairs = parsed_links[1];
-			for ( let l = 0; l < linkpairs.length; l++ ) {
-				this.addLink( linkpairs[l][0], linkpairs[l][1] );
-			}
+			for ( let l = 0; l < linkpairs.length; l++ )
+				this.addLink( linkpairs[l][0], linkpairs[l][1], autolinking );
 			let link_count = this.countLinks();
 			if ( link_count > LargePosetWarning_links
 					&& !LargePosetWarningError_isShowing )
@@ -728,22 +752,23 @@ function getAddedLinkTargetString( e ) {
 
 function generate() {
 	let input_type = document.getElementById( "selInputType" ).value;
-	let input_perm = document.getElementById( "txtInputPermutation" ).value;
+	let input_perm =
+		removeGroups( document.getElementById( "txtInputPermutation" ).value );
 	let error = "";
 	let hasWarning = false;
 	let new_poset;
 	try {
-		if ( input_type === "predefined" )
+		if ( input_type == "predefined" )
 			new_poset = getPredefined();
-		else if ( input_type === "pcauset" )
+		else if ( input_type == "pcauset" )
 			new_poset = new Poset( input_perm, "", true );
-		else if ( input_type === "rcauset" )
-			new_poset = new Poset( input_perm, 
-				document.getElementById( "txtInputRemovedLinks" ).value, true );
-		else if ( input_type === "causet" )
-			new_poset = new Poset( input_perm, 
-				document.getElementById( "txtInputLinks" ).value, false );
-		else if ( input_type === "latex" ) {
+		else if ( input_type == "rcauset" )
+			new_poset = new Poset( input_perm, removeGroups( 
+				document.getElementById( "txtInputRemovedLinks" ).value ), true );
+		else if ( input_type == "causet" )
+			new_poset = new Poset( input_perm, removeGroups( 
+				document.getElementById( "txtInputLinks" ).value ), false );
+		else if ( input_type == "latex" ) {
 			new_poset = getFromLatexMacro(
 				document.getElementById( "txtInputLatex" ).value );
 		}
@@ -771,17 +796,17 @@ function getPredefined() {
 	if ( isNaN( n ) || n < 1 )
 		throw new RangeError(
 			"The value for 'n' has to be a strictly positive integer." )
-	if ( input_type === "chain" )
+	if ( input_type == "chain" )
 		return getPredefined_chain( n );
-	if ( input_type === "antichain" )
+	if ( input_type == "antichain" )
 		return getPredefined_antichain( n );
-	if ( input_type === "random" )
+	if ( input_type == "random" )
 		return getPredefined_random( n );
-	if ( input_type === "fence" )
+	if ( input_type == "fence" )
 		return getPredefined_fence( n );
-	if ( input_type === "polygon" )
+	if ( input_type == "polygon" )
 		return getPredefined_polygon( n );
-	if ( input_type === "crown" )
+	if ( input_type == "crown" )
 		return getPredefined_crown( n );
 	throw new TypeError(
 		"The poset type '" + input_type + "' is not implemented." );
@@ -853,47 +878,48 @@ function getPredefined_polygon( n ) {
 	return new Poset( permutation, removedlinks, true );
 }
 
-function getFromLatexMacro_find_endgroup( macro, start ) {
-	let endgroup = macro.indexOf( "}", start );
-	if ( endgroup < 0 ) return -1;
-	let begingroup = macro.indexOf( "{", start );
-	if ( begingroup < start || begingroup > endgroup )
-		return endgroup;
-	endgroup = getFromLatexMacro_find_endgroup( macro, begingroup + 1 );
-	if ( endgroup < 0 ) return -1;
-	return getFromLatexMacro_find_endgroup( macro, endgroup + 1 );
-}
-
 function getFromLatexMacro( macro ) {
 	macro = macro.trim();
-	let is_pcauset = macro.startsWith( "\\pcauset{" )
-		|| macro.startsWith( "\\pcauset[" ) || macro.startsWith( "\\pcauset " );
-	let is_rcauset = macro.startsWith( "\\rcauset{" )
-		|| macro.startsWith( "\\rcauset[" ) || macro.startsWith( "\\rcauset " );
-	let is_causet = macro.startsWith( "\\causet{" )
-		|| macro.startsWith( "\\causet[" ) || macro.startsWith( "\\causet " );
+	let is_pcauset = macro.startsWith( "\\drawpcauset{" )
+		|| macro.startsWith( "\\pcauset{" ) || macro.startsWith( "\\pcauset[" )
+		|| macro.startsWith( "\\pcausetL{" ) || macro.startsWith( "\\pcausetL[" )
+		|| macro.startsWith( "\\pcausetP{" ) || macro.startsWith( "\\pcausetP[" )
+		|| macro.startsWith( "\\pcausetX{" ) || macro.startsWith( "\\pcausetX[" );
+	let is_rcauset = macro.startsWith( "\\drawrcauset{" )
+		|| macro.startsWith( "\\rcauset{" ) || macro.startsWith( "\\rcauset[" )
+		|| macro.startsWith( "\\rcausetL{" ) || macro.startsWith( "\\rcausetL[" )
+		|| macro.startsWith( "\\rcausetP{" ) || macro.startsWith( "\\rcausetP[" )
+		|| macro.startsWith( "\\rcausetX{" ) || macro.startsWith( "\\rcausetX[" );
+	let is_causet = macro.startsWith( "\\drawcauset{" )
+		|| macro.startsWith( "\\causet{" ) || macro.startsWith( "\\causet[" )
+		|| macro.startsWith( "\\causetL{" ) || macro.startsWith( "\\causetL[" )
+		|| macro.startsWith( "\\causetP{" ) || macro.startsWith( "\\causetP[" )
+		|| macro.startsWith( "\\causetX{" ) || macro.startsWith( "\\causetX[" );
 	if ( !is_pcauset && !is_rcauset && !is_causet )
-		throw new SyntaxError( "This value cannot be processed. " + 
-			"Supported macros are: \\pcauset, \\rcauset, \\causet." );
-	let begingroup = macro.indexOf( "{" ) + 1;
-	if ( begingroup < 1 )
+		throw new SyntaxError( "This value cannot be processed. "
+			+ "Supported macros are: \\pcauset, \\rcauset and \\causet each followed "
+			+ "by an optional L P or X and a square bracket [ or brace {. \n"
+			+ "Supported macros are also: \\drawpcauset, \\drawrcauset and "
+			+ "\\drawcauset that must be followed by a brace {." );
+	let start = macro.indexOf( "{" ) + 1;
+	if ( start < 1 )
 		throw new SyntaxError( "The LaTeX macro has to have a first argument " + 
 			"starting with an opening brace {." );
-	let endgroup = getFromLatexMacro_find_endgroup( macro, begingroup );
-	if ( endgroup < begingroup )
+	let end = findEndgroup( macro, start );
+	if ( end < start )
 		throw new SyntaxError( "The first argument has no closing brace }." );
 	if ( is_pcauset )
-		return new Poset( macro.slice( begingroup, endgroup ), [], true );
-	let begingroup2 = macro.indexOf( "{", endgroup ) + 1;
-	if ( begingroup2 < 1 )
+		return new Poset( removeGroups( macro.slice( start, end ) ), [], true );
+	let start2 = macro.indexOf( "{", end ) + 1;
+	if ( start2 < 1 )
 		throw new SyntaxError( "The LaTeX macro has to have an second argument " + 
 			"starting with an opening brace {." );
-	let endgroup2 = getFromLatexMacro_find_endgroup( macro, begingroup2 );
-	if ( endgroup2 < begingroup2 )
+	let end2 = findEndgroup( macro, start2 );
+	if ( end2 < start2 )
 		throw new SyntaxError( "The second argument has no closing brace }." );
 	return new Poset(
-		macro.substring( begingroup, endgroup ),
-		macro.substring( begingroup2, endgroup2 ),
+		removeGroups( macro.substring( start, end ) ),
+		removeGroups( macro.substring( start2, end2 ) ),
 		is_rcauset
 	);
 }
@@ -1459,7 +1485,7 @@ function updateExport() {
 function getExportMatrix() {
 	let type = document.getElementById( "selExportMatrixType" ).value;
 	let matrix;
-	if ( type === "link" )
+	if ( type == "link" )
 		matrix = poset.toLinkMatrix();
 	else
 		matrix = poset.toOrderMatrix();
@@ -1539,25 +1565,25 @@ function handleDoubleClick( e ) {
 function handleKeyDown( e ) {
 	switch ( e.code ) {
 		case "KeyA":
-			if ( e.key === 'A' )
+			if ( e.key == 'A' )
 				moveU( -1 );
 			else
 				selectU( -1 );
 			break;
 		case "KeyD":
-			if ( e.key === 'D' )
+			if ( e.key == 'D' )
 				moveU( 1 );
 			else
 				selectU( 1 );
 			break;
 		case "KeyS":
-			if ( e.key === 'S' )
+			if ( e.key == 'S' )
 				moveV( -1 );
 			else
 				selectV( -1 );
 			break;
 		case "KeyW":
-			if ( e.key === 'W' )
+			if ( e.key == 'W' )
 				moveV( 1 );
 			else
 				selectV( 1 );
