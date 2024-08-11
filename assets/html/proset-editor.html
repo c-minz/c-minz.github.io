@@ -56,6 +56,7 @@
 					<option value="rcauset">permutation and list of removed links</option>
 					<option value="causet">permutation and list of links</option>
 					<option value="latex">LaTeX macro</option>
+					<option value="coveringlist">List of coverings for a 2-layer poset</option>
 					<option value="matrix" hidden>causal matrix</option>
 				</select>
 			</div>
@@ -102,8 +103,12 @@
 				<label for="txtInputLatex">LaTeX macro:</label>
 				<input type="text" class="form-control" id="txtInputLatex" />
 			</div>
+			<div class="form-group" id="frmInputCoveringList">
+				<label for="txtInputCoveringList">List of coverings:</label>
+				<textarea class="form-control" id="txtInputCoveringList" rows="5"></textarea>
+			</div>
 			<div class="form-group" id="frmInputMatrix" hidden>
-				<label for="txtInputMatrix">Order matrix</label>
+				<label for="txtInputMatrix">Order matrix:</label>
 				<textarea class="form-control" id="txtInputMatrix" rows="5"></textarea>
 			</div>
 			<button type="button" class="btn btn-primary mb-2"
@@ -484,6 +489,23 @@
 					<code>\causet</code> followed by (an optional argument enclosed in 
 					square brackets <code>[]</code> and) one or two arguments for the 
 					permutation and links enclosed in braces <code>{}</code>.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">List of coverings for a 2-layer poset</div>
+				<div class="col-8">
+					For each second-layer element, write a line listing the first-layer 
+					elements (separeted with commas) that are covered by this 
+					second-layer element. The elements on the first layer have to be 
+					numbered with consecutive integers, so that each first-layer element 
+					appears in at least one of the specified lines in the text field 
+					(each first-layer element is covered by at least one second-layer 
+					element). 
+					Note that the labels of elements in the generated diagram may differ 
+					but they start from the same lowest integer as in the input. The 
+					diagram is generated after rearranging the elements on the first and 
+					second layer so that the number of link crossings is (locally) 
+					minimised.
 				</div>
 			</div>
 			<div class="row" hidden>

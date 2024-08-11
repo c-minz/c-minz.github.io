@@ -97,6 +97,8 @@ function selectInputType() {
 		( input_type != "causet" );
 	document.getElementById( "frmInputLatex" ).hidden = 
 		( input_type != "latex" );
+	document.getElementById( "frmInputCoveringList" ).hidden = 
+		( input_type != "coveringlist" );
 	document.getElementById( "frmInputMatrix" ).hidden = 
 		( input_type != "matrix" );
 }
@@ -771,6 +773,10 @@ function generate() {
 		else if ( input_type == "latex" ) {
 			new_poset = getFromLatexMacro(
 				document.getElementById( "txtInputLatex" ).value );
+		}
+		else if ( input_type == "coveringlist" ) {
+			new_poset = getFromCoveringList(
+				document.getElementById( "txtInputCoveringList" ).value );
 		}
 		error = new_poset.error;
 		hasWarning = new_poset.hasWarning;
@@ -1601,4 +1607,36 @@ function handleResize() {
 	if ( updateWidth() ) {
 		redrawPoset();
 	}
+}
+
+
+// #############################################################################
+// Process layered posets
+
+function getFromCoveringList( coverings ) {
+	throw new Error( "Not implemented." );
+}
+
+function autoArrange() {
+	throw new Error( "Not implemented." );
+}
+
+function countLinkCrossings( coveringlist ) {
+	/* Returns the number of link crossings in a 2-layer poset, where all the 
+	elements on the first layer are indexed in strict increasing order and the 
+	array `coveringlist` contains a subset as list of these first layer indices 
+	for each element on the second layer. */
+	let count = 0;
+	for ( let b_j = 1; b_j < coveringlist.length; b_j++ ) {
+		let b_j_covering = coveringlist[b_j];
+		for ( let b_i = 0; b_i < b_j; b_i++ ) {
+			let b_i_covering = coveringlist[b_i];
+			for ( let i = 0; i < b_i_covering.length; i++ ) {
+				for ( let j = 0; j < b_j_covering.length; j++ ) {
+					if ( b_i_covering[i] > b_j_covering[j] ) count++;
+				}
+			}
+		}
+	}
+	return count;
 }
