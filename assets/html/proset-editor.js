@@ -34,6 +34,13 @@ class LargePosetWarningError extends WarningError {
 	}
 	
 }
+	
+function throwWarningIfLarge( value, links = false ) {
+	if ( ( ( links && value > LargePosetWarning_links )
+				|| ( !links && value > LargePosetWarning_elements ) )
+			&& !LargePosetWarningError_isShowing )
+	throw new LargePosetWarningError( value, links );
+}
 
 function showError( message, isWarning ) {
 	const msgError = document.getElementById( "msgError" );
@@ -98,7 +105,7 @@ function selectInputType() {
 	document.getElementById( "frmInputLatex" ).hidden = 
 		( input_type != "latex" );
 	document.getElementById( "frmInputCoveringList" ).hidden = 
-		( input_type != "coveringlist" );
+		( input_type != "coveringslist" );
 	document.getElementById( "frmInputMatrix" ).hidden = 
 		( input_type != "matrix" );
 }
@@ -774,7 +781,7 @@ function generate() {
 			new_poset = getFromLatexMacro(
 				document.getElementById( "txtInputLatex" ).value );
 		}
-		else if ( input_type == "coveringlist" ) {
+		else if ( input_type == "coveringslist" ) {
 			new_poset = getFromCoveringList(
 				document.getElementById( "txtInputCoveringList" ).value );
 		}
@@ -1613,24 +1620,78 @@ function handleResize() {
 // #############################################################################
 // Process layered posets
 
-function getFromCoveringList( coverings ) {
-	throw new Error( "Not implemented." );
+function getFromCoveringList( coveringsfield ) {
+	/* Parses the textfield input `coveringslist`, checking the input and raises 
+	syntax errors. */
+	let lines = coveringsfield.split( "\n" );
+	let coverings = [];
+	let firstlayer = [];
+	let firstlayer_min = 0;
+	let firstlayer_max = 0;
+	let linkcount = 0;
+	let elementcount = 0;
+	for ( let i = 0; i < lines.length; i++ ) {
+		let line = lines[i].trim();
+		if ( line.length == 0 ) continue;
+		let line_split = line.split( "," ).map( parseIntNotNaN );
+		let element_coverings = [];
+		for ( let j = 0; j < line_split.length; j++ ) {
+			e = line_split[j];
+			if ( firstlayer.length == 0 || e < firstlayer_min )
+				firstlayer_min = e;
+			if ( firstlayer.length == 0 || e > firstlayer_max )
+				firstlayer_max = e;
+			if ( !firstlayer.includes( e ) )
+				firstlayer.push( e );
+			if ( !element_coverings.includes( e ) )
+				element_coverings.push( e );
+		}
+		if ( element_coverings.length == 0 ) continue;
+		elementcount = elementcount + 1;
+		throwWarningIfLarge( elementcount );
+		linkcount = linkcount + element_coverings.length;
+		throwWarningIfLarge( linkcount, true );
+		coverings.push( element_coverings );
+	}
+	if ( coverings.length == 0 )
+		throw new SyntaxError( "The list of coverings is empty!" );
+	let firstlayer_count = firstlayer_max - firstlayer_min + 1;
+	if ( firstlayer_count != firstlayer.length ) {
+		let firstlayer_missing = [];
+		let firstlayer_missing_more = false;
+		for ( let i = 0; i < firstlayer_count; i++ ) {
+			if ( !firstlayer.includes( firstlayer_min + i ) ) {
+				firstlayer_missing_more = ( firstlayer_missing.length >= 5 );
+				if ( firstlayer_missing_more ) break;
+				firstlayer_missing.push( firstlayer_min + i );
+			}
+		}
+		throw new SyntaxError( "The"
+			+ ( ( firstlayer_missing.length == 1 ) ? " element " : " elements " )
+			+ firstlayer_missing.join( ", " )
+			+ ( ( firstlayer_missing_more ) ? " and more " : "" )
+			+ ( ( firstlayer_missing.length == 1 ) ? " is " : " are " )
+			+ "missing in the list of coverings!" );
+	}
+	elementcount = elementcount + firstlayer_count;
+	throwWarningIfLarge( elementcount );
+	return convertCoveringsToPoset( coverings );
 }
 
-function autoArrange() {
-	throw new Error( "Not implemented." );
+function convertCoveringsToPoset() {
+	throw new Error( "Unfinished implementation." );
 }
 
-function countLinkCrossings( coveringlist ) {
+function countLinkCrossings( coverings ) {
 	/* Returns the number of link crossings in a 2-layer poset, where all the 
 	elements on the first layer are indexed in strict increasing order and the 
-	array `coveringlist` contains a subset as list of these first layer indices 
+	array `coveringslist` contains a subset as list of these first layer indices 
 	for each element on the second layer. */
 	let count = 0;
-	for ( let b_j = 1; b_j < coveringlist.length; b_j++ ) {
-		let b_j_covering = coveringlist[b_j];
+	for ( let b_j = 1; b_j < coverings.length; b_j++ ) {
+		let b_j_covering = coverings[b_j];
 		for ( let b_i = 0; b_i < b_j; b_i++ ) {
-			let b_i_covering = coveringlist[b_i];
+			let b_i_covering = coverings[b_i];
 			for ( let i = 0; i < b_i_covering.length; i++ ) {
 				for ( let j = 0; j < b_j_covering.length; j++ ) {
 					if ( b_i_covering[i] > b_j_covering[j] ) count++;
