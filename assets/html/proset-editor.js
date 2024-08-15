@@ -1675,11 +1675,54 @@ function getFromCoveringList( coveringsfield ) {
 	}
 	elementcount = elementcount + firstlayer_count;
 	throwWarningIfLarge( elementcount );
-	return convertCoveringsToPoset( coverings );
+	return convertCoveringsToPoset( coverings, firstlayer_min, firstlayer_count );
 }
 
-function convertCoveringsToPoset() {
-	throw new Error( "Unfinished implementation." );
+function convertCoveringsToPoset( coverings, first, firstlayer_count ) {
+	let n = firstlayer_count + coverings.length;
+	const permutation = new Array( n );
+	let last = firstlayer_count + first - 1;
+	for ( let i = 0; i < firstlayer_count; i++ )
+		permutation[i] = last - i;
+	last = last + n;
+	for ( let i = firstlayer_count; i < n; i++ )
+		permutation[i] = last - i;
+	const links = [];
+	for ( let b = 0; b < coverings.length; b++ ) {
+		let b_coverings = coverings[b];
+		for ( let j = 0; j < b_coverings.length; j++ ) {
+			links.push( [ b_coverings[j], b + firstlayer_count + first ] );
+		}
+	}
+	return new Poset( permutation, links, false );
+}
+
+function optimize() {
+	throw new Error( "Not implemented!" );
+}
+
+function reduceLinkCrossingsWithLayer1( coverings ) {
+	throw new Error( "Not implemented!" );
+}
+
+function reduceLinkCrossingsWithLayer2( coverings ) {
+	let improved = coverings;
+	let crossingcount = countLinkCrossings( improved );
+	if ( crossingcount == 0 ) return improved;
+	for ( let i = 0; i < coverings.length; i++ ) {
+		for ( let j = i + 1; j < coverings.length; j++ ) {
+			let permuted_coverings = improved.slice();
+			permuted_coverings[i] = improved[j];
+			permuted_coverings[j] = improved[i];
+			let new_crossingcount = countLinkCrossings( permuted_coverings );
+			if ( new_crossingcount < crossingcount ) {
+				improved = permuted_coverings;
+				crossingcount = new_crossingcount;
+				if ( crossingcount == 0 ) return improved;
+			}
+		}
+	}
+	return [ improved, crossingcount ];
 }
 
 function countLinkCrossings( coverings ) {
@@ -1689,12 +1732,12 @@ function countLinkCrossings( coverings ) {
 	for each element on the second layer. */
 	let count = 0;
 	for ( let b_j = 1; b_j < coverings.length; b_j++ ) {
-		let b_j_covering = coverings[b_j];
+		let b_j_coverings = coverings[b_j];
 		for ( let b_i = 0; b_i < b_j; b_i++ ) {
-			let b_i_covering = coverings[b_i];
-			for ( let i = 0; i < b_i_covering.length; i++ ) {
-				for ( let j = 0; j < b_j_covering.length; j++ ) {
-					if ( b_i_covering[i] > b_j_covering[j] ) count++;
+			let b_i_coverings = coverings[b_i];
+			for ( let i = 0; i < b_i_coverings.length; i++ ) {
+				for ( let j = 0; j < b_j_coverings.length; j++ ) {
+					if ( b_i_coverings[i] > b_j_coverings[j] ) count++;
 				}
 			}
 		}

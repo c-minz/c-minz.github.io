@@ -56,7 +56,7 @@
 					<option value="rcauset">permutation and list of removed links</option>
 					<option value="causet">permutation and list of links</option>
 					<option value="latex">LaTeX macro</option>
-					<option value="coveringslist">list of coverings (for a 2-layer poset)</option>
+					<option value="coveringslist">list of coverings (for a 2-layered poset)</option>
 					<option value="matrix" hidden>causal matrix</option>
 				</select>
 			</div>
@@ -165,7 +165,7 @@
 				&#x238F; <span class="sr-only">Lower labels</span>
 			</button>
 		</div>
-		<div class="input-group mr-2">
+		<div class="input-group">
 			<div class="input-group-prepend">
 				<button type="button" class="btn btn-secondary" 
 					data-toggle="tooltip" data-placement="bottom" 
@@ -192,11 +192,19 @@
 				aria-label="Linked element" aria-describedby="lblLinked" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected linked/unlinked element" id="txtLinking" readonly/>
+		</div>
+		<div class="btn-group mr-2">
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Reset links to automatic links (2D-order)" 
+				title="Reset links to those of a 2D-order" 
 				id="butAutoLink" onClick="autoLink()" disabled>
-				&#x27D0; <span class="sr-only">Auto-link</span>
+				&#x2A08; <span class="sr-only">Auto-link</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Rearrange elements to minimize link crossings" 
+				id="butOptimize" onClick="optimize()" disabled>
+				&#x2223;&#x2223;&#x2223; <span class="sr-only">Optimize</span>
 			</button>
 		</div>
 	</div>
@@ -492,7 +500,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">List of coverings for a 2-layer poset</div>
+				<div class="col">List of coverings for a 2-layered poset</div>
 				<div class="col-8">
 					For each second-layer element, write a line listing the first-layer 
 					elements (separeted with commas) that are covered by this 
@@ -570,20 +578,32 @@
 			<div class="row">
 				<div class="col">&#x2715;</div>
 				<div class="col-10">
-					Delete the selected element.
+					Delete the selected element. This function is only available when an 
+					element is selected.
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">&#x2A52;</div>
 				<div class="col-10">
-					Link/unlink the selected elements.
+					Link/unlink the selected elements. This function is only available 
+					when two elements are selected.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x27D0;</div>
+				<div class="col">&#x2A08;</div>
 				<div class="col-10">
-					Reset all links to the automatic links (the links of the underlying 
-					2D-order).
+					Reset all links to those of a 2D-order with the same element 
+					positions. This function is only available when the diagram is not 
+					showing a 2D-order.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2223;&#x2223;&#x2223;</div>
+				<div class="col-10">
+					Rearrange the elements of a 2-layered poset to minimize link 
+					crossings. This function is only available when the elements are in a 
+					2-layer arrangement such that every element on the first layer covers 
+					all elements on the second layer.
 				</div>
 			</div>
 		</div>
