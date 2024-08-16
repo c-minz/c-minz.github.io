@@ -1493,6 +1493,8 @@ function updateExport() {
 	document.getElementById( "frmExport_rcauset" ).hidden = export_pcauset;
 	document.getElementById( "frmExport_causet" ).hidden = export_pcauset;
 	document.getElementById( "txtExportMatrix" ).value = "";
+	document.getElementById( "butOptimize" ).disabled = 
+		( countLayeredAntichains( poset.permutation ) != 2 );
 }
 
 function getExportMatrix() {
@@ -1697,47 +1699,80 @@ function convertCoveringsToPoset( coverings, first, firstlayer_count ) {
 	return new Poset( permutation, links, false );
 }
 
+function countLayeredAntichains( permutation ) {
+	/* Returns the number of layered antichains or 0 if the permutation does not 
+	represent layered antichains. Layered antichains are total ordered sequence 
+	of antichains. */
+	let n = permutation.length;
+	if ( n == 0 ) return 0;
+	let prev = permutation[0];
+	let antichains = 1;
+	for ( let i = 1; i < n; i++ ) {
+		let next = prev - 1;
+		let p = permutation[i];
+		if ( p < next ) return 0;  // not layered antichains
+		if ( p > next ) antichains = antichains + 1;
+		prev = p;
+	}
+	return antichains;
+}
+
 function optimize() {
 	throw new Error( "Not implemented!" );
 }
 
-function reduceLinkCrossingsWithLayer1( coverings ) {
-	throw new Error( "Not implemented!" );
+function oppositeLinkings( linkings, min, count, new_min ) {
+	/* Turns the `linkings` of a 2-layer poset over to the other layer 
+	(`covering` <-> `coveredby`), where `min` is the minimal values in 
+	`linkings`, `count` is the number of distinct indices in `linkings`, and 
+	`new_min` is the offset to the element indices on the other layer. */
+	const opposite = initializeLinkList( count );
+	for ( let i = 0; i < linkings.length; i++ ) {
+		let a_links = linkings[i];
+		for ( let j = 0; j < a_links.length; j++ ) {
+			opposite[a_links[j] - min].push( i + new_min );
+		}
+	}
+	return opposite;
 }
 
-function reduceLinkCrossingsWithLayer2( coverings ) {
-	let improved = coverings;
-	let crossingcount = countLinkCrossings( improved );
-	if ( crossingcount == 0 ) return improved;
-	for ( let i = 0; i < coverings.length; i++ ) {
-		for ( let j = i + 1; j < coverings.length; j++ ) {
-			let permuted_coverings = improved.slice();
-			permuted_coverings[i] = improved[j];
-			permuted_coverings[j] = improved[i];
-			let new_crossingcount = countLinkCrossings( permuted_coverings );
+function reduceLinkCrossings( linkings, crossingcount ) {
+	/* Tests all swaps of arrays in `linkings` to search for a lower link 
+	crossing count than `crossingcount` of the input `linkings`. Only if a swap 
+	reduces the link crossings, it is kept. After running once through all 
+	element combinations for the swaps the permuted `linkings` and the 
+	corresponding `crossingcount` are returned. */
+	let permuted = linkings;  // holds `linkings` with all swaps
+	if ( crossingcount == 0 ) return permuted;
+	for ( let i = 0; i < linkings.length; i++ ) {
+		for ( let j = i + 1; j < linkings.length; j++ ) {
+			let swapped = permuted.slice();  // holds `permuted` with a new swap
+			swapped[i] = permuted[j];
+			swapped[j] = permuted[i];
+			let new_crossingcount = countLinkCrossings( swapped );
 			if ( new_crossingcount < crossingcount ) {
-				improved = permuted_coverings;
+				permuted = swapped;
 				crossingcount = new_crossingcount;
-				if ( crossingcount == 0 ) return improved;
+				if ( crossingcount == 0 ) return permuted;
 			}
 		}
 	}
-	return [ improved, crossingcount ];
+	return [ permuted, crossingcount ];
 }
 
-function countLinkCrossings( coverings ) {
+function countLinkCrossings( linkings ) {
 	/* Returns the number of link crossings in a 2-layer poset, where all the 
-	elements on the first layer are indexed in strict increasing order and the 
-	array `coveringslist` contains a subset as list of these first layer indices 
-	for each element on the second layer. */
+	elements on each layer are indexed in strict increasing order. The array 
+	`linkings` contains a list of linked element indices of one layer for each 
+	element on other layer. */
 	let count = 0;
-	for ( let b_j = 1; b_j < coverings.length; b_j++ ) {
-		let b_j_coverings = coverings[b_j];
-		for ( let b_i = 0; b_i < b_j; b_i++ ) {
-			let b_i_coverings = coverings[b_i];
-			for ( let i = 0; i < b_i_coverings.length; i++ ) {
-				for ( let j = 0; j < b_j_coverings.length; j++ ) {
-					if ( b_i_coverings[i] > b_j_coverings[j] ) count++;
+	for ( let b = 1; b < linkings.length; b++ ) {
+		let b_links = linkings[b];
+		for ( let a = 0; a < b; a++ ) {
+			let a_links = linkings[a];
+			for ( let i = 0; i < a_links.length; i++ ) {
+				for ( let j = 0; j < b_links.length; j++ ) {
+					if ( a_links[i] > b_links[j] ) count++;
 				}
 			}
 		}
