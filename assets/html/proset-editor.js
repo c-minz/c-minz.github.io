@@ -1718,46 +1718,102 @@ function countLayeredAntichains( permutation ) {
 }
 
 function optimize() {
-	throw new Error( "Not implemented!" );
+	if ( countLayeredAntichains( poset.permutation ) != 2 ) return;
+	let offset = poset.offset;
+	let minima = [ 0, poset.permutation[0] + 1 ];
+	let counts = [ minima[1], poset.card() - minima[1] ];
+	let linkings = poset.links.slice( 0, minima[1] );
+	let crossingcount = countLinkCrossings( linkings );
+	const optimized = findLinkCrossingMinimum( linkings, minima, counts,
+		crossingcount, true );
+	if ( optimized[1] == crossingcount ) return;
+	poset = convertCoveringsToPoset( optimized[0], minima[0], counts[0] );
+	if ( offset != 0 ) {
+		changeOffset( offset );
+	} else {
+		setSelection( NaN );
+		updateExport();
+	}
+	addUndoStep();
 }
 
-function oppositeLinkings( linkings, min, count, new_min ) {
+function findLinkCrossingMinimum( linkings, minima, counts, crossingcount, 
+		finishing_opposite = false ) {
+	/* Calls `reduceLinkCrossings` repeatedly for a 2-layered poset until a 
+	(local) minimum is reached. As input, it expects `linkings` as the list of 
+	links from one of the layers to the other one, `minima` and `counts` as two 
+	element arrays for the minimal element index and count of elements on this 
+	layer (first entry) and the other layer (second entry), respectively, and 
+	`crossingcount` as the number of link crossings in `linkings`. It returns a 
+	new array as `linkings` (and the input is modified in place) and its number 
+	of link crossings. By default, the routine finishes on the same layer where 
+	it started, but it can finish on the other layer when setting the flag 
+	`finishing_opposite`. */
+	let i = 0;
+	let optimized_layers = 0;
+	while ( optimized_layers < 2 ) {
+		let new_crossingcount = reduceLinkCrossings( linkings, crossingcount );
+		if ( new_crossingcount < crossingcount ) {
+			crossingcount = new_crossingcount;
+			optimized_layers = 0;
+		} else {
+			optimized_layers = optimized_layers + 1;
+		}
+		linkings = oppositeLinkings( linkings,
+			minima[i % 2], minima[( i + 1 ) % 2], counts[i % 2] );
+		i = i + 1;
+	}
+	if ( ( finishing_opposite && ( i % 2 == 0 ) )
+			|| ( !finishing_opposite && ( i % 2 != 0 ) ) ) {
+		linkings = oppositeLinkings( linkings,
+			minima[i % 2], minima[( i + 1 ) % 2], counts[( i + 1 ) % 2] );
+	}
+	return [ linkings, crossingcount ];
+}
+
+function oppositeLinkings( linkings, min, min_o, count_o ) {
 	/* Turns the `linkings` of a 2-layer poset over to the other layer 
-	(`covering` <-> `coveredby`), where `min` is the minimal values in 
-	`linkings`, `count` is the number of distinct indices in `linkings`, and 
-	`new_min` is the offset to the element indices on the other layer. */
-	const opposite = initializeLinkList( count );
+	(`covering` <-> `coveredby`), where `min` is the first element index on the 
+	layer from where `linkings` originate, `min_o` is the first element index on 
+	the opposite layer (the minimum of the values in `linkings`), and `count_o` 
+	is the number of elements on the opposite layer. */
+	const opposite = initializeLinkList( count_o );
 	for ( let i = 0; i < linkings.length; i++ ) {
 		let a_links = linkings[i];
-		for ( let j = 0; j < a_links.length; j++ ) {
-			opposite[a_links[j] - min].push( i + new_min );
-		}
+		for ( let j = 0; j < a_links.length; j++ )
+			opposite[a_links[j] - min_o].push( i + min );
 	}
 	return opposite;
 }
 
+function swapElementPair( linkings, i, j ) {
+	/* Swaps elements `i` and `j` of an array in place. */
+	let swap = linkings[i];
+	linkings[i] = linkings[j];
+	linkings[j] = swap;
+}
+
 function reduceLinkCrossings( linkings, crossingcount ) {
-	/* Tests all swaps of arrays in `linkings` to search for a lower link 
-	crossing count than `crossingcount` of the input `linkings`. Only if a swap 
+	/* Tests all swaps of arrays in `linkings` to search for a lower number of 
+	link crossings than `crossingcount` of the input `linkings`. Only if a swap 
 	reduces the link crossings, it is kept. After running once through all 
-	element combinations for the swaps the permuted `linkings` and the 
-	corresponding `crossingcount` are returned. */
-	let permuted = linkings;  // holds `linkings` with all swaps
-	if ( crossingcount == 0 ) return permuted;
+	element combinations for the swaps the new number of link crossings is 
+	returned. Swaps are applied in place to the array. */
+	if ( crossingcount == 0 ) return crossingcount;
 	for ( let i = 0; i < linkings.length; i++ ) {
 		for ( let j = i + 1; j < linkings.length; j++ ) {
-			let swapped = permuted.slice();  // holds `permuted` with a new swap
-			swapped[i] = permuted[j];
-			swapped[j] = permuted[i];
-			let new_crossingcount = countLinkCrossings( swapped );
-			if ( new_crossingcount < crossingcount ) {
-				permuted = swapped;
-				crossingcount = new_crossingcount;
-				if ( crossingcount == 0 ) return permuted;
+			swapElementPair( linkings, i, j );
+			let new_crossingcount = countLinkCrossings( linkings );
+			if ( new_crossingcount >= crossingcount ) {
+				// no improvement -> unswap
+				swapElementPair( linkings, i, j );
+				continue;
 			}
+			crossingcount = new_crossingcount;
+			if ( crossingcount == 0 ) return crossingcount;
 		}
 	}
-	return [ permuted, crossingcount ];
+	return crossingcount;
 }
 
 function countLinkCrossings( linkings ) {
