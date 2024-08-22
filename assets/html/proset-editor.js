@@ -42,7 +42,7 @@ function throwWarningIfLarge( value, links = false ) {
 	throw new LargePosetWarningError( value, links );
 }
 
-function showError( message, isWarning ) {
+function showError( message, isWarning = false ) {
 	const msgError = document.getElementById( "msgError" );
 	msgError.innerText = message;
 	msgError.className = isWarning ? "alert alert-danger" : "alert alert-warning";
@@ -62,18 +62,20 @@ function initializeEditor() {
 	document.getElementById( "msgJavascript" ).hidden = true;
 	selectInputType();
 	updateWidth();
+	document.getElementById( "butUndo" ).disabled = true;
+	document.getElementById( "butRedo" ).disabled = true;
+	document.getElementById( "butOptimize" ).disabled = true;
+	document.getElementById( "butTo2Order" ).disabled = true;
 	const butRemoveElement = document.getElementById( "butRemoveElement" );
 	butRemoveElement.disabled = true;
 	butRemoveElement.className = "btn btn-secondary";
 	const txtSelection = document.getElementById( "txtSelection" );
 	txtSelection.value = "";
-	document.getElementById( "butUndo" ).disabled = true;
-	document.getElementById( "butRedo" ).disabled = true;
-	document.getElementById( "butAutoLink" ).disabled = true;
 	const butLink = document.getElementById( "butLink" );
 	butLink.disabled = true;
 	butLink.className = "btn btn-secondary";
 	document.getElementById( "txtLinking" ).value = "";
+	document.getElementById( "butSwapLeft" ).disabled = true;
 	updateSettingsButton( "ShowLabels", false );
 	document.getElementById( "chbShowCross" ).checked = true;
 	updateSettingsButton( "ShowCross", false );
@@ -959,10 +961,17 @@ function getSelection() {
 
 function setSelection( new_sel ) {
 	let strSel = "";
-	if ( new_sel >= 0 && new_sel < poset.card() )
+	let n = poset.card();
+	const butSwapLeft = document.getElementById( "butSwapLeft" );
+	butSwapLeft.disabled = true;
+	if ( new_sel >= 0 && new_sel < n ) {
 		strSel = String( new_sel + poset.offset );
+		let i = poset.permutation.indexOf( new_sel );
+		butSwapLeft.disabled = 
+			( i > n - 2 ) || ( poset.permutation[i + 1] != new_sel - 1 );
+	}
 	const butRemoveElement = document.getElementById( "butRemoveElement" );
-	butRemoveElement.disabled = ( strSel == "" ) || ( poset.card() === 1 );
+	butRemoveElement.disabled = ( strSel == "" ) || ( n == 1 );
 	if ( butRemoveElement.disabled )
 		butRemoveElement.className="btn btn-secondary";
 	else
@@ -1386,7 +1395,17 @@ function changeLink() {
 	}
 }
 
-function autoLink() {
+function swapLeft() {
+	try {
+		let sel = getSelection();
+		if ( isNaN( sel ) || isNaN( linksel ) ) return;
+		// TODO: Finish implementation.
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
+	}
+}
+
+function to2Order() {
 	if ( !document.getElementById( "frmExport_pcauset" ).hidden ) return;
 	poset.resetLinks( true );
 	setLinkingSelection( NaN );
@@ -1485,13 +1504,13 @@ function updateExport() {
 	document.getElementById( "txtExport_causet" ).value = 
 		"\\causet" + style + "{" + strPerm + "}{" + strLinks + "}";
 	let export_pcauset = ( strRemovedLinks.length === 0 );
-	document.getElementById( "butAutoLink" ).disabled = export_pcauset;
+	document.getElementById( "butOptimize" ).disabled = 
+		( countLayeredAntichains( poset.permutation ) != 2 );  // TODO
+	document.getElementById( "butTo2Order" ).disabled = export_pcauset;
 	document.getElementById( "frmExport_pcauset" ).hidden = !export_pcauset;
 	document.getElementById( "frmExport_rcauset" ).hidden = export_pcauset;
 	document.getElementById( "frmExport_causet" ).hidden = export_pcauset;
 	document.getElementById( "txtExportMatrix" ).value = "";
-	document.getElementById( "butOptimize" ).disabled = 
-		( countLayeredAntichains( poset.permutation ) != 2 );
 }
 
 function getExportMatrix() {
@@ -1677,22 +1696,31 @@ function getFromCoveringList( coveringsfield ) {
 	return convertCoveringsToPoset( coverings, firstlayer_min, firstlayer_count );
 }
 
-function convertCoveringsToPoset( coverings, first, firstlayer_count ) {
-	let n = firstlayer_count + coverings.length;
-	const permutation = new Array( n );
-	let last = firstlayer_count + first - 1;
-	for ( let i = 0; i < firstlayer_count; i++ )
+function convertCoveringsToPoset( coverings, start1, count1, parallel = 0 ) {
+	/* Converts the `coverings` to the 2-layer poset object, where `start1` is 
+	the index of the first element on the first layer, `count1` is the number of 
+	elements on the first layer, and `parallel` is the number of elements that 
+	are form a parallel antichain to the 2-layers (the number of elements that 
+	are not covered --- these are not included in `count1`). */
+	if ( parallel < 0 ) parallel = 0;
+	let n = count1 + coverings.length;
+	const permutation = new Array( n + parallel );
+	let last = count1 + start1 - 1;
+	for ( let i = 0; i < count1; i++ )
 		permutation[i] = last - i;
 	last = last + n;
-	for ( let i = firstlayer_count; i < n; i++ )
+	for ( let i = count1; i < n; i++ )
 		permutation[i] = last - i;
+	for ( let i = 0; i < parallel; i++ )
+		permutation[n + i] = start1 - 1 - i;
 	const links = [];
 	for ( let b = 0; b < coverings.length; b++ ) {
 		let b_coverings = coverings[b];
 		for ( let j = 0; j < b_coverings.length; j++ ) {
-			links.push( [ b_coverings[j], b + firstlayer_count + first ] );
+			links.push( [ b_coverings[j], b + count1 + start1 ] );
 		}
 	}
+	// TODO: Finish implementation.
 	return new Poset( permutation, links, false );
 }
 
@@ -1715,23 +1743,27 @@ function countLayeredAntichains( permutation ) {
 }
 
 function optimize() {
-	if ( countLayeredAntichains( poset.permutation ) != 2 ) return;
-	let offset = poset.offset;
-	let minima = [ 0, poset.permutation[0] + 1 ];
-	let counts = [ minima[1], poset.card() - minima[1] ];
-	let linkings = poset.links.slice( 0, minima[1] );
-	let crossingcount = countLinkCrossings( linkings );
-	const optimized = findLinkCrossingMinimum( linkings, minima, counts,
-		crossingcount, true );
-	if ( optimized[1] == crossingcount ) return;
-	poset = convertCoveringsToPoset( optimized[0], minima[0], counts[0] );
-	if ( offset != 0 ) {
-		changeOffset( offset );
-	} else {
-		setSelection( NaN );
-		updateExport();
+	try {
+		if ( countLayeredAntichains( poset.permutation ) != 2 ) return;
+		let offset = poset.offset;
+		let minima = [ 0, poset.permutation[0] + 1 ];
+		let counts = [ minima[1], poset.card() - minima[1] ];
+		let linkings = poset.links.slice( 0, minima[1] );
+		let crossingcount = countLinkCrossings( linkings );
+		const optimized = findLinkCrossingMinimum( linkings, minima, counts,
+			crossingcount, true );
+		if ( optimized[1] == crossingcount ) return;
+		poset = convertCoveringsToPoset( optimized[0], minima[0], counts[0] );
+		if ( offset != 0 ) {
+			changeOffset( offset );
+		} else {
+			setSelection( NaN );
+			updateExport();
+		}
+		addUndoStep();
+	} catch ( e ) {
+		showError( e.message, e instanceof WarningError );
 	}
-	addUndoStep();
 }
 
 function findLinkCrossingMinimum( linkings, minima, counts, crossingcount, 
@@ -1756,9 +1788,9 @@ function findLinkCrossingMinimum( linkings, minima, counts, crossingcount,
 		} else {
 			optimized_layers = optimized_layers + 1;
 		}
-		linkings = oppositeLinkings( linkings,
-			minima[i % 2], minima[( i + 1 ) % 2], counts[i % 2] );
 		i = i + 1;
+		linkings = oppositeLinkings( linkings,
+			minima[( i + 1 ) % 2], minima[i % 2], counts[i % 2] );
 	}
 	if ( ( finishing_opposite && ( i % 2 == 0 ) )
 			|| ( !finishing_opposite && ( i % 2 != 0 ) ) ) {

@@ -52,7 +52,7 @@
 				</label>
 				<select class="form-control" id="selInputType" onChange="selectInputType()">
 					<option value="predefined" selected>predefined type</option>
-					<option value="pcauset">permutation (for a 2D-order)</option>
+					<option value="pcauset">permutation (for a 2-order)</option>
 					<option value="rcauset">permutation and list of removed links</option>
 					<option value="causet">permutation and list of links</option>
 					<option value="latex">LaTeX macro</option>
@@ -67,7 +67,7 @@
 						<select class="form-control" id="selInputPredefinedType">
 							<option value="chain" selected>n-chain</option>
 							<option value="antichain">n-antichain</option value="chain">
-							<option value="random">random 2D-order with n elements</option>
+							<option value="random">random 2-order with n elements</option>
 							<option value="fence">n-fence</option>
 							<option value="crown">n-crown poset</option>
 							<option value="polygon">(regular) n-sided polygon poset</option>
@@ -164,6 +164,18 @@
 				id="butLowerOffset" onClick="changeOffset( -1 )">
 				&#x229F; <span class="sr-only">Lower labels</span>
 			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Rearrange elements to minimize link crossings" 
+				id="butOptimize" onClick="optimize()" disabled>
+				&#x2223;&#x2223;&#x2223; <span class="sr-only">Optimize</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Reset links to those of a 2-order" 
+				id="butTo2Order" onClick="to2Order()" disabled>
+				&#x2A08; <span class="sr-only">Auto-link</span>
+			</button>
 		</div>
 		<div class="input-group">
 			<div class="input-group-prepend">
@@ -192,25 +204,11 @@
 				aria-label="Linked element" aria-describedby="lblLinked" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected linked/unlinked element" id="txtLinking" readonly/>
-		</div>
-		<div class="btn-group mr-2">
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Reset links to those of a 2D-order" 
-				id="butAutoLink" onClick="autoLink()" disabled>
-				&#x2A08; <span class="sr-only">Auto-link</span>
-			</button>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Swap with separated element to the left" 
-				id="butLayer" onClick="layer()" disabled>
+				title="Swap with element to the left" 
+				id="butSwapLeft" onClick="swapLeft()" disabled>
 				&#x238C; <span class="sr-only">Swap left</span>
-			</button>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Rearrange elements to minimize link crossings" 
-				id="butOptimize" onClick="optimize()" disabled>
-				&#x2223;&#x2223;&#x2223; <span class="sr-only">Optimize</span>
 			</button>
 		</div>
 	</div>
@@ -475,7 +473,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">permutation (for a 2D-order)</div>
+				<div class="col">permutation (for a 2-order)</div>
 				<div class="col-8">
 					Enter a permutation of consecutive integers as a comma-separated list.
 				</div>
@@ -543,42 +541,58 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x21B6;</div>
+				<div class="col">&#x2936;</div>
 				<div class="col-10">
 					Undo the last actions if it was one of the following: generate, 
 					move/remove/add element, remove/add link.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x21B7;</div>
+				<div class="col">&#x2937;</div>
 				<div class="col-10">
 					Redo the last actions if it was one of the following: generate, 
 					move/remove/add element, remove/add link.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x21C4;</div>>
+				<div class="col">&#x2B16;</div>
 				<div class="col-10">
 					Mirror the diagram horizontally, which yields an equivalent diagram.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x21C5;</div>
+				<div class="col">&#x2B19;</div>
 				<div class="col-10">
 					Mirror the diagram vertically, which yields a diagram of the opposite 
 					poset.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x2390;</div>
+				<div class="col">&#x229E;</div>
 				<div class="col-10">
 					Increase all element labels by 1.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x238F;</div>
+				<div class="col">&#x229F;</div>
 				<div class="col-10">
 					Decrease all element labels by 1.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2223;&#x2223;&#x2223;</div>
+				<div class="col-10">
+					Rearrange the elements of a 2-layered poset to minimize link 
+					crossings. This function is only available when the poset has two 
+					layers.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x2A08;</div>
+				<div class="col-10">
+					Reset all links to those of a 2-order with the same element 
+					positions. This function is only available when the diagram is not 
+					showing a 2-order.
 				</div>
 			</div>
 			<div class="row">
@@ -592,24 +606,15 @@
 				<div class="col">&#x2A52;</div>
 				<div class="col-10">
 					Link/unlink the selected elements. This function is only available 
-					when two elements are selected.
+					when an element and another link-able element is selected.
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x2A08;</div>
+				<div class="col">&#x238C;</div>
 				<div class="col-10">
-					Reset all links to those of a 2D-order with the same element 
-					positions. This function is only available when the diagram is not 
-					showing a 2D-order.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">&#x2223;&#x2223;&#x2223;</div>
-				<div class="col-10">
-					Rearrange the elements of a 2-layered poset to minimize link 
-					crossings. This function is only available when the elements are in a 
-					2-layer arrangement such that every element on the first layer covers 
-					all elements on the second layer.
+					Swap the element with the one on the same layer to the left. 
+					This function is only available when an element is selected and the 
+					swap is possible.
 				</div>
 			</div>
 		</div>
