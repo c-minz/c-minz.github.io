@@ -586,6 +586,25 @@ class Poset {
 		}
 	}
 	
+	restoreLinks( xlinks, adding, e, f, isremoving_e = false ) {
+		/* This is a class private method called by `reset_restoreLinks`. */
+		for ( let i = 0; i < xlinks.length; i++ ) {
+			if ( i == e || i == f ) continue;  // || i === f 
+			let xlinks_i = xlinks[i];
+			let a = ( isremoving_e && i > e ) ? ( i - 1 ) : i;
+			for ( let l = 0; l < xlinks_i.length; l++ ) {
+				let b = xlinks_i[l];
+				if ( b == e || b == f ) continue;
+				if ( isremoving_e && e < b ) b = b - 1;
+				if ( this.isLinkable( a, b ) === -1 )
+					if ( adding )
+						this.addLink( a, b, true );
+					else
+						this.removeLink( a, b, true );
+			}
+		}
+	}
+	
 	reset_restoreLinks( e, f, isremoving_e = false ) {
 		/* This is a class private method. Resets to auto-links and restores all 
 		removed/added links but ignores the elements `e` (and `f`), while `e` is 
@@ -594,31 +613,9 @@ class Poset {
 		let addedlinks = this.addedlinks;
 		this.resetLinks( true );
 		// restore removed links, while shifting elements larger than `e`:
-		for ( let i = 0; i < removedlinks.length; i++ ) {
-			if ( i === e || i === f ) continue;
-			let removedlinks_i = removedlinks[i];
-			let a = ( !isremoving_e || i < e ) ? i : ( i - 1 );
-			for ( let l = 0; l < removedlinks_i.length; l++ ) {
-				let b = removedlinks_i[l];
-				if ( b === e || b === f ) continue;
-				if ( isremoving_e && e < b ) b = b - 1;
-				if ( this.isLinkable( a, b ) === -1 )
-					this.removeLink( a, b, true );
-			}
-		}
+		this.restoreLinks( removedlinks, false, e, f, isremoving_e );
 		// restore added links, while shifting elements larger than `e`:
-		for ( let i = 0; i < addedlinks.length; i++ ) {
-			if ( i === e || i === f ) continue;
-			let addedlinks_i = addedlinks[i];
-			let a = ( !isremoving_e || i < e ) ? i : ( i - 1 );
-			for ( let l = 0; l < addedlinks_i.length; l++ ) {
-				let b = addedlinks_i[l];
-				if ( b === e || b === f ) continue;
-				if ( isremoving_e && e < b ) b = b - 1;
-				if ( this.isLinkable( a, b ) === 1 )
-					this.addLink( a, b, true );
-			}
-		}
+		this.restoreLinks( addedlinks, true, e, f, isremoving_e );
 	}
 	
 	removeElement( e ) {
