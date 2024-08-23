@@ -19,3 +19,11 @@ canvas {
 	border-style: solid;
 	border-color: rgb(248, 249, 250);
 }
+
+#txtInputLatex, #txtInputCoveringList, #txtInputMatrix,
+#txtExport_pcauset, #txtExport_rcauset, #txtExport_causet,
+#txtExportArray {
+	font-family: 'Liberation Mono', 'Lucida Console', Consolas, monospace;
+	font-size: 11pt;
+	white-space: pre;
+}

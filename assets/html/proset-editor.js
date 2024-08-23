@@ -89,7 +89,7 @@ function initializeEditor() {
 		document.getElementById( "txtExport_" + frmExports[i] ).value = "";
 		document.getElementById( "frmExport_" + frmExports[i] ).hidden = true;
 	}
-	document.getElementById( "txtExportMatrix" ).value = "";
+	document.getElementById( "txtExportArray" ).value = "";
 }
 
 function selectInputType() {
@@ -449,6 +449,21 @@ class Poset {
 		return count;
 	}
 	
+	getLayerIndices() {
+		/* Returns an the layer index as an array with the length of card(). */
+		// TODO: Missing implementation.
+		return new Array( this.card() );
+	}
+	
+	countLayers() {
+		/* Returns the number of layers in the poset. */
+		let layers = this.getLayerIndices();
+		let max = 0;
+		for ( let i = 0; i < layers.length; i++ )
+			if ( layers[i] > max ) max = layers[i];
+		return max;
+	}
+	
 	removeLink( i, j, ignoreerrors = false ) {
 		/* Removes a link from element `i` to `j` (or `j` to `i` if `i > j`). If 
 		`ignoreerrors` and both arguments are the same or there is no link between 
@@ -590,6 +605,7 @@ class Poset {
 	
 	restoreLinks( xlinks, adding, e, f, isremoving_e = false ) {
 		/* This is a class private method called by `reset_restoreLinks`. */
+		// TODO: Restore all links that can be restored (don't exclude e and f).
 		for ( let i = 0; i < xlinks.length; i++ ) {
 			if ( i == e || i == f ) continue;  // || i === f 
 			let xlinks_i = xlinks[i];
@@ -800,6 +816,8 @@ function generate() {
 	updateExport();
 	addUndoStep();
 	window.location.href = "#edit";
+	if ( input_type == "coveringslist" )
+		optimize();
 }
 
 function getPredefined() {
@@ -1491,7 +1509,9 @@ function updateExport() {
 	let strRemovedLinks = poset.getRemovedLinksString();
 	let strAddlinks = poset.getAddedLinksString();
 	let strLinks = poset.getLinksString();
+	let layercount = poset.countLayers();
 	document.getElementById( "txtCard" ).value = poset.card().toString();
+	document.getElementById( "txtLayers" ).value = layercount.toString();
 	document.getElementById( "txtPermutation" ).value = strPerm;
 	document.getElementById( "txtLinks" ).value = strLinks;
 	document.getElementById( "txtRemovedLinks" ).value = strRemovedLinks;
@@ -1504,27 +1524,31 @@ function updateExport() {
 	document.getElementById( "txtExport_causet" ).value = 
 		"\\causet" + style + "{" + strPerm + "}{" + strLinks + "}";
 	let export_pcauset = ( strRemovedLinks.length === 0 );
-	document.getElementById( "butOptimize" ).disabled = 
-		( countLayeredAntichains( poset.permutation ) != 2 );  // TODO
+	document.getElementById( "butOptimize" ).disabled = ( layercount != 2 );
 	document.getElementById( "butTo2Order" ).disabled = export_pcauset;
 	document.getElementById( "frmExport_pcauset" ).hidden = !export_pcauset;
 	document.getElementById( "frmExport_rcauset" ).hidden = export_pcauset;
 	document.getElementById( "frmExport_causet" ).hidden = export_pcauset;
-	document.getElementById( "txtExportMatrix" ).value = "";
+	document.getElementById( "txtExportArray" ).value = "";
 }
 
-function getExportMatrix() {
-	let type = document.getElementById( "selExportMatrixType" ).value;
-	let matrix;
-	if ( type == "link" )
-		matrix = poset.toLinkMatrix();
-	else
-		matrix = poset.toOrderMatrix();
-	function rowmapping( row ) {
-		return row.map( Number ).join( "," );
+function getExportArray() {
+	let type = document.getElementById( "selExportArrayType" ).value;
+	if ( type.endsWith( "matrix" ) ) {
+		let matrix;
+		if ( type.startsWith( "link" ) )
+			matrix = poset.toLinkMatrix();
+		else
+			matrix = poset.toOrderMatrix();
+		function rowmapping( row ) {
+			return row.map( Number ).join( "," );
+		}
+		document.getElementById( "txtExportArray" ).value = 
+			matrix.map( rowmapping ).join( "\n" );
+		return;
 	}
-	document.getElementById( "txtExportMatrix" ).value = 
-		matrix.map( rowmapping ).join( "\n" );
+	document.getElementById( "txtExportArray" ).value = "Not implemented.";  
+	// TODO: Implement "coveringrelations" and "coveredbyrelations"
 }
 
 
@@ -1641,6 +1665,8 @@ function handleResize() {
 function getFromCoveringList( coveringsfield ) {
 	/* Parses the textfield input `coveringslist`, checking the input and raises 
 	syntax errors. */
+	// TODO: Treat empty lines (except the very last) as parallel elements.
+	// TODO: Treat empty lines (except the very last) as parallel elements.
 	let lines = coveringsfield.split( "\n" );
 	let coverings = [];
 	let firstlayer = [];
@@ -1720,7 +1746,7 @@ function convertCoveringsToPoset( coverings, start1, count1, parallel = 0 ) {
 			links.push( [ b_coverings[j], b + count1 + start1 ] );
 		}
 	}
-	// TODO: Finish implementation.
+	// TODO: Move elements to reduce removed links.
 	return new Poset( permutation, links, false );
 }
 
@@ -1745,6 +1771,7 @@ function countLayeredAntichains( permutation ) {
 function optimize() {
 	try {
 		if ( countLayeredAntichains( poset.permutation ) != 2 ) return;
+		// TODO: Generalise to all posets with two layers.
 		let offset = poset.offset;
 		let minima = [ 0, poset.permutation[0] + 1 ];
 		let counts = [ minima[1], poset.card() - minima[1] ];

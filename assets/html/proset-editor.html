@@ -56,7 +56,7 @@
 					<option value="rcauset">permutation and list of removed links</option>
 					<option value="causet">permutation and list of links</option>
 					<option value="latex">LaTeX macro</option>
-					<option value="coveringslist">list of coverings (for a 2-layered poset)</option>
+					<option value="coveringslist">list of covering relations (for a 2-layered poset)</option>
 					<option value="matrix" hidden>causal matrix</option>
 				</select>
 			</div>
@@ -247,6 +247,10 @@
 			</div>
 			<input type="text" class="form-control" id="txtCard" readonly />
 			<div class="input-group-prepend">
+				<div class="input-group-text">Layers:</div>
+			</div>
+			<input type="text" class="form-control" id="txtLayers" readonly />
+			<div class="input-group-prepend">
 				<div class="input-group-text">Canvas size:</div>
 			</div>
 			<select class="form-control" id="selRelativeCanvasSize"
@@ -388,31 +392,32 @@
 		</div>
 	</p>
 	
-	<a name="export_matrix"><h4>Matrices</h4></a>
+	<a name="export_matrix"><h4>Matrices and lists</h4></a>
 	<p>
-		<div class="form-group" id="frmExportLatex">
+		<div class="form-group" id="frmExportArray">
 			<div class="input-group">
-				<select class="form-control" id="selExportMatrixType">
-					<option value="order">Order matrix</option>
-					<option value="link">Link matrix</option>
+				<select class="form-control" id="selExportArrayType">
+					<option value="linkmatrix">Link matrix</option>
+					<option value="ordermatrix">Order matrix</option>
+					<option value="coveringrelations">List of covering relations</option>
+					<option value="coveredbyrelations">List of covered by relations</option>
 				</select>
 				<button type="button" class="btn btn-secondary mb-2"
-					id="butExportMatrix" onClick="getExportMatrix()" width="auto">
+					id="butExportArray" onClick="getExportArray()" width="auto">
 					Compute
 				</button>
 			</div>
 			<div class="input-group">
-				<textarea class="form-control" id="txtExportMatrix" rows="5" readonly>
+				<textarea class="form-control" id="txtExportArray" rows="7" readonly>
 				</textarea>
 				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportMatrix"
-					onClick="copyToClipboard( 'txtExportMatrix' )">
-					&#x23CD; <span class="sr-only">Copy matrix</span>
+					id="butCopyExportArray"
+					onClick="copyToClipboard( 'txtExportArray' )">
+					&#x23CD; <span class="sr-only">Copy array</span>
 				</button>
 			</div>
 		</div>
 	</p>
-	
 	
 	<!--#######################################################################-->
 	<a name="help"><h2>Help</h2></a>
