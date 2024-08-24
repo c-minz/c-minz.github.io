@@ -104,8 +104,9 @@
 				<input type="text" class="form-control" id="txtInputLatex" />
 			</div>
 			<div class="form-group" id="frmInputCoveringList">
-				<label for="txtInputCoveringList">List of coverings:</label>
-				<textarea class="form-control" id="txtInputCoveringList" rows="5"></textarea>
+				<label for="txtInputCoveringList">List of covering relations:</label>
+				<textarea class="form-control" id="txtInputCoveringList" rows="5">
+				</textarea>
 			</div>
 			<div class="form-group" id="frmInputMatrix" hidden>
 				<label for="txtInputMatrix">Order matrix:</label>
@@ -166,19 +167,25 @@
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Rearrange elements to minimize link crossings" 
-				id="butOptimize" onClick="optimize()" disabled>
-				&#x2223;&#x2223;&#x2223; <span class="sr-only">Optimize</span>
+				title="Reset links to those of a 2-order" 
+				id="butTo2Order" onClick="to2Order()" disabled>
+				&#x27D0; <span class="sr-only">Auto-link</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Reset links to those of a 2-order" 
-				id="butTo2Order" onClick="to2Order()" disabled>
-				&#x2A08; <span class="sr-only">Auto-link</span>
+				title="Rearrange elements to minimize link crossings" 
+				id="butOptimize" onClick="optimize()" disabled>
+				&#x223A; <span class="sr-only">Optimize</span>
 			</button>
 		</div>
-		<div class="input-group">
+		<div class="input-group" role="group" aria-label="Element actions">
 			<div class="input-group-prepend">
+				<button type="button" class="btn btn-secondary" 
+					data-toggle="tooltip" data-placement="bottom" 
+					title="Swap with element to the left" 
+					id="butSwapLeft" onClick="swapLeft()" disabled>
+					&#x238C; <span class="sr-only">Swap left</span>
+				</button>
 				<button type="button" class="btn btn-secondary" 
 					data-toggle="tooltip" data-placement="bottom" 
 					title="Delete the selected element" 
@@ -204,17 +211,13 @@
 				aria-label="Linked element" aria-describedby="lblLinked" 
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Selected linked/unlinked element" id="txtLinking" readonly/>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Swap with element to the left" 
-				id="butSwapLeft" onClick="swapLeft()" disabled>
-				&#x238C; <span class="sr-only">Swap left</span>
-			</button>
 		</div>
 	</div>
+	
 	<div class="posetcontainer" id="cnvPosetContainer">
 		<canvas id="cnvPoset" width="720" height="720"></canvas>
 	</div>
+	
 	<div class="form-group">
 		<div class="input-group mr-2" role="toolbar" aria-label="Settings toolbar">
 			<div class="btn-group btn-group-sm input-group btn-group-toggle"
@@ -238,7 +241,7 @@
 						title="Show poset element grid" 
 						onClick="updateSettingsButton( 'ShowGrid', true )">
 						Grid
-				</labe>
+				</label>
 			</div>
 		</div>
 		<div class="input-group input-group-sm">
@@ -268,7 +271,7 @@
 				<option value="1000">1000%</option>
 			</select>
 			<div class="input-group-prepend">
-				<div class="input-group-text">up to</div>
+				<div class="input-group-text">to</div>
 			</div>
 			<select class="form-control" id="selAbsoluteCanvasSize"
 				style="background-color: #e9ecef;" onChange="handleResize()">
@@ -585,7 +588,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x2223;&#x2223;&#x2223;</div>
+				<div class="col">&#x223A;</div>
 				<div class="col-10">
 					Rearrange the elements of a 2-layered poset to minimize link 
 					crossings. This function is only available when the poset has two 
@@ -593,11 +596,19 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x2A08;</div>
+				<div class="col">&#x27D0;</div>
 				<div class="col-10">
 					Reset all links to those of a 2-order with the same element 
 					positions. This function is only available when the diagram is not 
 					showing a 2-order.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x238C;</div>
+				<div class="col-10">
+					Swap the element with the one on the same layer to the left. 
+					This function is only available when an element is selected and the 
+					swap is possible.
 				</div>
 			</div>
 			<div class="row">
@@ -612,14 +623,6 @@
 				<div class="col-10">
 					Link/unlink the selected elements. This function is only available 
 					when an element and another link-able element is selected.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">&#x238C;</div>
-				<div class="col-10">
-					Swap the element with the one on the same layer to the left. 
-					This function is only available when an element is selected and the 
-					swap is possible.
 				</div>
 			</div>
 		</div>

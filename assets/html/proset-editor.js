@@ -302,6 +302,15 @@ function removeGroups( value, begingroup = "{", endgroup = "}" ) {
 	return removeGroups( value, begingroup, endgroup );
 }
 
+function initializeArray( n, value ) {
+	/* Returns an array of length `n`, where each element is initialized with 
+	`value`. */
+	const A = new Array( n );
+	for ( let i = 0; i < n; i++ )
+		A[i] = value;
+	return A;
+}
+
 function initializeLinkList( n ) {
 	/* Returns an array of length `n`, where each element is an empty array. */
 	const linklist = new Array( n );
@@ -451,8 +460,17 @@ class Poset {
 	
 	getLayerIndices() {
 		/* Returns an the layer index as an array with the length of card(). */
-		// TODO: Missing implementation.
-		return new Array( this.card() );
+		const layers = initializeArray( this.card(), 1 );
+		for ( let i = 0; i < layers.length; i++ ) {
+			let links = this.links[i];
+			let next_layer = layers[i] + 1;
+			for ( let l = 0; l < links.length; l++ ) {
+				let j = links[l];
+				if ( next_layer > layers[j] )
+					layers[j] = next_layer;
+			}
+		}
+		return layers;
 	}
 	
 	countLayers() {
@@ -1416,8 +1434,22 @@ function changeLink() {
 function swapLeft() {
 	try {
 		let sel = getSelection();
-		if ( isNaN( sel ) || isNaN( linksel ) ) return;
-		// TODO: Finish implementation.
+		if ( isNaN( sel ) ) return;
+		let sel_v = poset.permutation.indexOf( sel );
+		if ( sel_v < 0 || sel_v >= poset.card() - 1 ) return;
+		let new_sel = sel - 1;
+		if ( poset.permutation[sel_v + 1] != new_sel ) return;
+		for ( let i = 0; i < sel; i++ ) {
+			swapLinks( poset.links[i], sel, new_sel );
+			swapLinks( poset.removedlinks[i], sel, new_sel );
+			swapLinks( poset.addedlinks[i], sel, new_sel );
+		}
+		swapElementPair( poset.links, sel, new_sel );
+		swapElementPair( poset.removedlinks, sel, new_sel );
+		swapElementPair( poset.addedlinks, sel, new_sel );
+		setSelection( new_sel );
+		updateExport();
+		addUndoStep();
 	} catch ( e ) {
 		showError( e.message, e instanceof WarningError );
 	}
@@ -1847,6 +1879,16 @@ function swapElementPair( linkings, i, j ) {
 	let swap = linkings[i];
 	linkings[i] = linkings[j];
 	linkings[j] = swap;
+}
+
+function swapLinks( linkings, i, j ) {
+	/* Swaps all entries `i` for `j` and `j` for `i` in an array in place. */
+	for ( let l = 0; l < linkings.length; l++ ) {
+		if ( linkings[l] == i )
+			linkings[l] = j;
+		else if ( linkings[l] == j )
+			linkings[l] = i;
+	}
 }
 
 function reduceLinkCrossings( linkings, crossingcount ) {
