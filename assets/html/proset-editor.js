@@ -80,10 +80,13 @@ function initializeEditor() {
 	document.getElementById( "chbShowCross" ).checked = true;
 	updateSettingsButton( "ShowCross", false );
 	updateSettingsButton( "ShowGrid", false );
-	document.getElementById( "txtCard" ).value = "";
-	const strStatusBars = [ "txtPermutation", "txtLinks", "txtRemovedLinks" ];
-	for ( let i = 0; i < strStatusBars.length; i++ )
-		document.getElementById( strStatusBars[i] ).value = "";
+	document.getElementById( "txtLayers" ).value = "";
+	document.getElementById( "lblPermutation" ).innerHTML = "0 elements:";
+	document.getElementById( "txtPermutation" ).value = "";
+	document.getElementById( "lblLinks" ).innerHTML = "0 links:";
+	document.getElementById( "txtLinks" ).value = "";
+	document.getElementById( "lblRemovedLinks" ).innerHTML = "0 removed links:";
+	document.getElementById( "txtRemovedLinks" ).value = "";
 	const frmExports = [ "pcauset", "rcauset", "causet" ];
 	for ( let i = 0; i < frmExports.length; i++ ) {
 		document.getElementById( "txtExport_" + frmExports[i] ).value = "";
@@ -751,17 +754,19 @@ class Poset {
 	
 	get_LinksString( linklist, targetmap ) {
 		/* This method is class private. It converts the nested array `linklist` 
-		into a comma-separated string. Each item is formatted as number/(*) where 
-		(*) stands for the return of `targetmap` for the target element of the 
-		links. */
+		into a comma-separated string and a number of entries. Each item is 
+		formatted as number/(*) where (*) stands for the return of `targetmap` for 
+		the target element of the links. */
 		let s = "";
+		let c = 0;
 		for ( let i = 0; i < linklist.length; i++ ) {
 			if ( linklist[i].length === 0 ) continue;
 			let from = getElementString( i ) + "/";
 			if ( s.length > 0 ) s = s + ",";
 			s = s + from + linklist[i].map( targetmap ).join( "," + from );
+			c = c + linklist[i].length;
 		}
-		return s;
+		return [ s, c ];
 	}
 	
 	getRemovedLinksString() {
@@ -1504,7 +1509,7 @@ function revise() {
 	const txtInputPermutation = document.getElementById( "txtInputPermutation" );
 	txtInputPermutation.value = document.getElementById( "txtPermutation" ).value;
 	let strInputType = "pcauset";
-	let strRemovedLinks = poset.getRemovedLinksString();
+	let strRemovedLinks = document.getElementById( "txtRemovedLinks" ).value;
 	if ( strRemovedLinks.length > 0 ) {
 		strInputType = "rcauset";
 		let strAddlinks = poset.getAddedLinksString();
@@ -1538,23 +1543,31 @@ function updateExport() {
 	hideLastError();
 	let style = document.getElementById( "selExportLatexStyle" ).value;
 	let strPerm = poset.getPermutationString();
-	let strRemovedLinks = poset.getRemovedLinksString();
-	let strAddlinks = poset.getAddedLinksString();
-	let strLinks = poset.getLinksString();
+	let removedLinks = poset.getRemovedLinksString();
+	let addedLinks = poset.getAddedLinksString();
+	let links = poset.getLinksString();
 	let layercount = poset.countLayers();
-	document.getElementById( "txtCard" ).value = poset.card().toString();
 	document.getElementById( "txtLayers" ).value = layercount.toString();
+	let n = poset.card();
+	document.getElementById( "lblPermutation" ).innerHTML =
+		n.toString() + ( n == 1 ? " element:" : " elements:" );
 	document.getElementById( "txtPermutation" ).value = strPerm;
-	document.getElementById( "txtLinks" ).value = strLinks;
+	document.getElementById( "lblLinks" ).innerHTML =
+		links[1].toString() + ( links[1] == 1 ? " link:" : " links:" );
+	document.getElementById( "txtLinks" ).value = links[0];
+	document.getElementById( "lblRemovedLinks" ).innerHTML =
+		removedLinks[1].toString() + " removed"
+		+ ( removedLinks[1] == 1 ? " link:" : " links:" );
+	let strRemovedLinks = removedLinks[0];
 	document.getElementById( "txtRemovedLinks" ).value = strRemovedLinks;
-	if ( strAddlinks.length > 0 )
-		strRemovedLinks = strRemovedLinks + "," + strAddlinks;
+	if ( addedLinks[0].length > 0 )
+		strRemovedLinks = strRemovedLinks + "," + addedLinks[0];
 	document.getElementById( "txtExport_pcauset" ).value = 
 		"\\pcauset" + style + "{" + strPerm + "}";
 	document.getElementById( "txtExport_rcauset" ).value = 
 		"\\rcauset" + style + "{" + strPerm + "}{" + strRemovedLinks + "}";
 	document.getElementById( "txtExport_causet" ).value = 
-		"\\causet" + style + "{" + strPerm + "}{" + strLinks + "}";
+		"\\causet" + style + "{" + strPerm + "}{" + links[0] + "}";
 	let export_pcauset = ( strRemovedLinks.length === 0 );
 	document.getElementById( "butOptimize" ).disabled = ( layercount != 2 );
 	document.getElementById( "butTo2Order" ).disabled = export_pcauset;
@@ -1650,6 +1663,9 @@ function handleDoubleClick( e ) {
 }
 
 function handleKeyDown( e ) {
+	if ( document.activeElement
+			&& document.activeElement.is.startsWith( "txt" ) )
+		return;  // ignore keyboard when a text field is active
 	switch ( e.code ) {
 		case "KeyA":
 			if ( e.key == 'A' )

@@ -246,10 +246,6 @@
 		</div>
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
-				<div class="input-group-text">Cardinality:</div>
-			</div>
-			<input type="text" class="form-control" id="txtCard" readonly />
-			<div class="input-group-prepend">
 				<div class="input-group-text">Layers:</div>
 			</div>
 			<input type="text" class="form-control" id="txtLayers" readonly />
@@ -294,7 +290,9 @@
 		</div>
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
-				<div class="input-group-text">Permutation:</div>
+				<div class="input-group-text" id="lblPermutation">
+					0 elements:
+				</div>
 			</div>
 			<input type="text" class="form-control" id="txtPermutation" readonly />
 			<button type="button" class="btn btn-sm btn-light"
@@ -304,7 +302,9 @@
 		</div>
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
-				<div class="input-group-text">Links:</div>
+				<div class="input-group-text" id="lblLinks">
+					0 links:
+				</div>
 			</div>
 			<input type="text" class="form-control" id="txtLinks" readonly />
 			<button type="button" class="btn btn-sm btn-light"
@@ -314,7 +314,9 @@
 		</div>
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
-				<div class="input-group-text">Removed links:</div>
+				<div class="input-group-text" id="lblRemovedLinks">
+					0 removed links:
+				</div>
 			</div>
 			<input type="text" class="form-control" id="txtRemovedLinks" readonly />
 			<button type="button" class="btn btn-sm btn-light"
@@ -425,45 +427,29 @@
 	<!--#######################################################################-->
 	<a name="help"><h2>Help</h2></a>
 	<div class="alert alert-info" role="alert">
-		<b>Note that most posets do not have a unique diagram.</b> The best 
-		diagrams are obtained by having as few manually added links and "removed 
-		links" as possible. For example, if the poset is 2-dimensional, there exists 
-		a diagram with no "removed links". All posets with up to 5 elements and all 
-		but 3 posets with 6 elements are 2-dimensional.
+		<a name="help_howto">
+			Note that most posets do not have a unique diagram, though there are only 
+			very few "good" diagrams.
+		</a>
 	</div>
-	
-	<a name="help_howto"><h4>Steps to create a diagram of a poset</h4></a>
 	<p>
-		<ol>
-			<li>
-				Generate a predefined poset with the desired cardinality &mdash; or 
-				add/remove elements to/from some imported poset to get the desired 
-				number of elements.
-			</li>
-			<li>
-				Auto-link the elements with the button &#x27D0; if the imported poset 
-				was higher dimensional (otherwise the button is disabled).
-			</li>
-			<li>
-				Rearrange the elements until (almost) all of the automatic links 
-				coincide with the links of the desired diagram.
-			</li>
-			<li>
-				Shuffle the elements to see if there is another similar configuration 
-				where all links are already matched by the auto-links.
-			</li>
-			<li>
-				Remove unwanted links. This is only necessary if the dimension of the 
-				poset is more than 2 &mdash; or if it is a causal set that cannot be 
-				embedded in (1+1)-dimensional Minkowski spacetime.
-			</li>
-			<li>
-				Lastly if required, add new links to your diagram. Again this step is 
-				not necessary for 2-dimensional posets.
-			</li>
-		</ol>
-		All these actions can be done with the <a href="#help_toolbar">toolbar</a> 
-		and by using a <a href="#help_mouse">mouse/touchpad</a> or 
+		The best diagrams are obtained by finding a diagram that is as <b>close to 
+		a 2-order</b> as possible, because 2-orders (posets that are the 
+		intersection of two total orders) can be represented without having any 
+		"removed links". 
+		Represent higher dimensional posets by finding a corresponding 2-order such 
+		that <b>as few links as possible need to be removed</b> from it. 
+		For example, <b>all posets with five elements and all but three posets with 
+		six elements</b> are 2-orders and have diagrams <b>without removed 
+		links</b>. 
+		For all posets that are not 2-orders, the editor provides some tools to 
+		construct diagrams while keeping the number of removed (and added) links as 
+		small as possible. 
+	</p>
+	<p>
+		To find diagrams with as few "removed links"" as possible, you may use the 
+		<a href="#help_toolbar">toolbar</a>, the 
+		<a href="#help_mouse">mouse/touchpad</a> or the 
 		<a href="#help_keyboard">keyboard</a>.
 	</p>
 	
@@ -515,17 +501,16 @@
 				<div class="col">List of coverings for a 2-layered poset</div>
 				<div class="col-8">
 					For each second-layer element, write a line listing the first-layer 
-					elements (separeted with commas) that are covered by this 
-					second-layer element. The elements on the first layer have to be 
-					numbered with consecutive integers, so that each first-layer element 
-					appears in at least one of the specified lines in the text field 
-					(each first-layer element is covered by at least one second-layer 
-					element). 
-					Note that the labels of elements in the generated diagram may differ 
-					but they start from the same lowest integer as in the input. The 
-					diagram is generated after rearranging the elements on the first and 
-					second layer so that the number of link crossings is (locally) 
-					minimised.
+					elements (separated with commas) that are covered by this 
+					second-layer element. 
+					The elements on the first layer have to be numbered with consecutive 
+					integers, so that each first-layer element appears in at least one of 
+					the specified lines in the text field (each first-layer element is 
+					covered by at least one second-layer element). 
+					Empty lines are treated as separate elements that are parallel to the 
+					diagram.
+					Once generated, the diagram is being optimised for a diagram with as 
+					few crossed links as possible. 
 				</div>
 			</div>
 			<div class="row" hidden>
@@ -649,16 +634,11 @@
 			<div class="row">
 				<div class="col">Canvas size</div>
 				<div class="col-9">
-					Set the relative canvas size as percentage of the page width. Use 
-					'fill' to size the canvas to the maximal value.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">up to</div>
-				<div class="col-9">
-					Set the maximal canvas size. Use 'unbounded' to resize the canvas 
-					to the relative size. If 'fill' and 'unbounded' is selected, the 
-					canvas is sized to 100% of the page width. 
+					Set the relative canvas size as percentage of the page width. 
+					Use 'fill' to size the canvas to the maximal value.
+					An absolute height value sets the maximal canvas size. 
+					If 'fill' and 'unbounded' is selected, the canvas is sized to 100% of 
+					the page width. 
 				</div>
 			</div>
 			<div class="row">
@@ -673,36 +653,28 @@
 	<a name="help_mouse"><h4>Mouse and touchscreen functions</h4></a>
 	<p>
 		<div class="container">
-			<div class="row">
-				<div class="col">
+			<ul>
+				<li>
 					Click on an element (highlighted with a red mark on hover) to select 
 					it. If another element is already selected, clicking on a succeeding 
 					element that can be linked (connected by an edge) in the diagram, the 
-					(possible) link will be selected.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
+					(possible) link will be selected as well.
+				</li>
+				<li>
 					Click along the row/column going in 45 degree angles away from the 
 					selected element to move it there.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
+				</li>
+				<li>
 					Click on an empty area to unselect.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
+				</li>
+				<li>
 					Double click on an element to replace it by a 2-antichain.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
+				</li>
+				<li>
 					Double click on an element while holding the shift key to replace it 
 					by a 2-chain.
-				</div>
-			</div>
+				</li>
+			</ul>
 		</div>
 	</p>
 	
@@ -791,14 +763,14 @@
 	<p>
 		<b>Report a problem or make a suggestion:</b>
 		Please send me a comprehensive problem description and information of your 
-		browser (name and version) if you encounter an error. 
+		browser (name and version) if you encounter a problem with the editor. 
 		I also welcome any suggestions to improve the tool. 
-		My contact details are on my <a href="https://c-minz.github.io">main 
-		page</a>.
+		My <a href="https://c-minz.github.io">contact details</a> are on my main 
+		page.
 	</p>
 	<p class="sticky-bottom mt-5" role="contentinfo">
 		&copy; Copyright 2024, Christoph Minz.
-		PrOSET editor version v1.0 (revision 2024-08-15).
+		PrOSET editor version v1.1 (revision 2024-08-24).
 		<br />
 		Styled with <a href="https://getbootstrap.com/" target="_blank"
 		rel="external nofollow noopener">Bootstrap</a>.
