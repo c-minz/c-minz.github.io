@@ -8,6 +8,28 @@
 	margin-top: 0px;
 }
 
+#busy {
+	width: 17px;
+	height: 17px;
+	margin: 12px;
+	align-items: unset;
+	transform: rotate(45deg);
+	animation: building 2s linear infinite;
+}
+
+@keyframes building {
+	0% {
+		border: 1px solid rgb(0, 123, 255);
+		border-top: transparent;
+		border-left: transparent;
+	}
+	100% {
+		border: 15px solid rgb(0, 123, 255);
+		border-top: transparent;
+		border-left: transparent;
+	}
+}
+
 .posetcontainer {
 	padding-top: 5px;
 	padding-bottom: 0px;

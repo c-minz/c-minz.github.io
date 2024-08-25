@@ -43,6 +43,7 @@ function throwWarningIfLarge( value, links = false ) {
 }
 
 function showError( message, isWarning = false ) {
+	// document.getElementById( "busy" ).hidden = true;
 	const msgError = document.getElementById( "msgError" );
 	msgError.innerText = message;
 	msgError.className = isWarning ? "alert alert-danger" : "alert alert-warning";
@@ -798,6 +799,7 @@ function getAddedLinkTargetString( e ) {
 }
 
 function generate() {
+	// document.getElementById( "busy" ).hidden = false;
 	let input_type = document.getElementById( "selInputType" ).value;
 	let input_perm =
 		removeGroups( document.getElementById( "txtInputPermutation" ).value );
@@ -839,6 +841,7 @@ function generate() {
 	updateExport();
 	addUndoStep();
 	window.location.href = "#edit";
+	// document.getElementById( "busy" ).hidden = true;
 	if ( input_type == "coveringslist" )
 		optimize();
 }
@@ -1710,29 +1713,31 @@ function handleResize() {
 // #############################################################################
 // Process layered posets
 
-function getFromCoveringList( coveringsfield ) {
-	/* Parses the textfield input `coveringslist`, checking the input and raises 
-	syntax errors. */
-	// TODO: Treat empty lines (except the very last) as parallel elements.
-	// TODO: Treat empty lines (except the very last) as parallel elements.
-	let lines = coveringsfield.split( "\n" );
+function getFromCoveringList( textfieldvalue ) {
+	/* Parses the textfield input `textfieldvalue` (checking the input and raises 
+	syntax errors if necessary) and returns a poset object. */
+	let lines = textfieldvalue.split( "\n" );
 	let coverings = [];
 	let firstlayer = [];
-	let firstlayer_min = 0;
-	let firstlayer_max = 0;
+	let min1 = 0;
+	let max1 = 0;
 	let linkcount = 0;
 	let elementcount = 0;
+	let parallelcount = 0;
 	for ( let i = 0; i < lines.length; i++ ) {
 		let line = lines[i].trim();
-		if ( line.length == 0 ) continue;
+		if ( line.length == 0 ) {
+			parallelcount = parallelcount + 1;
+			continue;
+		}
 		let line_split = line.split( "," ).map( parseIntNotNaN );
 		let element_coverings = [];
 		for ( let j = 0; j < line_split.length; j++ ) {
 			e = line_split[j];
-			if ( firstlayer.length == 0 || e < firstlayer_min )
-				firstlayer_min = e;
-			if ( firstlayer.length == 0 || e > firstlayer_max )
-				firstlayer_max = e;
+			if ( firstlayer.length == 0 || e < min1 )
+				min1 = e;
+			if ( firstlayer.length == 0 || e > max1 )
+				max1 = e;
 			if ( !firstlayer.includes( e ) )
 				firstlayer.push( e );
 			if ( !element_coverings.includes( e ) )
@@ -1740,34 +1745,36 @@ function getFromCoveringList( coveringsfield ) {
 		}
 		if ( element_coverings.length == 0 ) continue;
 		elementcount = elementcount + 1;
-		throwWarningIfLarge( elementcount );
 		linkcount = linkcount + element_coverings.length;
-		throwWarningIfLarge( linkcount, true );
 		coverings.push( element_coverings );
 	}
-	if ( coverings.length == 0 )
-		throw new SyntaxError( "The list of coverings is empty!" );
-	let firstlayer_count = firstlayer_max - firstlayer_min + 1;
-	if ( firstlayer_count != firstlayer.length ) {
-		let firstlayer_missing = [];
-		let firstlayer_missing_more = false;
-		for ( let i = 0; i < firstlayer_count; i++ ) {
-			if ( !firstlayer.includes( firstlayer_min + i ) ) {
-				firstlayer_missing_more = ( firstlayer_missing.length >= 5 );
-				if ( firstlayer_missing_more ) break;
-				firstlayer_missing.push( firstlayer_min + i );
+	if ( coverings.length == 0 ) {
+		if ( parallelcount == 0 )
+			throw new SyntaxError( "The list of coverings is empty!" );
+		return getPredefined_antichain( parallelcount );
+	}
+	let count1 = max1 - min1 + 1;
+	if ( count1 != firstlayer.length ) {
+		let missing1 = [];
+		let missing1_more = false;
+		for ( let i = 0; i < count1; i++ ) {
+			if ( !firstlayer.includes( min1 + i ) ) {
+				missing1_more = ( missing1.length >= 5 );
+				if ( missing1_more ) break;
+				missing1.push( min1 + i );
 			}
 		}
 		throw new SyntaxError( "The"
-			+ ( ( firstlayer_missing.length == 1 ) ? " element " : " elements " )
-			+ firstlayer_missing.join( ", " )
-			+ ( ( firstlayer_missing_more ) ? " and more " : "" )
-			+ ( ( firstlayer_missing.length == 1 ) ? " is " : " are " )
+			+ ( ( missing1.length == 1 ) ? " element " : " elements " )
+			+ missing1.join( ", " )
+			+ ( ( missing1_more ) ? " and more " : "" )
+			+ ( ( missing1.length == 1 ) ? " is " : " are " )
 			+ "missing in the list of coverings!" );
 	}
-	elementcount = elementcount + firstlayer_count;
+	elementcount = elementcount + count1 + parallelcount;
 	throwWarningIfLarge( elementcount );
-	return convertCoveringsToPoset( coverings, firstlayer_min, firstlayer_count );
+	throwWarningIfLarge( linkcount, true );
+	return convertCoveringsToPoset( coverings, min1, count1, parallelcount );
 }
 
 function convertCoveringsToPoset( coverings, start1, count1, parallel = 0 ) {
@@ -1781,12 +1788,13 @@ function convertCoveringsToPoset( coverings, start1, count1, parallel = 0 ) {
 	const permutation = new Array( n + parallel );
 	let last = count1 + start1 - 1;
 	for ( let i = 0; i < count1; i++ )
-		permutation[i] = last - i;
+		permutation[i + parallel] = last - i;
 	last = last + n;
 	for ( let i = count1; i < n; i++ )
-		permutation[i] = last - i;
+		permutation[i + parallel] = last - i;
+	n = n + parallel;
 	for ( let i = 0; i < parallel; i++ )
-		permutation[n + i] = start1 - 1 - i;
+		permutation[i] = n - i;
 	const links = [];
 	for ( let b = 0; b < coverings.length; b++ ) {
 		let b_coverings = coverings[b];
