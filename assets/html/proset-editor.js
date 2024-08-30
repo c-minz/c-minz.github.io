@@ -1667,7 +1667,7 @@ function handleDoubleClick( e ) {
 
 function handleKeyDown( e ) {
 	if ( document.activeElement
-			&& document.activeElement.is.startsWith( "txt" ) )
+			&& document.activeElement.id.startsWith( "txt" ) )
 		return;  // ignore keyboard when a text field is active
 	switch ( e.code ) {
 		case "KeyA":
