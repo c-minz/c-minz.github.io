@@ -52,28 +52,61 @@
 				<label for="selInputType">
 					Generate a diagram of a partially ordered set from a
 				</label>
-				<select class="form-control" id="selInputType" onChange="selectInputType()">
-					<option value="predefined" selected>predefined type</option>
-					<option value="pcauset">permutation (for a 2-order)</option>
-					<option value="rcauset">permutation and list of removed links</option>
-					<option value="causet">permutation and list of links</option>
-					<option value="latex">LaTeX macro</option>
-					<option value="coveringslist">list of covering relations (for a 2-layered poset)</option>
-					<option value="matrix" hidden>causal matrix</option>
+				<select class="form-control" id="selInputType"
+					onChange="selectInputType()">
+					<option value="predefined" selected>
+						predefined type
+					</option>
+					<option value="pcauset">
+						permutation (for a 2-order)
+					</option>
+					<option value="rcauset">
+						permutation and list of removed links
+					</option>
+					<option value="causet">
+						permutation and list of links
+					</option>
+					<option value="latex">
+						LaTeX macro
+					</option>
+					<option value="coveringslist">
+						list of covering relations (for a 2-layered poset)
+					</option>
+					<option value="matrix" hidden>
+						causal matrix
+					</option>
 				</select>
 			</div>
-			<div class="form-group" id="frmInputPredefined" onChange="hideLastError()">
+			<div class="form-group" id="frmInputPredefined"
+				onChange="hideLastError()">
 				<label for="selInputPredefinedType">Predefined type:</label>
 				<div class="form-row">
 					<div class="col-7">
 						<select class="form-control" id="selInputPredefinedType">
-							<option value="chain" selected>n-chain</option>
-							<option value="antichain">n-antichain</option value="chain">
-							<option value="random">random 2-order with n elements</option>
-							<option value="fence">n-fence</option>
-							<option value="crown">n-crown poset</option>
-							<option value="polygon">(regular) n-sided polygon poset</option>
-							<option value="simplex" hidden>n-simplex</option>
+							<option value="chain" selected>
+								n-chain
+							</option>
+							<option value="antichain">
+								n-antichain
+							</option value="chain">
+							<option value="random">
+								random 2-order with n elements
+							</option>
+							<option value="fence">
+								n-fence
+							</option>
+							<option value="crown">
+								n-crown poset
+							</option>
+							<option value="polygon">
+								(regular) n-sided polygon poset
+							</option>
+							<option value="2lattice">
+								n &times; n lattice subset
+							</option>
+							<option value="simplex" hidden>
+								n-simplex
+							</option>
 						</select>
 					</div>
 					<div class="col-2">
@@ -145,18 +178,6 @@
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Mirror the diagram horizontally" 
-				id="butReflect" onClick="reflect()">
-				&#x2B16; <span class="sr-only">Reflect</span>
-			</button>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
-				title="Mirror the diagram vertically to get the opposite poset" 
-				id="butOpposite" onClick="turnOpposite()">
-				&#x2B19; <span class="sr-only">Opposite</span>
-			</button>
-			<button type="button" class="btn btn-secondary" 
-				data-toggle="tooltip" data-placement="bottom" 
 				title="Increase all labels by 1" 
 				id="butRaiseOffset" onClick="changeOffset( 1 )">
 				&#x229E; <span class="sr-only">Raise labels</span>
@@ -166,6 +187,18 @@
 				title="Decrease all labels by 1" 
 				id="butLowerOffset" onClick="changeOffset( -1 )">
 				&#x229F; <span class="sr-only">Lower labels</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Mirror the diagram horizontally" 
+				id="butReflect" onClick="reflect()">
+				&#x2B16; <span class="sr-only">Reflect</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Mirror the diagram vertically to get the opposite poset" 
+				id="butOpposite" onClick="turnOpposite()">
+				&#x2B19; <span class="sr-only">Opposite</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -550,6 +583,18 @@
 				</div>
 			</div>
 			<div class="row">
+				<div class="col">&#x229E;</div>
+				<div class="col-10">
+					Increase all element labels by 1.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">&#x229F;</div>
+				<div class="col-10">
+					Decrease all element labels by 1.
+				</div>
+			</div>
+			<div class="row">
 				<div class="col">&#x2B16;</div>
 				<div class="col-10">
 					Mirror the diagram horizontally, which yields an equivalent diagram.
@@ -563,15 +608,11 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">&#x229E;</div>
+				<div class="col">&#x27D0;</div>
 				<div class="col-10">
-					Increase all element labels by 1.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">&#x229F;</div>
-				<div class="col-10">
-					Decrease all element labels by 1.
+					Reset all links to those of a 2-order with the same element 
+					positions. This function is only available when the diagram is not 
+					showing a 2-order.
 				</div>
 			</div>
 			<div class="row">
@@ -580,14 +621,6 @@
 					Rearrange the elements of a 2-layered poset to minimize link 
 					crossings. This function is only available when the poset has two 
 					layers.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">&#x27D0;</div>
-				<div class="col-10">
-					Reset all links to those of a 2-order with the same element 
-					positions. This function is only available when the diagram is not 
-					showing a 2-order.
 				</div>
 			</div>
 			<div class="row">

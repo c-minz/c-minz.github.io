@@ -35,11 +35,11 @@ class LargePosetWarningError extends WarningError {
 	
 }
 	
-function throwWarningIfLarge( value, links = false ) {
-	if ( ( ( links && value > LargePosetWarning_links )
-				|| ( !links && value > LargePosetWarning_elements ) )
+function checkAndThrowWarningIfLarge( count, isLinkCount = false ) {
+	if ( ( ( isLinkCount && count > LargePosetWarning_links )
+				|| ( !isLinkCount && count > LargePosetWarning_elements ) )
 			&& !LargePosetWarningError_isShowing )
-	throw new LargePosetWarningError( value, links );
+		throw new LargePosetWarningError( count, isLinkCount );
 }
 
 function showError( message, isWarning = false ) {
@@ -140,42 +140,42 @@ function updateWidth() {
 	return true;
 }
 
-function parseIntNotNaN( value ) {
+function parseIntNotNaN( string_value ) {
 	/* Parse a string input `value` to an integer and raises an error if the 
 	string does not represent an integer, while leading and trailing spaces are 
 	ignored. */
-	let int_value = parseInt( value.trim(), 10 );
+	let int_value = parseInt( string_value.trim(), 10 );
 	if ( isNaN( int_value ) ) {
-		if ( value.length == 0 )
-			value = "(empty)";
+		if ( string_value.length == 0 )
+			string_value = "(empty)";
 		throw new SyntaxError(
-			"The value " + value + " cannot be converted to an integer!" );
+			"The value " + string_value + " cannot be converted to an integer!" );
 	}
 	return int_value;
 }
 
-function parseLink( value ) {
+function parseLink( string_value ) {
 	/* Parse a string input `value` to a pair of integers (and a string option) 
 	and raises an error if the string does not represent link, while leading and 
 	trailing spaces are ignored. Returns an array of either two or three entries, 
 	where the first entry is the lower index (from) and the second one is the 
 	upper index (to), the optional third entry is a string of all specified link 
 	options. */
-	let sep0 = value.indexOf( "/" );
+	let sep0 = string_value.indexOf( "/" );
 	if ( sep0 < 0 )
 		throw new SyntaxError(
 			"Each link has to be of the format 'number/number'." );
-	let sep1 = value.indexOf( "/", sep0 + 1 );
-	let from = parseIntNotNaN( value.substr( 0, sep0 ) );
+	let sep1 = string_value.indexOf( "/", sep0 + 1 );
+	let from = parseIntNotNaN( string_value.substr( 0, sep0 ) );
 	let to;
 	let has_options = false;
 	let options = "";
 	if ( sep1 < 0 ) {
-		to = parseIntNotNaN( value.substr( sep0 + 1 ) );
+		to = parseIntNotNaN( string_value.substr( sep0 + 1 ) );
 	} else {
-		to = parseIntNotNaN( value.substr( sep0 + 1, sep1 - sep0 - 1 ) );
+		to = parseIntNotNaN( string_value.substr( sep0 + 1, sep1 - sep0 - 1 ) );
 		has_options = true;
-		options = value.substr( sep1 + 1 );
+		options = string_value.substr( sep1 + 1 );
 	}
 	if ( from === to )
 		throw new SyntaxError( "An element cannot be linked to itself." );
@@ -189,7 +189,7 @@ function parseLink( value ) {
 	return [ from, to ];
 }
 
-function parsePermutation( value ) {
+function parsePermutation( value, checkIfLarge ) {
 	/* Parse `value` either as a string or list of integers and check if the 
 	input is valid. Raises an error for invalid inputs. Returns the parsed 
 	permutation list and an offset value to adjust labels in the diagram. */
@@ -215,9 +215,7 @@ function parsePermutation( value ) {
 	}
 	// get intended number of elements:
 	let n_target = Math.max( n, max_element - min_element + 1 );
-	if ( n_target > LargePosetWarning_elements
-			&& !LargePosetWarningError_isShowing )
-		throw new LargePosetWarningError( n_target );
+	if ( checkIfLarge ) checkAndThrowWarningIfLarge( n_target );
 	// check for repeated and missing elements:
 	const checkedInput = new Array( n_target ).fill( 0 );
 	for ( let i = 0; i < n; i++ ) {
@@ -359,12 +357,12 @@ class Poset {
 	The elements in the permutation are indexed starting from 0 and the parameter 
 	`offset` shifts the labels. */
 	
-	constructor( permutation, links, autolinking ){
+	constructor( permutation, links, use2Order, checkIfLarge = true ){
 		this.error = "";  // holds an input error message (if any)
 		this.hasWarning = false;
 		// parse permutation for the element positions:
 		try {
-			const parsed_permutation = parsePermutation( permutation );
+			const parsed_permutation = parsePermutation( permutation, checkIfLarge );
 			this.permutation = parsed_permutation[0];
 			this.offset = parsed_permutation[1];
 		} catch ( e ) {
@@ -373,11 +371,11 @@ class Poset {
 			return;
 		}
 		// parse links:
-		this.resetLinks( autolinking );
+		this.resetLinks( use2Order );
 		try {
 			const parsed_links = parseLinks( links, this.offset, this.card() - 1 );
 			let linkpairs = parsed_links[0];
-			if ( autolinking ) {
+			if ( use2Order ) {
 				for ( let l = 0; l < linkpairs.length; l++ )
 					this.removeLink( linkpairs[l][0], linkpairs[l][1] );
 			} else {
@@ -386,11 +384,9 @@ class Poset {
 			}
 			linkpairs = parsed_links[1];
 			for ( let l = 0; l < linkpairs.length; l++ )
-				this.addLink( linkpairs[l][0], linkpairs[l][1], autolinking );
+				this.addLink( linkpairs[l][0], linkpairs[l][1], use2Order );
 			let link_count = this.countLinks();
-			if ( link_count > LargePosetWarning_links
-					&& !LargePosetWarningError_isShowing )
-				throw new LargePosetWarningError( link_count, true );
+			if ( checkIfLarge ) checkAndThrowWarningIfLarge( link_count, true );
 		} catch ( e ) {
 			this.error = e.toString();
 			this.hasWarning = ( e instanceof WarningError );
@@ -582,8 +578,7 @@ class Poset {
 	pushNewElement() {
 		/* Adds a new element to the right of the diagram. */
 		let i = this.card();
-		if ( i === LargePosetWarning_elements && !LargePosetWarningError_isShowing )
-			throw new LargePosetWarningError( i + 1 );
+		checkAndThrowWarningIfLarge( i + 1 );
 		this.permutation.unshift( i );
 		this.autolinks.push( [] );
 		this.removedlinks.push( [] );
@@ -596,9 +591,9 @@ class Poset {
 		is true). Raises an error if `e` is out of bounds. */
 		let n = this.card();
 		if ( e < 0 || e >= n )
-			throw new RangeError( "There is no element " + getElementString( e ) + "." );
-		if ( n === LargePosetWarning_elements && !LargePosetWarningError_isShowing )
-			throw new LargePosetWarningError( n + 1 );
+			throw new RangeError(
+				"There is no element " + getElementString( e ) + "." );
+		checkAndThrowWarningIfLarge( n + 1 );
 		let v = this.permutation.indexOf( e );
 		for ( let i = 0; i < n; i++ ) {
 			if ( this.permutation[i] >= e )
@@ -860,30 +855,35 @@ function getPredefined() {
 		return getPredefined_random( n );
 	if ( input_type == "fence" )
 		return getPredefined_fence( n );
-	if ( input_type == "polygon" )
-		return getPredefined_polygon( n );
 	if ( input_type == "crown" )
 		return getPredefined_crown( n );
+	if ( input_type == "polygon" )
+		return getPredefined_polygon( n );
+	if ( input_type == "2lattice" )
+		return getPredefined_2lattice( n );
 	throw new TypeError(
 		"The poset type '" + input_type + "' is not implemented." );
 }
 
 function getPredefined_chain( n ) {
-	const permutation = [];
+	checkAndThrowWarningIfLarge( n );
+	const permutation = new Array( n );
 	for ( let i = 0; i < n; )
 		permutation[i] = ++i;
-	return new Poset( permutation, [], true );
+	return new Poset( permutation, [], true, false );
 }
 
 function getPredefined_antichain( n ) {
-	const permutation = [];
+	checkAndThrowWarningIfLarge( n );
+	const permutation = new Array( n );
 	for ( let i = 0; i < n; i++ )
 		permutation[i] = n - i;
-	return new Poset( permutation, [], true );
+	return new Poset( permutation, [], true, false );
 }
 
 function getPredefined_random( n ) {
-	const permutation = [];
+	checkAndThrowWarningIfLarge( n );
+	const permutation = new Array( n );
 	for ( let i = 0; i < n; )
 		permutation[i] = ++i;
 	for ( let i = n - 1; i > 0; i-- ) {
@@ -892,21 +892,26 @@ function getPredefined_random( n ) {
 		permutation[i] = permutation[j];
 		permutation[j] = swap;
 	}
-	return new Poset( permutation, [], true );
+	return new Poset( permutation, [], true, false );
 }
 
 function getPredefined_fence( n ) {
+	checkAndThrowWarningIfLarge( n );
 	if ( n === 1 ) return new Poset( [ 1 ], [], true );
-	const permutation = [ n - 1 ];
+	const permutation = new Array( n );
+	permutation[0] = n - 1;
 	for ( let i = n % 2; i < n; i++ ) {
 		permutation[i] = Math.max( 1, n - i - 2 );
 		permutation[++i] = Math.min( n - i + 2, n );
 	}
-	return new Poset( permutation, [], true );
+	return new Poset( permutation, [], true, false );
 }
 
 function getPredefined_crown( n ) {
-	if ( n === 1 ) throw new RangeError( "Crown posets only exist for n > 1." );
+	if ( n === 1 )
+		throw new RangeError( "Crown posets only exist for n > 1." );
+	checkAndThrowWarningIfLarge( 2 * n );
+	checkAndThrowWarningIfLarge( n * ( n - 1 ), true );
 	const permutation = [ n + 1 ];
 	for ( let i = n - 1; i >= 2; i-- )
 		permutation.push( i );
@@ -917,10 +922,12 @@ function getPredefined_crown( n ) {
 	const removedlinks = [];
 	for ( let i = 2; i < n; i++ )
 		removedlinks.push( [ i, 2 * n - i + 1 ] );
-	return new Poset( permutation, removedlinks, true );
+	return new Poset( permutation, removedlinks, true, false );
 }
 
 function getPredefined_polygon( n ) {
+	checkAndThrowWarningIfLarge( 2 * n + 2 );
+	checkAndThrowWarningIfLarge( 4 * n, true );
 	if ( n === 1 ) return new Poset( [ 0, 1, 2, 3 ], [], true );
 	if ( n === 2 ) return new Poset( [ 0, 2, 1, 4, 3, 5 ], [], true );
 	const permutation = [ 0, 2 * ( n - 1 ), 2 * ( n - 2 ), 2 * n ];
@@ -931,7 +938,17 @@ function getPredefined_polygon( n ) {
 	let max = 2 * n - 4;
 	for ( let i = 2; i <= max; i = i + 2 )
 		removedlinks.push( [ i, i + 3 ] );
-	return new Poset( permutation, removedlinks, true );
+	return new Poset( permutation, removedlinks, true, false );
+}
+
+function getPredefined_2lattice( n ) {
+	let n2 = n * n;
+	checkAndThrowWarningIfLarge( n2 );
+	checkAndThrowWarningIfLarge( 2 * ( n2 - n ), true );
+	const permutation = new Array( n2 );
+	for ( let i = 0; i < n2; i++ )
+		permutation[i] = Math.floor( ( i * n ) / n2 ) + ( i * n ) % n2 + 1;
+	return new Poset( permutation, [], true, false );
 }
 
 function getFromLatexMacro( macro ) {
@@ -1772,8 +1789,8 @@ function getFromCoveringList( textfieldvalue ) {
 			+ "missing in the list of coverings!" );
 	}
 	elementcount = elementcount + count1 + parallelcount;
-	throwWarningIfLarge( elementcount );
-	throwWarningIfLarge( linkcount, true );
+	checkAndThrowWarningIfLarge( elementcount );
+	checkAndThrowWarningIfLarge( linkcount, true );
 	return convertCoveringsToPoset( coverings, min1, count1, parallelcount );
 }
 
