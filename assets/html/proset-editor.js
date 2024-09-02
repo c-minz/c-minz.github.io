@@ -110,6 +110,8 @@ function selectInputType() {
 		( input_type != "causet" );
 	document.getElementById( "frmInputLatex" ).hidden = 
 		( input_type != "latex" );
+	document.getElementById( "frmInputMemory" ).hidden = 
+		( input_type != "memory" );
 	document.getElementById( "frmInputCoveringList" ).hidden = 
 		( input_type != "coveringslist" );
 	document.getElementById( "frmInputMatrix" ).hidden = 
@@ -373,7 +375,7 @@ class Poset {
 		// parse links:
 		this.resetLinks( use2Order );
 		try {
-			const parsed_links = parseLinks( links, this.offset, this.card() - 1 );
+			const parsed_links = parseLinks( links, this.offset, this.count() - 1 );
 			let linkpairs = parsed_links[0];
 			if ( use2Order ) {
 				for ( let l = 0; l < linkpairs.length; l++ )
@@ -394,14 +396,14 @@ class Poset {
 		}
 	}
 	
-	card() {
+	count() {
 		return this.permutation.length;
 	}
 	
 	resetLinks( autolinking ) {
 		/* Resets the list of links and auto links from the permutation if 
 		`autolinking = true`. */
-		let n = this.card();
+		let n = this.count();
 		this.autolinks = initializeLinkList( n );
 		this.removedlinks = initializeLinkList( n );
 		this.addedlinks = initializeLinkList( n );
@@ -452,7 +454,7 @@ class Poset {
 	countLinks() {
 		/* Returns the number of links in the poset. */
 		let count = 0;
-		let n = this.card();
+		let n = this.count();
 		for ( let i = 0; i < n; i++ )
 			count = count + this.links[i].length;
 		return count;
@@ -460,7 +462,7 @@ class Poset {
 	
 	getLayerIndices() {
 		/* Returns an the layer index as an array with the length of card(). */
-		const layers = initializeArray( this.card(), 1 );
+		const layers = initializeArray( this.count(), 1 );
 		for ( let i = 0; i < layers.length; i++ ) {
 			let links = this.links[i];
 			let next_layer = layers[i] + 1;
@@ -577,7 +579,7 @@ class Poset {
 	
 	pushNewElement() {
 		/* Adds a new element to the right of the diagram. */
-		let i = this.card();
+		let i = this.count();
 		checkAndThrowWarningIfLarge( i + 1 );
 		this.permutation.unshift( i );
 		this.autolinks.push( [] );
@@ -589,7 +591,7 @@ class Poset {
 	dublicateElement( e, related ) {
 		/* Dublicates the element `e` into a 2-antichain or a 2-chain (if `related` 
 		is true). Raises an error if `e` is out of bounds. */
-		let n = this.card();
+		let n = this.count();
 		if ( e < 0 || e >= n )
 			throw new RangeError(
 				"There is no element " + getElementString( e ) + "." );
@@ -655,7 +657,7 @@ class Poset {
 	
 	removeElement( e ) {
 		/* Remove the element `e`. Raises an error if it is out of bounds. */
-		let n = this.card();
+		let n = this.count();
 		if ( e < 0 || e >= n )
 			throw new RangeError(
 				"There is no element " + getElementString( e ) + "." );
@@ -668,13 +670,18 @@ class Poset {
 		this.reset_restoreLinks( e, e, true );
 	}
 	
+	insert( e, other ) {
+		/* Insert another poset `other` for an element `e`. */
+		// TODO: Implement replacement of an element by the poset `other`.
+	}
+	
 	moveU( e, moves ) {
 		/* Moves the element `e` in u-direction by `moves` steps (does nothing if 
 		moves === 0). Raises an error if the current or new position of the element 
 		is out of bounds. Returns the new u-position. */
 		let v = this.permutation.indexOf( e );
 		if ( moves === 0 ) return e;
-		let n = this.card();
+		let n = this.count();
 		if ( e < 0 || e >= n )
 			throw new RangeError(
 				"There is no element " + getElementString( e ) + "." );
@@ -697,7 +704,7 @@ class Poset {
 		is out of bounds. Returns the new v-position. */
 		let v = this.permutation.indexOf( e );
 		if ( moves === 0 ) return v;
-		let n = this.card();
+		let n = this.count();
 		if ( e < 0 || e >= n )
 			throw new RangeError(
 				"There is no element " + getElementString( e ) + "." );
@@ -715,7 +722,7 @@ class Poset {
 		/* Returns the poset as an n times n, upper-triangular, boolean matrix `M` 
 		where `M[i][j]` is true iff element `i` is linked to `j`. Since elements 
 		are not linked to themselves, the diagonal is `false`. */
-		let n = this.card();
+		let n = this.count();
 		let matrix = new Array( n );
 		for ( let i = 0; i < n; i++ ) {
 			let links = this.links[i];
@@ -732,7 +739,7 @@ class Poset {
 	toOrderMatrix() {
 		/* Returns the poset as an n times n, upper-triangular, boolean matrix `M` 
 		where `M[i][j]` is true iff element `i` is strictly ordered before `j`. */
-		let n = this.card();
+		let n = this.count();
 		let matrix = this.toLinkMatrix();
 		for ( let i = 0; i < n; i++ ) {
 			for ( let j = i + 1; j < n; j++ ) {
@@ -793,6 +800,32 @@ function getAddedLinkTargetString( e ) {
 	return getElementString( e ) + "/";
 }
 
+function createNew() {
+	let new_poset = generate();
+	if ( !new_poset ) return;
+	poset = new_poset;
+	updateSelectionBounds();
+	setSelection( NaN );
+	updateExport();
+	addUndoStep();
+	window.location.href = "#edit";
+	// document.getElementById( "busy" ).hidden = true;
+	if ( input_type == "coveringslist" )
+		optimize();
+}
+
+function createInsert() {
+	let sel = getSelection();
+	if ( isNaN( sel ) ) return;
+	let new_poset = generate();
+	if ( !new_poset ) return;
+	poset.insert( sel, new_poset );
+	updateSelectionBounds();
+	setSelection( NaN );
+	updateExport();
+	addUndoStep();
+}
+
 function generate() {
 	// document.getElementById( "busy" ).hidden = false;
 	let input_type = document.getElementById( "selInputType" ).value;
@@ -820,6 +853,10 @@ function generate() {
 			new_poset = getFromCoveringList(
 				document.getElementById( "txtInputCoveringList" ).value );
 		}
+		else if ( input_type == "memory" ) {
+			new_poset = getFromMemory(
+				document.getElementById( "selInputMemory" ).value );
+		}
 		error = new_poset.error;
 		hasWarning = new_poset.hasWarning;
 	} catch ( e ) {
@@ -828,17 +865,9 @@ function generate() {
 	}
 	if ( error ) {
 		showError( error, hasWarning );
-		return;
+		return 0;
 	}
-	poset = new_poset;
-	updateSelectionBounds();
-	setSelection( NaN );
-	updateExport();
-	addUndoStep();
-	window.location.href = "#edit";
-	// document.getElementById( "busy" ).hidden = true;
-	if ( input_type == "coveringslist" )
-		optimize();
+	return new_poset;
 }
 
 function getPredefined() {
@@ -997,6 +1026,10 @@ function getFromLatexMacro( macro ) {
 	);
 }
 
+function getFromMemory( memory_entry ) {
+	// TODO: Implement generation from memory entry.
+}
+
 
 // #############################################################################
 // Initialize editor and handle input/import data
@@ -1006,7 +1039,7 @@ let linkable = 0;
 
 function updateSelectionBounds() {
 	let lower = poset.offset;
-	let upper = poset.card() - 1 + poset.offset;
+	let upper = poset.count() - 1 + poset.offset;
 	document.getElementById( "txtSelection" ).min = lower.toString();
 	document.getElementById( "txtSelection" ).max = upper.toString();
 }
@@ -1014,7 +1047,7 @@ function updateSelectionBounds() {
 function getSelection() {
 	let sel = document.getElementById( "txtSelection" ).value;
 	let sel_int = parseInt( sel.trim(), 10 ) - poset.offset;
-	if ( ( sel_int >= 0 ) && ( sel_int < poset.card() ) ) {
+	if ( ( sel_int >= 0 ) && ( sel_int < poset.count() ) ) {
 		return sel_int;
 	}
 	return NaN;
@@ -1022,7 +1055,7 @@ function getSelection() {
 
 function setSelection( new_sel ) {
 	let strSel = "";
-	let n = poset.card();
+	let n = poset.count();
 	const butSwapLeft = document.getElementById( "butSwapLeft" );
 	butSwapLeft.disabled = true;
 	if ( new_sel >= 0 && new_sel < n ) {
@@ -1037,6 +1070,12 @@ function setSelection( new_sel ) {
 		butRemoveElement.className="btn btn-secondary";
 	else
 		butRemoveElement.className="btn btn-outline-danger";
+	const butCreateInsert = document.getElementById( "butCreateInsert" );
+	butCreateInsert.disabled = ( strSel == "" );
+	if ( butCreateInsert.disabled )
+		butCreateInsert.className="btn btn-outline-secondary mb-2";
+	else
+		butCreateInsert.className="btn btn-outline-danger mb-2";
 	const txtSelection = document.getElementById( "txtSelection" );
 	txtSelection.value = strSel;
 	document.getElementById( "txtLinking" ).value = "";
@@ -1054,7 +1093,7 @@ function resetSelection() {
 function getLinkingSelection() {
 	let sel = document.getElementById( "txtLinking" ).value;
 	let sel_int = parseInt( sel.trim(), 10 ) - poset.offset;
-	if ( ( sel_int >= 0 ) && ( sel_int < poset.card() ) ) {
+	if ( ( sel_int >= 0 ) && ( sel_int < poset.count() ) ) {
 		return sel_int;
 	}
 	return NaN;
@@ -1062,7 +1101,7 @@ function getLinkingSelection() {
 
 function setLinkingSelection( new_sel ) {
 	let strSel = "";
-	if ( new_sel >= 0 && new_sel < poset.card() )
+	if ( new_sel >= 0 && new_sel < poset.count() )
 		strSel = String( new_sel + poset.offset );
 	document.getElementById( "txtLinking" ).value = strSel;
 	const butLink = document.getElementById( "butLink" );
@@ -1120,7 +1159,7 @@ function redrawPoset() {
 	let sel_v = poset.permutation.indexOf( sel );
 	let linksel = getLinkingSelection();
 	let linksel_v = poset.permutation.indexOf( linksel );
-	let n = poset.card();
+	let n = poset.count();
 	initializeCanvas( context, n );  // setup canvas
 	// draw selection cross
 	if ( document.getElementById( "chbShowCross" ).checked ) {
@@ -1290,7 +1329,7 @@ function resetToUndoStep( dir ) {
 function updateHoveredTile( x, y ) {
 	let canvas = document.getElementById( "cnvPoset" );
 	let canvas_border = canvas.getBoundingClientRect();
-	let n = poset.card();
+	let n = poset.count();
 	let scaling = canvas.width / n;
 	x = x - canvas_border.left - canvas.width / 2;
 	y_u = -y + canvas_border.top + canvas.height / 2;
@@ -1332,7 +1371,7 @@ function selectU( dir ) {
 	if ( dir === 0 ) return;
 	let sel = getSelection();
 	if ( isNaN( sel ) && dir > 0 ) setSelection( 0 );
-	if ( isNaN( sel ) && dir < 0 ) setSelection( poset.card() - 1 );
+	if ( isNaN( sel ) && dir < 0 ) setSelection( poset.count() - 1 );
 	if ( isNaN( sel ) ) return;
 	setSelection( sel + dir );
 }
@@ -1340,7 +1379,7 @@ function selectU( dir ) {
 function selectV( dir ) {
 	if ( dir === 0 ) return;
 	let sel = getSelection();
-	let n = poset.card();
+	let n = poset.count();
 	if ( isNaN( sel ) && dir > 0 ) setSelection( poset.permutation[0] );
 	if ( isNaN( sel ) && dir < 0 ) setSelection( poset.permutation[n - 1] );
 	if ( isNaN( sel ) ) return;
@@ -1399,7 +1438,7 @@ function addElement() {
 		poset.pushNewElement();
 		hover = [];
 		updateSelectionBounds();
-		setSelection( poset.card() - 1 );
+		setSelection( poset.count() - 1 );
 		updateExport();
 		addUndoStep();
 	} catch ( e ) {
@@ -1425,7 +1464,7 @@ function dublicateElement( shift ) {
 function removeElement() {
 	try {
 		let sel = getSelection();
-		let n = poset.card();
+		let n = poset.count();
 		if ( isNaN( sel ) || sel < 0 || n === 1 ) return;
 		poset.removeElement( sel );
 		hover = [];
@@ -1461,7 +1500,7 @@ function swapLeft() {
 		let sel = getSelection();
 		if ( isNaN( sel ) ) return;
 		let sel_v = poset.permutation.indexOf( sel );
-		if ( sel_v < 0 || sel_v >= poset.card() - 1 ) return;
+		if ( sel_v < 0 || sel_v >= poset.count() - 1 ) return;
 		let new_sel = sel - 1;
 		if ( poset.permutation[sel_v + 1] != new_sel ) return;
 		for ( let i = 0; i < sel; i++ ) {
@@ -1492,7 +1531,7 @@ function turnOpposite() {
 	const opposite = poset.permutation.slice();
 	let sel = getSelection();
 	let new_sel = NaN;
-	let n = poset.card();
+	let n = poset.count();
 	for ( let i = n; i > 0; i-- ) {
 		let p = poset.permutation[n - i];
 		opposite[n - p - 1] = i - 1;
@@ -1510,7 +1549,7 @@ function reflect() {
 	const reflected = poset.permutation.slice();
 	let sel = getSelection();
 	let new_sel = NaN;
-	let n = poset.card();
+	let n = poset.count();
 	for ( let i = 0; i < n; i++ ) {
 		let p = poset.permutation[i];
 		reflected[p] = i;
@@ -1526,8 +1565,10 @@ function reflect() {
 }
 
 function revise() {
+	let strPermutation = document.getElementById( "txtPermutation" ).value;
+	if ( strPermutation == "" ) return;
 	const txtInputPermutation = document.getElementById( "txtInputPermutation" );
-	txtInputPermutation.value = document.getElementById( "txtPermutation" ).value;
+	txtInputPermutation.value = strPermutation;
 	let strInputType = "pcauset";
 	let strRemovedLinks = document.getElementById( "txtRemovedLinks" ).value;
 	if ( strRemovedLinks.length > 0 ) {
@@ -1543,6 +1584,10 @@ function revise() {
 	selectInputType();
 	window.location.href = "#import";
 	txtInputPermutation.focus();
+}
+
+function memorize() {
+	// TODO: Implement memorization of current diagram.
 }
 
 function copyToClipboard( textbox ) {
@@ -1568,7 +1613,7 @@ function updateExport() {
 	let links = poset.getLinksString();
 	let layercount = poset.countLayers();
 	document.getElementById( "txtLayers" ).value = layercount.toString();
-	let n = poset.card();
+	let n = poset.count();
 	document.getElementById( "lblPermutation" ).innerHTML =
 		n.toString() + ( n == 1 ? " element:" : " elements:" );
 	document.getElementById( "txtPermutation" ).value = strPerm;
@@ -1686,6 +1731,7 @@ function handleKeyDown( e ) {
 	if ( document.activeElement
 			&& document.activeElement.id.startsWith( "txt" ) )
 		return;  // ignore keyboard when a text field is active
+	// TODO: Include Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z for undo/redo.
 	switch ( e.code ) {
 		case "KeyA":
 			if ( e.key == 'A' )
@@ -1847,7 +1893,7 @@ function optimize() {
 		// TODO: Generalise to all posets with two layers.
 		let offset = poset.offset;
 		let minima = [ 0, poset.permutation[0] + 1 ];
-		let counts = [ minima[1], poset.card() - minima[1] ];
+		let counts = [ minima[1], poset.count() - minima[1] ];
 		let linkings = poset.links.slice( 0, minima[1] );
 		let crossingcount = countLinkCrossings( linkings );
 		const optimized = findLinkCrossingMinimum( linkings, minima, counts,

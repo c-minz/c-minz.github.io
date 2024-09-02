@@ -75,6 +75,9 @@
 					<option value="matrix" hidden>
 						causal matrix
 					</option>
+					<option value="memory">
+						memorized entry
+					</option>
 				</select>
 			</div>
 			<div class="form-group" id="frmInputPredefined"
@@ -147,8 +150,19 @@
 				<label for="txtInputMatrix">Order matrix:</label>
 				<textarea class="form-control" id="txtInputMatrix" rows="5"></textarea>
 			</div>
+			<div class="form-group" id="frmInputMemory">
+				<label for="selInputMemory">Memory entries:</label>
+				<select class="form-control" id="selInputMemory" size="5">
+				</select>
+			</div>
 			<button type="button" class="btn btn-primary mb-2"
-				id="butGenerate" onClick="generate()">Generate</button>
+				id="butCreateNew" onClick="createNew()">
+				&#x27E1; Create
+			</button>
+			<button type="button" class="btn btn-outline-secondary mb-2"
+				id="butCreateInsert" onClick="createInsert()" disabled>
+				&#x2386; Insert
+			</button>
 		</div>
 	</form>
 	<div class="alert alert-warning" role="alert" id="msgError" hidden></div>
@@ -163,6 +177,12 @@
 				title="Copy the poset back to the input and revise manually" 
 				id="butRevise" onClick="revise()">
 				&#x2336; <span class="sr-only">Revise</span>
+			</button>
+			<button type="button" class="btn btn-secondary" 
+				data-toggle="tooltip" data-placement="bottom" 
+				title="Copy the poset to the input memory" 
+				id="butMemorize" onClick="memorize()">
+				&#x2BB8; <span class="sr-only">Memorize</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -555,7 +575,19 @@
 					values 0 and 1, and the rows are separeted by a line break.
 				</div>
 			</div>
+			<!-- TODO: Include help for import from memory entry. -->
 		</div>
+	</p>
+	<p>
+		With the button "Create", the input data is converted to a diagram.
+		A message is shown and the creation interrupted if an error occurs, for 
+		example caused by incorrect syntax.
+	</p>
+	<p>
+		The button "Insert" is only active if another diagram has already been 
+		created and an element is selected.
+		This function replaces the selected element with the new diagram if it was 
+		generated correctly.
 	</p>
 	
 	<a name="help_toolbar"><h4>Toolbar functions</h4></a>
@@ -568,6 +600,7 @@
 					Copy the poset back to the input and revise manually.
 				</div>
 			</div>
+			<!-- TODO: Include help for memorize. -->
 			<div class="row">
 				<div class="col">&#x2936;</div>
 				<div class="col-10">
@@ -716,6 +749,24 @@
 	<a name="help_keyboard"><h4>Keyboard functions</h4></a>
 	<p>
 		<div class="container">
+			<div class="row">
+				<div class="col">Ctrl Z</div>
+				<div class="col-10">
+					Undo the last action.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">Ctrl Y</div>
+				<div class="col-10">
+					Redo the last action.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">Ctrl &#x21E7; Z</div>
+				<div class="col-10">
+					Redo the last action.
+				</div>
+			</div>
 			<div class="row">
 				<div class="col">W</div>
 				<div class="col-10">
