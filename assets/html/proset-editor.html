@@ -174,7 +174,7 @@
 		<div class="btn-group mr-2" role="group" aria-label="Global actions">
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Copy the poset back to the input and revise manually" 
+				title="Revise the poset as text input" 
 				id="butRevise" onClick="revise()">
 				&#x2336; <span class="sr-only">Revise</span>
 			</button>
@@ -182,7 +182,7 @@
 				data-toggle="tooltip" data-placement="bottom" 
 				title="Copy the poset to the input memory" 
 				id="butMemorize" onClick="memorize()">
-				&#x2BB8; <span class="sr-only">Memorize</span>
+				&#x2397; <span class="sr-only">Memorize</span>
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
@@ -597,10 +597,15 @@
 			<div class="row">
 				<div class="col">&#x2336;</div>
 				<div class="col-10">
-					Copy the poset back to the input and revise manually.
+					Copy the poset back to the input and revise in the input text fields.
 				</div>
 			</div>
-			<!-- TODO: Include help for memorize. -->
+			<div class="row">
+				<div class="col">&#x2397;</div>
+				<div class="col-10">
+					Copy the poset to the input memory field to create/insert it later.
+				</div>
+			</div>
 			<div class="row">
 				<div class="col">&#x2936;</div>
 				<div class="col-10">
@@ -748,6 +753,7 @@
 	
 	<a name="help_keyboard"><h4>Keyboard functions</h4></a>
 	<p>
+		Short-cuts that are bound to the local keyboard configuration:
 		<div class="container">
 			<div class="row">
 				<div class="col">Ctrl Z</div>
@@ -767,6 +773,23 @@
 					Redo the last action.
 				</div>
 			</div>
+			<div class="row">
+				<div class="col">Del</div>
+				<div class="col-10">
+					Delete the selected element.
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">.</div>
+				<div class="col-10">
+					Add a new element to the right of the diagram and select it.
+				</div>
+			</div>
+		</div>
+	</p>
+	<p>
+		Short-cuts that are bound to the keys of a QWERTY keyboard configuration:
+		<div class="container">
 			<div class="row">
 				<div class="col">W</div>
 				<div class="col-10">
@@ -813,18 +836,6 @@
 				<div class="col">&#x21E7; D</div>
 				<div class="col-10">
 					Move the selected element in north-east direction.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">Del</div>
-				<div class="col-10">
-					Delete the selected element.
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">.</div>
-				<div class="col-10">
-					Add a new element to the right of the diagram and select it.
 				</div>
 			</div>
 		</div>

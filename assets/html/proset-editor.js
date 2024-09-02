@@ -810,7 +810,7 @@ function createNew() {
 	addUndoStep();
 	window.location.href = "#edit";
 	// document.getElementById( "busy" ).hidden = true;
-	if ( input_type == "coveringslist" )
+	if ( document.getElementById( "selInputType" ).value == "coveringslist" )
 		optimize();
 }
 
@@ -1731,38 +1731,35 @@ function handleKeyDown( e ) {
 	if ( document.activeElement
 			&& document.activeElement.id.startsWith( "txt" ) )
 		return;  // ignore keyboard when a text field is active
-	// TODO: Include Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z for undo/redo.
-	switch ( e.code ) {
-		case "KeyA":
-			if ( e.key == 'A' )
-				moveU( -1 );
-			else
-				selectU( -1 );
-			break;
-		case "KeyD":
-			if ( e.key == 'D' )
-				moveU( 1 );
-			else
-				selectU( 1 );
-			break;
-		case "KeyS":
-			if ( e.key == 'S' )
-				moveV( -1 );
-			else
-				selectV( -1 );
-			break;
-		case "KeyW":
-			if ( e.key == 'W' )
-				moveV( 1 );
-			else
-				selectV( 1 );
-			break;
-		case "Delete":
+	if ( e.altKey || e.metaKey ) return;  // no alt/meta key short-cuts
+	if ( !e.shiftKey && e.ctrlKey && ( e.key == "z" ) )
+		resetToUndoStep( -1 );  // undo
+	if ( ( !e.shiftKey && e.ctrlKey && ( e.key == "y" ) )
+			|| ( e.shiftKey && e.ctrlKey && ( e.key == "Z" ) ) )
+		resetToUndoStep( 1 );  // redo
+	if ( e.ctrlKey ) return;
+	if ( e.shiftKey ) {
+		if ( e.code == "KeyA" )
+			moveU( -1 );
+		else if ( e.code == "KeyD" )
+			moveU( 1 );
+		else if ( e.code == "KeyS" )
+			moveV( -1 );
+		else if ( e.code == "KeyW" )
+			moveV( 1 );
+	} else {  // if ( !e.shiftKey )
+		if ( e.code == "KeyA" )
+			selectU( -1 );
+		else if ( e.code == "KeyD" )
+			selectU( 1 );
+		else if ( e.code == "KeyS" )
+			selectV( -1 );
+		else if ( e.code == "KeyW" )
+			selectV( 1 );
+		else if ( e.key == "Delete" )
 			removeElement();
-			break;
-		case "Period":
+		else if ( e.key == "." )
 			addElement();
-			break;
 	}
 }
 
