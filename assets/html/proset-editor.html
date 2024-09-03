@@ -152,8 +152,39 @@
 			</div>
 			<div class="form-group" id="frmInputMemory">
 				<label for="selInputMemory">Memory entries:</label>
-				<select class="form-control" id="selInputMemory" size="5">
+				<select class="form-control" id="selInputMemory" size="4">
 				</select>
+				<div class="form-group" role="toolbar" aria-label="Memory toolbar">
+					<div class="input-group mr-2" role="group" 
+						aria-label="Memory actions">
+						<div class="btn-group btn-group-sm input-group">
+							<button type="button" class="btn btn-light" 
+								data-toggle="tooltip" data-placement="bottom" 
+								title="Remove selected memory entry" disabled 
+								id="butRemoveMemoryEntry" onClick="removeMemoryEntry()">
+								Remove entry
+							</button>
+							<button type="button" class="btn btn-light" 
+								data-toggle="tooltip" data-placement="bottom" 
+								title="Clear the memory" disabled 
+								id="butClearMemory" onClick="clearMemory()">
+								Remove all
+							</button>
+							<button type="button" class="btn btn-light" 
+								data-toggle="tooltip" data-placement="bottom" 
+								title="Copy selected memory entry to the clipboard" disabled 
+								id="butCopyMemoryEntry" onClick="copyMemoryEntry()">
+								Copy entry
+							</button>
+							<button type="button" class="btn btn-light" 
+								data-toggle="tooltip" data-placement="bottom" 
+								title="Copy all memory entries to the clipboard" disabled 
+								id="butCopyMemory" onClick="copyMemory()">
+								Copy all
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 			<button type="button" class="btn btn-primary mb-2"
 				id="butCreateNew" onClick="createNew()">
@@ -180,7 +211,7 @@
 			</button>
 			<button type="button" class="btn btn-secondary" 
 				data-toggle="tooltip" data-placement="bottom" 
-				title="Copy the poset to the input memory" 
+				title="Add the poset to the input memory" 
 				id="butMemorize" onClick="memorize()">
 				&#x2397; <span class="sr-only">Memorize</span>
 			</button>
@@ -553,7 +584,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">List of coverings for a 2-layered poset</div>
+				<div class="col">list of coverings for a 2-layered poset</div>
 				<div class="col-8">
 					For each second-layer element, write a line listing the first-layer 
 					elements (separated with commas) that are covered by this 
@@ -575,7 +606,17 @@
 					values 0 and 1, and the rows are separeted by a line break.
 				</div>
 			</div>
-			<!-- TODO: Include help for import from memory entry. -->
+			<div class="row">
+				<div class="col">memorized entries</div>
+				<div class="col-8">
+					Select an entry from the list to recreate the diagram. 
+					Entries are only available if a previously generated diagram has been 
+					added to the memory (see button &#x2397; below). 
+					Unwanted entries can be removed or copied to the clipboard, and the 
+					entire memory can be cleared or copied to the clipboard with the 
+					buttons under the list. 
+				</div>
+			</div>
 		</div>
 	</p>
 	<p>
@@ -603,7 +644,8 @@
 			<div class="row">
 				<div class="col">&#x2397;</div>
 				<div class="col-10">
-					Copy the poset to the input memory field to create/insert it later.
+					Add the poset to the input memory so that it can be created/inserted 
+					later on.
 				</div>
 			</div>
 			<div class="row">

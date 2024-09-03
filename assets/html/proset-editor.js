@@ -63,6 +63,11 @@ function initializeEditor() {
 	document.getElementById( "msgJavascript" ).hidden = true;
 	selectInputType();
 	updateWidth();
+	document.getElementById( "butRemoveMemoryEntry" ).disabled = true;
+	document.getElementById( "butClearMemory" ).disabled = true;
+	document.getElementById( "butCopyMemoryEntry" ).disabled = true;
+	document.getElementById( "butCopyMemory" ).disabled = true;
+	document.getElementById( "butCreateInsert" ).disabled = true;
 	document.getElementById( "butUndo" ).disabled = true;
 	document.getElementById( "butRedo" ).disabled = true;
 	document.getElementById( "butOptimize" ).disabled = true;
@@ -816,7 +821,12 @@ function createNew() {
 
 function createInsert() {
 	let sel = getSelection();
-	if ( isNaN( sel ) ) return;
+	if ( isNaN( sel ) ) {
+		let error = new TypeError( "There is no element selected! "
+			+ "Select an element in the diagram for an insert." );
+		showError( error.toString() );
+		return;
+	}
 	let new_poset = generate();
 	if ( !new_poset ) return;
 	poset.insert( sel, new_poset );
@@ -1027,6 +1037,10 @@ function getFromLatexMacro( macro ) {
 }
 
 function getFromMemory( memory_entry ) {
+	if ( !memory_entry )
+		throw new TypeError( "There is no memory entry! "
+			+ "First create a diagram from another input type and add it to the "
+			+ "memory." );
 	// TODO: Implement generation from memory entry.
 }
 
@@ -1070,12 +1084,7 @@ function setSelection( new_sel ) {
 		butRemoveElement.className="btn btn-secondary";
 	else
 		butRemoveElement.className="btn btn-outline-danger";
-	const butCreateInsert = document.getElementById( "butCreateInsert" );
-	butCreateInsert.disabled = ( strSel == "" );
-	if ( butCreateInsert.disabled )
-		butCreateInsert.className="btn btn-outline-secondary mb-2";
-	else
-		butCreateInsert.className="btn btn-outline-danger mb-2";
+	document.getElementById( "butCreateInsert" ).disabled = ( strSel == "" );
 	const txtSelection = document.getElementById( "txtSelection" );
 	txtSelection.value = strSel;
 	document.getElementById( "txtLinking" ).value = "";
@@ -1586,10 +1595,6 @@ function revise() {
 	txtInputPermutation.focus();
 }
 
-function memorize() {
-	// TODO: Implement memorization of current diagram.
-}
-
 function copyToClipboard( textbox ) {
 	let text = document.getElementById( textbox ).value;
 	navigator.clipboard.writeText( text );
@@ -1659,6 +1664,51 @@ function getExportArray() {
 	}
 	document.getElementById( "txtExportArray" ).value = "Not implemented.";  
 	// TODO: Implement "coveringrelations" and "coveredbyrelations"
+}
+
+
+// #############################################################################
+// Memory functions
+
+function memorize() {
+	if ( !poset ) return;
+	let hasRemovedLinks = document.getElementById( "frmExport_pcauset" ).hidden;
+	let strMacro;
+	if ( hasRemovedLinks )
+		strMacro = document.getElementById( "txtExport_rcauset" ).value;
+	else
+		strMacro = document.getElementById( "txtExport_pcauset" ).value;
+	const option = document.createElement( "option" );
+	option.value = strMacro;
+	let n = poset.count();
+	let l = poset.countLinks();
+	option.innerHTML = n.toString() + ( ( n == 1 ) ? " element" : " elements" )
+		+ ", " + l.toString() + ( ( l == 1 ) ? " link" : " links" )
+		+ ", " + strMacro;
+	option.selected = true;
+	document.getElementById( "selInputMemory" ).appendChild( option );
+	document.getElementById( "butRemoveMemoryEntry" ).disabled = false;
+	document.getElementById( "butClearMemory" ).disabled = false;
+	document.getElementById( "butCopyMemoryEntry" ).disabled = false;
+	document.getElementById( "butCopyMemory" ).disabled = false;
+	document.getElementById( "selInputType" ).value = "memory";
+	selectInputType();
+}
+
+function removeMemoryEntry() {
+	// TODO: Implement removing element from memory.
+}
+
+function clearMemory() {
+	// TODO: Implement clearing the memory.
+}
+
+function copyMemoryEntry() {
+	// TODO: Implement copying the memory to the clipboard.
+}
+
+function copyMemory() {
+	// TODO: Implement copying the memory to the clipboard.
 }
 
 
