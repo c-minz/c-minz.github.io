@@ -76,7 +76,7 @@
 						causal matrix
 					</option>
 					<option value="memory">
-						memorized entry
+						memorized poset diagram
 					</option>
 				</select>
 			</div>
@@ -151,7 +151,7 @@
 				<textarea class="form-control" id="txtInputMatrix" rows="5"></textarea>
 			</div>
 			<div class="form-group" id="frmInputMemory">
-				<label for="selInputMemory">Memory entries:</label>
+				<label for="selInputMemory">Poset diagrams in memory:</label>
 				<select class="form-control" id="selInputMemory" size="4">
 				</select>
 				<div class="form-group" role="toolbar" aria-label="Memory toolbar">
@@ -766,36 +766,32 @@
 	</p>
 	
 	<a name="help_mouse"><h4>Mouse and touchscreen functions</h4></a>
-	<p>
-		<div class="container">
-			<ul>
-				<li>
-					Click on an element (highlighted with a red mark on hover) to select 
-					it. If another element is already selected, clicking on a succeeding 
-					element that can be linked (connected by an edge) in the diagram, the 
-					(possible) link will be selected as well.
-				</li>
-				<li>
-					Click along the row/column going in 45 degree angles away from the 
-					selected element to move it there.
-				</li>
-				<li>
-					Click on an empty area to unselect.
-				</li>
-				<li>
-					Double click on an element to replace it by a 2-antichain.
-				</li>
-				<li>
-					Double click on an element while holding the shift key to replace it 
-					by a 2-chain.
-				</li>
-			</ul>
-		</div>
-	</p>
+	<ul>
+		<li>
+			Click on an element (highlighted with a red mark on hover) to select 
+			it. If another element is already selected, clicking on a succeeding 
+			element that can be linked (connected by an edge) in the diagram, the 
+			(possible) link will be selected as well.
+		</li>
+		<li>
+			Click along the row/column going in 45 degree angles away from the 
+			selected element to move it there.
+		</li>
+		<li>
+			Click on an empty area to unselect.
+		</li>
+		<li>
+			Double click on an element to replace it by a 2-antichain.
+		</li>
+		<li>
+			Double click on an element while holding the shift key to replace it 
+			by a 2-chain.
+		</li>
+	</ul>
 	
 	<a name="help_keyboard"><h4>Keyboard functions</h4></a>
 	<p>
-		Short-cuts that are bound to the local keyboard configuration:
+		Shortcuts that are bound to the local keyboard configuration:
 		<div class="container">
 			<div class="row">
 				<div class="col">Ctrl Z</div>
@@ -830,7 +826,7 @@
 		</div>
 	</p>
 	<p>
-		Short-cuts that are bound to the keys of a QWERTY keyboard configuration:
+		Shortcuts that are bound to the keys of a QWERTY keyboard configuration:
 		<div class="container">
 			<div class="row">
 				<div class="col">W</div>
@@ -904,18 +900,174 @@
 		Please send me a comprehensive problem description and information of your 
 		browser (name and version) if you encounter a problem with the editor. 
 		I also welcome any suggestions to improve the tool. 
-		My <a href="https://c-minz.github.io">contact details</a> are on my main 
-		page.
+		My <a href="https://c-minz.github.io">contact details</a> are in the bottom 
+		of my start page.
 	</p>
+	
+	<a name="help_release_notes"><h4>Release notes</h4>
+	<div class="accordion" id="release_notes">
+  	<div class="accordion-item">
+			<h5 class="accordion-header">
+				<button type="button" class="accordion-button" 
+					data-bs-toggle="collapse" data-bs-target="#release_notes_v1.1" 
+					aria-expanded="true" aria-controls="release_notes_v1.1"
+					onClick="toggleReleaseNotes( 'v1.1' )">
+					Version 1.1 &mdash; released (under development)
+				</button>
+			</h5>
+			<div id="release_notes_v1.1" class="accordion-collapse collapse" 
+				data-bs-parent="#release_notes">
+				<p>
+					Support of covering relations for 2-layer posets, composition and 
+					memorization of diagrams. 
+				</p>
+				<h6>New features</h6>
+				<ul>
+					<li>
+						Predefined input type: n &times; n lattice subset.
+					</li>
+					<li>
+						Input types: list of covering relations (for a 2-layer poset), 
+						memorized poset diagrams.
+					</li>
+					<li>
+						Option to insert a diagram at a selected element.
+					</li>
+					<li>
+						Memorization of diagrams.
+					</li>
+					<li>
+						Functions to optimize and rearrange elements in a 2-layer poset.
+					</li>
+					<li>
+						Shortcut support for undo/redo.
+					</li>
+					<li>
+						Status bar information: layer count (length of the longest chain), 
+						link count, removed link count.
+					</li>
+					<li>
+						Export covering relations.
+					</li>
+				</ul>
+				<h6>Modifications</h6>
+				<ul>
+					<li>
+						Elements can be unlinked even if it makes them maximal/minimal for 
+						more flexibility when linking.
+					</li>
+					<li>
+						Improved link recovering, when moving elements.
+					</li>
+					<li>
+						Updated button symbols.
+					</li>
+				</ul>
+			</div>
+  	</div>
+		<div class="accordion-item">
+			<h5 class="accordion-header">
+				<button type="button" class="accordion-button" 
+					data-bs-toggle="collapse" data-bs-target="#release_notes_v1.0" 
+					aria-expanded="true" aria-controls="release_notes_v1.0"
+					onClick="toggleReleaseNotes( 'v1.0' )">
+					Version 1.0 &mdash; released 2024/08/05
+				</button>
+			</h5>
+			<div id="release_notes_v1.0" class="accordion-collapse collapse" 
+				data-bs-parent="#release_notes">
+				<p>
+					Graphical overhaul and full support for diagrams of any dimenion.
+				</p>
+				<h6>New features</h6>
+				<ul>
+					<li>
+						Predefined input types: n-chain, n-antichain, random 2-order with n 
+						elements, n-fence, n-crown poset, (regular) n-sided polygon poset.
+					</li>
+					<li>
+						Input types: permutation and list of removed links, permutation and 
+						list of links, LaTeX macro.
+					</li>
+					<li>
+						Support of an integer permutation with an arbitrary lower bound. 
+						Element labels can be raise and lower via the toolbar. 
+					</li>
+					<li>
+						Syntax checking of input, and warning if a large diagram is being 
+						generated.
+					</li>
+					<li>
+						Full mouse/touchscreen support to select, move, and dublicate 
+						elements.
+					</li>
+					<li>
+						Undo/redo functionality.
+					</li>
+					<li>
+						Linking/unlinking pairs of elements. Reset links to those of a 
+						2-order.
+					</li>
+					<li>
+						Status bars with information on cardinality, permutation, links, 
+						and removed links.
+					</li>
+					<li>
+						Canvas size setting (relative and absolute) in status bar.
+					</li>
+					<li>
+						Export order matrix and link matrix.
+					</li>
+				</ul>
+				<h6>Modifications</h6>
+				<ul>
+					<li>
+						Export to LaTeX macros can be chosen with a selector to get a 
+						diagram without labels, with labels, with permutation grid, or with 
+						permutation grid and labels. 
+					</li>
+					<li>
+						Settings to show/hide labels, selection cross, and grid are below 
+						the canvas.
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="accordion-item">
+			<h5 class="accordion-header">
+				<button type="button" class="accordion-button" 
+					data-bs-toggle="collapse" data-bs-target="#release_notes_v0.1" 
+					aria-expanded="true" aria-controls="release_notes_v0.1"
+					onClick="toggleReleaseNotes( 'v0.1' )">
+					Version 0.1 (beta) &mdash; released 2024/05/26
+				</button>
+			</h5>
+			<div id="release_notes_v0.1" class="accordion-collapse collapse" 
+				data-bs-parent="#release_notes">
+				<p>
+					Beta version to draw diagrams of 2-orders from a permutation input 
+					(required to start with 1) and without syntax check. 
+					The elements of a diagram could be selected and moved, removed and 
+					new ones added (by keyboard and button controls). The diagram could 
+					be converted into its opposite (reflected vertically) and reflected 
+					horizontally. 
+					Export output was generated only for the <code>\pcauset</code> macro. 
+				</p>
+			</div>
+		</div>
+	</div>
+	
+	
 	<p class="sticky-bottom mt-5" role="contentinfo">
-		&copy; Copyright 2024, Christoph Minz.
-		PrOSET editor version v1.1 (revision 2024-08-24).
+		&copy; Copyright 2024, 
+		<a href="https://c-minz.github.io">Christoph Minz</a>.
+		PrOSET editor version v1.1 (revision 2024-09-06).
 		<br />
 		Styled with <a href="https://getbootstrap.com/" target="_blank"
 		rel="external nofollow noopener">Bootstrap</a>.
 		Hosted by <a href="https://pages.github.com/" target="_blank"
 		rel="external nofollow noopener">GitHub Pages</a>.
-		Go to the page <a href="https://c-minz.github.io/impressum">impressum</a>.
+		<a href="https://c-minz.github.io/impressum">Impressum</a>.
 	</p>
 </div>
 </div>

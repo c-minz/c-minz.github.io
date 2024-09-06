@@ -51,6 +51,14 @@ function showError( message, isWarning = false ) {
 	msgError.focus();
 }
 
+function toggleReleaseNotes( version ) {
+	const releaseNotes = document.getElementById( "release_notes_" + version );
+	if ( releaseNotes.className == "accordion-collapse show" )
+		releaseNotes.className = "accordion-collapse collapse";
+	else
+		releaseNotes.className = "accordion-collapse show";
+}
+
 function hideLastError() {
 	document.getElementById( "msgError" ).hidden = true;
 	WarningError_isShowing = false;
@@ -556,11 +564,14 @@ class Poset {
 		/* Returns -1 if the elements with indices `i` and `j` are linked and the 
 		link can be removed. Returns 1 if the elements are not linked, but can be 
 		linked. Returns 0 otherwise. */
+		// TODO: Update help text to say that i must precede j, otherwise return 0.
 		if ( j <= i ) return 0;
 		let iv = this.permutation.indexOf( i );
 		let jv = this.permutation.indexOf( j );
 		if ( jv <= iv ) return 0;
 		if ( this.links[i].includes( j ) ) {
+			// TODO: Allow to unlink even if this will make `i` maximal, or `j` 
+			// minimal.
 			if ( this.links[i].length <= 1 ) return 0;
 			if ( this.findCoveredElements( this.links, j ).length <= 1 ) return 0;
 			return -1;  // can be unlinked

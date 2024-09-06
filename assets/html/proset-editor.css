@@ -36,6 +36,12 @@
 	text-align: center;
 }
 
+.accordion-button {
+	background: transparent;
+	border: none;
+	padding: 0px;
+}
+
 canvas {
 	border-width: 2px;
 	border-style: solid;
