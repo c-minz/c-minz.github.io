@@ -21,10 +21,19 @@
 <body class="fixed-top-nav sticky-bottom-footer" style="padding-top: 57px;" 
 	onload="initializeEditor()">
 <header>
-<nav class="nav container fixed-top justify-content-end bg-light"
+<div class="container fixed-top justify-content-end bg-light" style="padding-top: 40px;">
+	<div class="progress" role="progressbar" aria-label="Progress bar" 
+		aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" 
+		style="height: 2px">
+		<div class="progress-bar" style="width: 0%"></div>
+	</div>
+</div>
+<nav class="nav container fixed-top justify-content-end"
 	role="navigation">
 	<ul class="nav">
-		<!--<li class="nav-item"><div id="busy" hidden></div></li>-->
+		<li class="nav-item">
+			<div id="progress-symbol" class="progress-symbol"></div>
+		</li>
 		<li class="nav-item"><a class="nav-link" href="#import">Import</a></li>
 		<li class="nav-item"><a class="nav-link" href="#edit">Edit</a></li>
 		<li class="nav-item"><a class="nav-link" href="#export">Export</a></li>
@@ -912,7 +921,7 @@
 					data-bs-toggle="collapse" data-bs-target="#release_notes_v1.1" 
 					aria-expanded="true" aria-controls="release_notes_v1.1"
 					onClick="toggleReleaseNotes( 'v1.1' )">
-					Version 1.1 &mdash; released (under development)
+					Version 1.1 &mdash; (under development)
 				</button>
 			</h5>
 			<div id="release_notes_v1.1" class="accordion-collapse collapse" 
@@ -1051,7 +1060,8 @@
 					new ones added (by keyboard and button controls). The diagram could 
 					be converted into its opposite (reflected vertically) and reflected 
 					horizontally. 
-					Export output was generated only for the <code>\pcauset</code> macro. 
+					The export output only supported the <code>\pcauset</code> macro. 
+					It was under development as alpha version since 2024/02/22.
 				</p>
 			</div>
 		</div>

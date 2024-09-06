@@ -8,25 +8,37 @@
 	margin-top: 0px;
 }
 
-#busy {
-	width: 17px;
-	height: 17px;
-	margin: 12px;
+.progress-symbol {
+	width: 11px;
+	height: 11px;
+	margin: 16px;
 	align-items: unset;
 	transform: rotate(45deg);
+	border: 0.5px solid rgb(0, 123, 255);
+}
+
+.busy {
 	animation: building 2s linear infinite;
 }
 
 @keyframes building {
 	0% {
-		border: 1px solid rgb(0, 123, 255);
-		border-top: transparent;
-		border-left: transparent;
+		border-width: 0.5px;
+	}
+	49% {
+		border-width: 10.5px;
+		border-top-width: 0.5px;
+		border-left-width: 0.5px;
+	}
+	50% {
+		border-width: 10.5px;
+		border-right-width: 0.5px;
+		border-bottom-width: 0.5px;
 	}
 	100% {
-		border: 15px solid rgb(0, 123, 255);
-		border-top: transparent;
-		border-left: transparent;
+		border-width: 0.5px;
+		border-right-width: 0.5px;
+		border-bottom-width: 0.5px;
 	}
 }
 
