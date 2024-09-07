@@ -21,18 +21,19 @@
 <body class="fixed-top-nav sticky-bottom-footer" style="padding-top: 57px;" 
 	onload="initializeEditor()">
 <header>
-<div class="container fixed-top justify-content-end bg-light" style="padding-top: 40px;">
+<div class="container fixed-top justify-content-end bg-light" 
+	style="padding-top: 40px;">
 	<div class="progress" role="progressbar" aria-label="Progress bar" 
-		aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" 
+		id="prgBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" 
 		style="height: 2px">
-		<div class="progress-bar" style="width: 0%"></div>
+		<div id="prgBarValue" class="progress-bar" style="width: 0%"></div>
 	</div>
 </div>
 <nav class="nav container fixed-top justify-content-end"
 	role="navigation">
 	<ul class="nav">
 		<li class="nav-item">
-			<div id="progress-symbol" class="progress-symbol"></div>
+			<div id="prgSymbol" class="progress-symbol"></div>
 		</li>
 		<li class="nav-item"><a class="nav-link" href="#import">Import</a></li>
 		<li class="nav-item"><a class="nav-link" href="#edit">Edit</a></li>
@@ -85,7 +86,7 @@
 						causal matrix
 					</option>
 					<option value="memory">
-						memorized poset diagram
+						memorized poset
 					</option>
 				</select>
 			</div>
@@ -616,7 +617,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col">memorized entries</div>
+				<div class="col">memorized poset</div>
 				<div class="col-8">
 					Select an entry from the list to recreate the diagram. 
 					Entries are only available if a previously generated diagram has been 
@@ -937,7 +938,7 @@
 					</li>
 					<li>
 						Input types: list of covering relations (for a 2-layer poset), 
-						memorized poset diagrams.
+						memorized posets.
 					</li>
 					<li>
 						Option to insert a diagram at a selected element.
@@ -957,6 +958,9 @@
 					</li>
 					<li>
 						Export covering relations.
+					</li>
+					<li>
+						Showing progress while computing an export array.
 					</li>
 				</ul>
 				<h6>Modifications</h6>

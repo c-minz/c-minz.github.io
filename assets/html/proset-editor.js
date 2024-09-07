@@ -3,8 +3,9 @@
 // @license: BSD 3-Clause
 
 // #############################################################################
-// Editor initialization and main class definition
+// Error handling, progress updates, editor initialization
 
+let isBusy = false;
 const LargePosetWarning_elements = 250;
 const LargePosetWarning_links = 2000;
 let WarningError_isShowing = false;
@@ -43,7 +44,7 @@ function checkAndThrowWarningIfLarge( count, isLinkCount = false ) {
 }
 
 function showError( message, isWarning = false ) {
-	// document.getElementById( "busy" ).hidden = true;
+	finishProgress();
 	const msgError = document.getElementById( "msgError" );
 	msgError.innerText = message;
 	msgError.className = isWarning ? "alert alert-danger" : "alert alert-warning";
@@ -51,18 +52,31 @@ function showError( message, isWarning = false ) {
 	msgError.focus();
 }
 
-function toggleReleaseNotes( version ) {
-	const releaseNotes = document.getElementById( "release_notes_" + version );
-	if ( releaseNotes.className == "accordion-collapse show" )
-		releaseNotes.className = "accordion-collapse collapse";
-	else
-		releaseNotes.className = "accordion-collapse show";
-}
-
 function hideLastError() {
 	document.getElementById( "msgError" ).hidden = true;
 	WarningError_isShowing = false;
 	LargePosetWarningError_isShowing = false;
+}
+
+function startProgress() {
+	document.getElementById( "prgSymbol" ).className = "progress-symbol busy";
+	document.getElementById( "prgBar" ).ariaValueNow = "0";
+	document.getElementById( "prgBarValue" ).style = "width: 0%";
+	isBusy = true;
+}
+
+function stepProgress( fraction = 0.0 ) {
+	let percentage_string = Math.round( 100 * fraction ).toString();
+	document.getElementById( "prgBar" ).ariaValueNow = percentage_string;
+	document.getElementById( "prgBarValue" ).style = 
+		"width: " + percentage_string + "%";
+}
+
+function finishProgress() {
+	document.getElementById( "prgSymbol" ).className = "progress-symbol";
+	document.getElementById( "prgBar" ).ariaValueNow = "0";
+	document.getElementById( "prgBarValue" ).style = "width: 0%";
+	isBusy = false;
 }
 
 function initializeEditor() {
@@ -107,6 +121,7 @@ function initializeEditor() {
 		document.getElementById( "frmExport_" + frmExports[i] ).hidden = true;
 	}
 	document.getElementById( "txtExportArray" ).value = "";
+	finishProgress();
 }
 
 function selectInputType() {
@@ -154,6 +169,18 @@ function updateWidth() {
 	document.getElementById( "cnvPoset" ).height = new_width;
 	return true;
 }
+
+function toggleReleaseNotes( version ) {
+	const releaseNotes = document.getElementById( "release_notes_" + version );
+	if ( releaseNotes.className == "accordion-collapse show" )
+		releaseNotes.className = "accordion-collapse collapse";
+	else
+		releaseNotes.className = "accordion-collapse show";
+}
+
+
+// #############################################################################
+// Parse input strings and Poset class
 
 function parseIntNotNaN( string_value ) {
 	/* Parse a string input `value` to an integer and raises an error if the 
@@ -817,6 +844,7 @@ function getAddedLinkTargetString( e ) {
 }
 
 function createNew() {
+	if ( isBusy ) return;
 	let new_poset = generate();
 	if ( !new_poset ) return;
 	poset = new_poset;
@@ -825,12 +853,12 @@ function createNew() {
 	updateExport();
 	addUndoStep();
 	window.location.href = "#edit";
-	// document.getElementById( "busy" ).hidden = true;
 	if ( document.getElementById( "selInputType" ).value == "coveringslist" )
 		optimize();
 }
 
 function createInsert() {
+	if ( isBusy ) return;
 	let sel = getSelection();
 	if ( isNaN( sel ) ) {
 		let error = new TypeError( "There is no element selected! "
@@ -848,7 +876,6 @@ function createInsert() {
 }
 
 function generate() {
-	// document.getElementById( "busy" ).hidden = false;
 	let input_type = document.getElementById( "selInputType" ).value;
 	let input_perm =
 		removeGroups( document.getElementById( "txtInputPermutation" ).value );
@@ -1057,7 +1084,7 @@ function getFromMemory( memory_entry ) {
 
 
 // #############################################################################
-// Initialize editor and handle input/import data
+// Update selection and drawing canvas
 
 let hover = [];
 let linkable = 0;
@@ -1107,6 +1134,7 @@ function setSelection( new_sel ) {
 }
 
 function resetSelection() {
+	if ( isBusy ) return;
 	setSelection( getSelection() );
 }
 
@@ -1173,6 +1201,7 @@ const unlinked_color = "#d0ebff";
 const link_color = "#6c757d";
 
 function redrawPoset() {
+	if ( isBusy ) return;
 	let canvas = document.getElementById( "cnvPoset" );
 	let context = canvas.getContext( "2d" );
 	let sel = getSelection();
@@ -1324,6 +1353,7 @@ function addUndoStep() {
 }
 
 function resetToUndoStep( dir ) {
+	if ( isBusy ) return;
 	let new_undoindex = undoindex + dir;
 	if ( new_undoindex < 0 || new_undoindex >= undosteps.length ) return;
 	let new_poset = new Poset(
@@ -1388,6 +1418,7 @@ function updateHoveredTile( x, y ) {
 }
 
 function selectU( dir ) {
+	if ( isBusy ) return;
 	if ( dir === 0 ) return;
 	let sel = getSelection();
 	if ( isNaN( sel ) && dir > 0 ) setSelection( 0 );
@@ -1397,6 +1428,7 @@ function selectU( dir ) {
 }
 
 function selectV( dir ) {
+	if ( isBusy ) return;
 	if ( dir === 0 ) return;
 	let sel = getSelection();
 	let n = poset.count();
@@ -1414,6 +1446,7 @@ function selectV( dir ) {
 }
 
 function moveU( moves ) {
+	if ( isBusy ) return;
 	try {
 		if ( moves === 0 ) return;
 		let sel = getSelection();
@@ -1428,6 +1461,7 @@ function moveU( moves ) {
 }
 
 function moveV( moves ) {
+	if ( isBusy ) return;
 	try {
 		if ( moves === 0 ) return;
 		let sel = getSelection();
@@ -1442,6 +1476,7 @@ function moveV( moves ) {
 }
 
 function changeOffset( increase ) {
+	if ( isBusy ) return;
 	if ( increase === 0 ) return;
 	let sel = getSelection();
 	poset.offset = poset.offset + increase;
@@ -1454,6 +1489,7 @@ function changeOffset( increase ) {
 }
 
 function addElement() {
+	if ( isBusy ) return;
 	try {
 		poset.pushNewElement();
 		hover = [];
@@ -1467,6 +1503,7 @@ function addElement() {
 }
 
 function dublicateElement( shift ) {
+	if ( isBusy ) return;
 	try {
 		let sel = getSelection();
 		if ( isNaN( sel ) ) return;
@@ -1482,6 +1519,7 @@ function dublicateElement( shift ) {
 }
 
 function removeElement() {
+	if ( isBusy ) return;
 	try {
 		let sel = getSelection();
 		let n = poset.count();
@@ -1498,6 +1536,7 @@ function removeElement() {
 }
 
 function changeLink() {
+	if ( isBusy ) return;
 	try {
 		let sel = getSelection();
 		let linksel = getLinkingSelection();
@@ -1516,6 +1555,7 @@ function changeLink() {
 }
 
 function swapLeft() {
+	if ( isBusy ) return;
 	try {
 		let sel = getSelection();
 		if ( isNaN( sel ) ) return;
@@ -1540,6 +1580,7 @@ function swapLeft() {
 }
 
 function to2Order() {
+	if ( isBusy ) return;
 	if ( !document.getElementById( "frmExport_pcauset" ).hidden ) return;
 	poset.resetLinks( true );
 	setLinkingSelection( NaN );
@@ -1548,6 +1589,7 @@ function to2Order() {
 }
 
 function turnOpposite() {
+	if ( isBusy ) return;
 	const opposite = poset.permutation.slice();
 	let sel = getSelection();
 	let new_sel = NaN;
@@ -1566,6 +1608,7 @@ function turnOpposite() {
 }
 
 function reflect() {
+	if ( isBusy ) return;
 	const reflected = poset.permutation.slice();
 	let sel = getSelection();
 	let new_sel = NaN;
@@ -1585,6 +1628,7 @@ function reflect() {
 }
 
 function revise() {
+	if ( isBusy ) return;
 	let strPermutation = document.getElementById( "txtPermutation" ).value;
 	if ( strPermutation == "" ) return;
 	const txtInputPermutation = document.getElementById( "txtInputPermutation" );
@@ -1659,6 +1703,8 @@ function updateExport() {
 }
 
 function getExportArray() {
+	if ( isBusy ) return;
+	// TODO: Use setTimeout and progress status updates.
 	let type = document.getElementById( "selExportArrayType" ).value;
 	if ( type.endsWith( "matrix" ) ) {
 		let matrix;
@@ -1707,18 +1753,22 @@ function memorize() {
 }
 
 function removeMemoryEntry() {
+	if ( isBusy ) return;
 	// TODO: Implement removing element from memory.
 }
 
 function clearMemory() {
+	if ( isBusy ) return;
 	// TODO: Implement clearing the memory.
 }
 
 function copyMemoryEntry() {
+	if ( isBusy ) return;
 	// TODO: Implement copying the memory to the clipboard.
 }
 
 function copyMemory() {
+	if ( isBusy ) return;
 	// TODO: Implement copying the memory to the clipboard.
 }
 
@@ -1733,12 +1783,14 @@ window.addEventListener( "keydown", handleKeyDown );
 window.addEventListener( "resize", handleResize );
 
 function handleHover( e ) {
+	if ( isBusy ) return;
 	if ( updateHoveredTile( e.clientX, e.clientY ) ) {
 		redrawPoset();
 	}
 }
 
 function handleClick( e ) {
+	if ( isBusy ) return;
 	let x = e.clientX;
 	let y = e.clientY;
 	updateHoveredTile( x, y );
@@ -1779,6 +1831,7 @@ function handleClick( e ) {
 }
 
 function handleDoubleClick( e ) {
+	if ( isBusy ) return;
 	updateHoveredTile( e.clientX, e.clientY );
 	if ( hover.length == 0 ) return;
 	let u = hover[0];
@@ -1789,6 +1842,7 @@ function handleDoubleClick( e ) {
 }
 
 function handleKeyDown( e ) {
+	if ( isBusy ) return;
 	if ( document.activeElement
 			&& document.activeElement.id.startsWith( "txt" ) )
 		return;  // ignore keyboard when a text field is active
@@ -1825,6 +1879,7 @@ function handleKeyDown( e ) {
 }
 
 function handleResize() {
+	if ( isBusy ) return;
 	if ( updateWidth() ) {
 		redrawPoset();
 	}
@@ -1946,6 +2001,7 @@ function countLayeredAntichains( permutation ) {
 }
 
 function optimize() {
+	if ( isBusy ) return;
 	try {
 		if ( countLayeredAntichains( poset.permutation ) != 2 ) return;
 		// TODO: Generalise to all posets with two layers.

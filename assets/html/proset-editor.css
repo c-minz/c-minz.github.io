@@ -18,27 +18,22 @@
 }
 
 .busy {
-	animation: building 2s linear infinite;
+	animation: building 1.5s linear infinite;
 }
 
 @keyframes building {
-	0% {
+	0%, 100% {
+		border-width: 0.5px;
+		border-top-width: 11px;
+		border-left-width: 11px;
+	}
+	10%, 35% {
 		border-width: 0.5px;
 	}
-	49% {
-		border-width: 10.5px;
-		border-top-width: 0.5px;
-		border-left-width: 0.5px;
-	}
-	50% {
-		border-width: 10.5px;
-		border-right-width: 0.5px;
-		border-bottom-width: 0.5px;
-	}
-	100% {
+	85% {
 		border-width: 0.5px;
-		border-right-width: 0.5px;
-		border-bottom-width: 0.5px;
+		border-bottom-width: 11px;
+		border-right-width: 11px;
 	}
 }
 
