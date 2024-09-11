@@ -1079,7 +1079,7 @@ function getFromMemory( memory_entry ) {
 		throw new TypeError( "There is no memory entry! "
 			+ "First create a diagram from another input type and add it to the "
 			+ "memory." );
-	// TODO: Implement generation from memory entry.
+	return getFromLatexMacro( memory_entry );
 }
 
 
@@ -1728,48 +1728,84 @@ function getExportArray() {
 // Memory functions
 
 function memorize() {
-	if ( !poset ) return;
+	if ( isBusy || !poset ) return;
 	let hasRemovedLinks = document.getElementById( "frmExport_pcauset" ).hidden;
 	let strMacro;
 	if ( hasRemovedLinks )
 		strMacro = document.getElementById( "txtExport_rcauset" ).value;
 	else
 		strMacro = document.getElementById( "txtExport_pcauset" ).value;
-	const option = document.createElement( "option" );
-	option.value = strMacro;
+	const entry = document.createElement( "option" );
+	entry.value = strMacro;
 	let n = poset.count();
 	let l = poset.countLinks();
-	option.innerHTML = n.toString() + ( ( n == 1 ) ? " element" : " elements" )
+	entry.innerHTML = n.toString() + ( ( n == 1 ) ? " element" : " elements" )
 		+ ", " + l.toString() + ( ( l == 1 ) ? " link" : " links" )
 		+ ", " + strMacro;
-	option.selected = true;
-	document.getElementById( "selInputMemory" ).appendChild( option );
-	document.getElementById( "butRemoveMemoryEntry" ).disabled = false;
-	document.getElementById( "butClearMemory" ).disabled = false;
-	document.getElementById( "butCopyMemoryEntry" ).disabled = false;
-	document.getElementById( "butCopyMemory" ).disabled = false;
+	entry.selected = true;
+	document.getElementById( "selInputMemory" ).appendChild( entry );
+	disableMemoryTools( false );
 	document.getElementById( "selInputType" ).value = "memory";
 	selectInputType();
 }
 
+function disableMemoryTools( disabled = true ) {
+	document.getElementById( "butRemoveMemoryEntry" ).disabled = disabled;
+	document.getElementById( "butClearMemory" ).disabled = disabled;
+	document.getElementById( "butCopyMemoryEntry" ).disabled = disabled;
+	document.getElementById( "butCopyMemory" ).disabled = disabled;
+}
+
 function removeMemoryEntry() {
 	if ( isBusy ) return;
-	// TODO: Implement removing element from memory.
+	if ( !WarningError_isShowing ) {
+		showError( "Removing a poset from this memory list cannot be undone! "
+			+ "Push the button again to continue.", true );
+		WarningError_isShowing = true;
+		return;
+	}
+	hideLastError();
+	const selInputMemory = document.getElementById( "selInputMemory" );
+	for ( let i = 0; i < selInputMemory.children.length; i++ ) {
+		if ( !selInputMemory.children.item( i ).selected ) continue;
+		selInputMemory.children.item( i ).remove();
+		break;	
+	}
+	if ( selInputMemory.children.length == 0 ) {
+		disableMemoryTools();
+		return;
+	}
+	selInputMemory.children.item( 0 ).selected = true;
 }
 
 function clearMemory() {
 	if ( isBusy ) return;
-	// TODO: Implement clearing the memory.
+	if ( !WarningError_isShowing ) {
+		showError( "Clearing the poset memory list cannot be undone! "
+			+ "Push the button again to continue.", true );
+		WarningError_isShowing = true;
+		return;
+	}
+	hideLastError();
+	document.getElementById( "selInputMemory" ).innerHTML = "";
+	disableMemoryTools();
 }
 
 function copyMemoryEntry() {
-	if ( isBusy ) return;
-	// TODO: Implement copying the memory to the clipboard.
+	let entry_value = document.getElementById( "selInputMemory" ).value;
+	navigator.clipboard.writeText( entry_value );
 }
 
 function copyMemory() {
-	if ( isBusy ) return;
-	// TODO: Implement copying the memory to the clipboard.
+	const selInputMemory = document.getElementById( "selInputMemory" );
+	let all_entry_values = "";
+	for ( let i = 0; i < selInputMemory.children.length; i++ ) {
+		if ( i > 0 )
+			all_entry_values = all_entry_values + "\n";
+		all_entry_values = all_entry_values
+			+ selInputMemory.children.item( i ).value;
+	}
+	navigator.clipboard.writeText( all_entry_values );
 }
 
 
