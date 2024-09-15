@@ -113,7 +113,9 @@ function initializeEditor() {
 	document.getElementById( "txtPermutation" ).value = "";
 	document.getElementById( "lblLinks" ).innerHTML = "0 links:";
 	document.getElementById( "txtLinks" ).value = "";
-	document.getElementById( "lblRemovedLinks" ).innerHTML = "0 removed links:";
+	const lblRemovedLinks = document.getElementById( "lblRemovedLinks" );
+	lblRemovedLinks.className = "input-group-text";
+	lblRemovedLinks.innerHTML = "0 removed links:";
 	document.getElementById( "txtRemovedLinks" ).value = "";
 	const frmExports = [ "pcauset", "rcauset", "causet" ];
 	for ( let i = 0; i < frmExports.length; i++ ) {
@@ -565,7 +567,7 @@ class Poset {
 		if ( this.links[i].includes( j ) ) {
 			if ( ignoreerrors ) return;
 			throw new ReferenceError( "The element " + i.toString()
-				+ " already precedes " + j.toString() + "." )
+				+ " already covers " + j.toString() + "." )
 		}
 		// remove links from an element `a <= i` to an element `b >= j`:
 		for ( let a = 0; a <= i; a++ ) {
@@ -588,19 +590,17 @@ class Poset {
 	}
 	
 	isLinkable( i, j ) {
-		/* Returns -1 if the elements with indices `i` and `j` are linked and the 
-		link can be removed. Returns 1 if the elements are not linked, but can be 
-		linked. Returns 0 otherwise. */
-		// TODO: Update help text to say that i must precede j, otherwise return 0.
+		/* Returns -1 if the elements with indices `i` and `j` are linked `i < j` 
+		and the link can be removed. Returns 1 if the elements are not linked, but 
+		can be linked `i < j`. Returns 0 otherwise. */
 		if ( j <= i ) return 0;
 		let iv = this.permutation.indexOf( i );
 		let jv = this.permutation.indexOf( j );
 		if ( jv <= iv ) return 0;
 		if ( this.links[i].includes( j ) ) {
-			// TODO: Allow to unlink even if this will make `i` maximal, or `j` 
-			// minimal.
-			if ( this.links[i].length <= 1 ) return 0;
-			if ( this.findCoveredElements( this.links, j ).length <= 1 ) return 0;
+			if ( ( this.links[i].length == 0 )
+					|| ( this.findCoveredElements( this.links, j ).length == 0 ) )
+				return 0;
 			return -1;  // can be unlinked
 		}
 		if ( this.isOrdered( i, j ) ) return 0;
@@ -665,37 +665,76 @@ class Poset {
 		}
 	}
 	
-	restoreLinks( xlinks, adding, e, f, isremoving_e = false ) {
-		/* This is a class private method called by `reset_restoreLinks`. */
-		// TODO: Restore all links that can be restored (don't exclude e and f).
-		for ( let i = 0; i < xlinks.length; i++ ) {
-			if ( i == e || i == f ) continue;  // || i === f 
-			let xlinks_i = xlinks[i];
-			let a = ( isremoving_e && i > e ) ? ( i - 1 ) : i;
-			for ( let l = 0; l < xlinks_i.length; l++ ) {
-				let b = xlinks_i[l];
-				if ( b == e || b == f ) continue;
-				if ( isremoving_e && e < b ) b = b - 1;
-				if ( this.isLinkable( a, b ) === -1 )
-					if ( adding )
-						this.addLink( a, b, true );
-					else
-						this.removeLink( a, b, true );
-			}
-		}
-	}
-	
-	reset_restoreLinks( e, f, isremoving_e = false ) {
+	reset_restoreLinks( e, e_new ) {
 		/* This is a class private method. Resets to auto-links and restores all 
-		removed/added links but ignores the elements `e` (and `f`), while `e` is 
-		treated as removed element if `isremoving_e`. */
+		removed/added links of the element `e` moved to `e_new` (`NaN` if it is 
+		being removed). */
 		let removedlinks = this.removedlinks;
 		let addedlinks = this.addedlinks;
+		let coveredby_e = this.findCoveredElements( this.links, e );
+		let e_covering = this.links[e];
 		this.resetLinks( true );
-		// restore removed links, while shifting elements larger than `e`:
-		this.restoreLinks( removedlinks, false, e, f, isremoving_e );
-		// restore added links, while shifting elements larger than `e`:
-		this.restoreLinks( addedlinks, true, e, f, isremoving_e );
+		this.restoreLinks( removedlinks, false, e, e_new, coveredby_e, e_covering );
+		this.restoreLinks( addedlinks, true, e, e_new, coveredby_e, e_covering );
+	}
+	
+	restoreLink( a, b, isAddedlinks ) {
+		/* This is a class private method called to link (`isAddedlinks = true`) 
+		or unlink (`isAddedlinks = false`) elements `a` and `b` without raising 
+		errors. */
+		let isLinkable = this.isLinkable( a, b );
+		if ( isAddedlinks && isLinkable == 1 )
+			this.addLink( a, b, true );
+		else if ( !isAddedlinks && isLinkable == -1 )
+			this.removeLink( a, b, true );
+	}
+	
+	restoreLinks( xlinks, isAddedlinks, e, e_new, coveredby_e, links_e ) {
+		/* This is a class private method called to restore all removed 
+		(`isAddedlinks = false`) or added (`isAddedlinks = true`) links in `xlinks` 
+		while moving element `e` to `e_new` (where `e_new = NaN` for removing). 
+		The element `e` was covering the elements `coveredby_e` and was covered by 
+		`e_covering`. */
+		// i, j: element indices before (re)move
+		// a, b: element indices after (re)move
+		const xcoveredby_e = [];
+		for ( let i = 0; i < xlinks.length; i++ ) {
+			let a = i - ( i > e ) + ( i > e_new ) + ( i == e_new && e > e_new );
+			if ( i == e ) {
+				if ( isNaN( e_new ) ) continue;
+				a = e_new;
+			}
+			let xlinks_i = xlinks[i];
+			for ( let l = 0; l < xlinks_i.length; l++ ) {
+				let j = xlinks_i[l];
+				let b = j - ( j > e ) + ( j > e_new ) + ( j == e_new && e > e_new );
+				if ( j == e ) {
+					xcoveredby_e.push( i );
+					if ( isNaN( e_new ) ) continue;
+					b = e_new;
+				}
+				this.restoreLink( a, b, isAddedlinks );
+			}
+		}
+		// Restore removed/added links that used to relate other elements to `e`:
+		for ( let i = 0; i < xcoveredby_e.length; i++ ) {
+			let a = xcoveredby_e[i];
+			for ( let l = 0; l < links_e.length; l++ ) {
+				let b = links_e[l];
+				this.restoreLink( a + ( a >= e_new ), b - 1 + ( b >= e_new ), 
+					isAddedlinks );
+			}
+		}
+		// Restore removed/added links that used to relate `e` to other elements:
+		const xlinks_e = xlinks[e];
+		for ( let i = 0; i < coveredby_e.length; i++ ) {
+			let a = coveredby_e[i];
+			for ( let l = 0; l < xlinks_e.length; l++ ) {
+				let b = xlinks_e[l];
+				this.restoreLink( a + ( a >= e_new ), b - 1 + ( b >= e_new ), 
+					isAddedlinks );
+			}
+		}
 	}
 	
 	removeElement( e ) {
@@ -710,7 +749,7 @@ class Poset {
 			if ( this.permutation[i] > e )
 				this.permutation[i] = this.permutation[i] - 1;
 		}
-		this.reset_restoreLinks( e, e, true );
+		this.reset_restoreLinks( e, NaN );
 	}
 	
 	insert( e, other ) {
@@ -754,9 +793,8 @@ class Poset {
 		let v_new = v + moves;
 		if ( v_new < 0 || v_new >= n )
 			throw new RangeError( "The new position lies outside the diagram." );
-		let e_new = this.permutation[v_new];
-		this.permutation.splice(
-			v_new, 0, this.permutation.splice( v, 1 )[0] );
+		let e_new = e;  // this.permutation[v_new];
+		this.permutation.splice( v_new, 0, this.permutation.splice( v, 1 )[0] );
 		this.reset_restoreLinks( e, e_new );
 		return v_new;
 	}
@@ -798,7 +836,7 @@ class Poset {
 		return this.permutation.map( getElementString ).join( "," );
 	}
 	
-	get_LinksString( linklist, targetmap ) {
+	get_LinksStringAndCount( linklist, targetmap ) {
 		/* This method is class private. It converts the nested array `linklist` 
 		into a comma-separated string and a number of entries. Each item is 
 		formatted as number/(*) where (*) stands for the return of `targetmap` for 
@@ -815,16 +853,19 @@ class Poset {
 		return [ s, c ];
 	}
 	
-	getRemovedLinksString() {
-		return this.get_LinksString( this.removedlinks, getElementString );
+	getRemovedLinksStringAndCount() {
+		return this.get_LinksStringAndCount(
+			this.removedlinks, getElementString );
 	}
 	
-	getAddedLinksString() {
-		return this.get_LinksString( this.addedlinks, getAddedLinkTargetString );
+	getAddedLinksStringAndCount() {
+		return this.get_LinksStringAndCount(
+			this.addedlinks, getAddedLinkTargetString );
 	}
 	
-	getLinksString() {
-		return this.get_LinksString( this.links, getElementString );
+	getLinksStringAndCount() {
+		return this.get_LinksStringAndCount(
+			this.links, getElementString );
 	}
 	
 }
@@ -836,7 +877,7 @@ class Poset {
 let poset;
 	
 function getElementString( e ) {
-	return String( e + poset.offset );
+	return ( e + poset.offset ).toString();
 }
 	
 function getAddedLinkTargetString( e ) {
@@ -1192,8 +1233,8 @@ const linking_width = 0.14;
 const event_hover_size = 0.33;
 const event_linking_size = 0.17;
 const selection_color = "red";
-const selection_cross_color = "#ffe6e2"; // #e9ecef";
-const relocation_color = "#90b030";
+const selection_cross_color = "#ffe6e6";
+const relocation_color = "#30a070";
 const event_color = "black";
 const event_hover_color = "#703030";
 const event_linking_color = "#007bff";
@@ -1637,9 +1678,9 @@ function revise() {
 	let strRemovedLinks = document.getElementById( "txtRemovedLinks" ).value;
 	if ( strRemovedLinks.length > 0 ) {
 		strInputType = "rcauset";
-		let strAddlinks = poset.getAddedLinksString();
-		if ( strAddlinks.length > 0 )
-			strRemovedLinks = strRemovedLinks + "," + strAddlinks;
+		let addedlinks = poset.getAddedLinksStringAndCount();
+		if ( addedlinks[1] > 0 )
+			strRemovedLinks = strRemovedLinks + "," + addedlinks[0];
 	}
 	document.getElementById( "selInputType" ).value = strInputType;
 	document.getElementById( "txtInputRemovedLinks" ).value = strRemovedLinks;
@@ -1668,9 +1709,9 @@ function updateExport() {
 	hideLastError();
 	let style = document.getElementById( "selExportLatexStyle" ).value;
 	let strPerm = poset.getPermutationString();
-	let removedLinks = poset.getRemovedLinksString();
-	let addedLinks = poset.getAddedLinksString();
-	let links = poset.getLinksString();
+	let removedLinks = poset.getRemovedLinksStringAndCount();
+	let addedLinks = poset.getAddedLinksStringAndCount();
+	let links = poset.getLinksStringAndCount();
 	let layercount = poset.countLayers();
 	document.getElementById( "txtLayers" ).value = layercount.toString();
 	let n = poset.count();
@@ -1680,9 +1721,24 @@ function updateExport() {
 	document.getElementById( "lblLinks" ).innerHTML =
 		links[1].toString() + ( links[1] == 1 ? " link:" : " links:" );
 	document.getElementById( "txtLinks" ).value = links[0];
-	document.getElementById( "lblRemovedLinks" ).innerHTML =
-		removedLinks[1].toString() + " removed"
-		+ ( removedLinks[1] == 1 ? " link:" : " links:" );
+	const lblRemovedLinks = document.getElementById( "lblRemovedLinks" );
+	let tooManyRemovedLinks = 0;
+	if ( n <= 5 || layercount > n - 3 )
+		tooManyRemovedLinks = removedLinks[1];
+	else if ( n > 5 && removedLinks[1] > n - layercount - 2 )
+		tooManyRemovedLinks = removedLinks[1] - n + layercount + 2;
+	if ( tooManyRemovedLinks > 0 ) {
+		lblRemovedLinks.className = "input-group-text alert-danger";
+		lblRemovedLinks.innerHTML =
+			( tooManyRemovedLinks < removedLinks[1] ? "At least " : "" )
+			+ tooManyRemovedLinks.toString() + " of "
+			+ removedLinks[1].toString() + " too many removed links:";
+	} else {
+		lblRemovedLinks.className = "input-group-text";
+		lblRemovedLinks.innerHTML =
+			removedLinks[1].toString() + " removed"
+			+ ( removedLinks[1] == 1 ? " link:" : " links:" );
+	}
 	let strRemovedLinks = removedLinks[0];
 	document.getElementById( "txtRemovedLinks" ).value = strRemovedLinks;
 	if ( addedLinks[0].length > 0 )
@@ -1693,7 +1749,7 @@ function updateExport() {
 		"\\rcauset" + style + "{" + strPerm + "}{" + strRemovedLinks + "}";
 	document.getElementById( "txtExport_causet" ).value = 
 		"\\causet" + style + "{" + strPerm + "}{" + links[0] + "}";
-	let export_pcauset = ( strRemovedLinks.length === 0 );
+	let export_pcauset = ( strRemovedLinks.length == 0 );
 	document.getElementById( "butOptimize" ).disabled = ( layercount != 2 );
 	document.getElementById( "butTo2Order" ).disabled = export_pcauset;
 	document.getElementById( "frmExport_pcauset" ).hidden = !export_pcauset;
