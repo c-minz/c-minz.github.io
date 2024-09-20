@@ -382,18 +382,55 @@ function remapLinkList( links, mapping ) {
 	}
 	return remapped_links;
 }
-
-function raiseLinkedElements( linkedelements, e, offset, addLinksTo ) {
-	/* Offsets all elements larger than `e` in `linkedelements` by `offset` and 
-	replaces `e` by `new_e`. If `e` is in the list, the elements of the array 
-	`addLinksTo` are added to the list as well. */
-	for ( let l = 0; l < linkedelements.length; l++ ) {
-		if ( linkedelements[l] > e )
-			linkedelements[l] = linkedelements[l] + offset;
+	
+function findCoveredElements( linklist, e ) {
+	/* Returns the list of links that go from any element to `j`. Returns an 
+	empty array if `j` does not cover any elements or if `j` is out of bounds. 
+	*/
+	const covered = [];
+	if ( e >= linklist.length ) return covered;
+	for ( let i = 0; i < e; i++ ) {
+		if ( linklist[i].includes( e ) )
+			covered.push( i );
 	}
-	if ( addLinksTo.length === 0 || !linkedelements.includes( e ) ) return;
-	for ( let l = 0; l < addLinksTo.length; l++ )
-		linkedelements.push( addLinksTo[l] );
+	return covered;
+}
+
+function raiseElements( elementlist, start, offset ) {
+	/* Offsets all elements larger or equal to `start` in `elementlist` by 
+	`offset`. */
+	for ( let i = 0; i < elementlist.length; i++ ) {
+		if ( elementlist[i] >= start )
+			elementlist[i] = elementlist[i] + offset;
+	}
+}
+
+function raiseLinkedElements( linklist, start, offset ) {
+	/* Offsets all elements larger or equal to `start` in the nested `linklist` 
+	by `offset`. */
+	for ( let i = 0; i < linklist.length; i++ )
+		raiseElements( linklist[i], start, offset );
+}
+
+function insertLinks( linklist, e, insertLinklist, minimal, maximal ) {
+	raiseLinkedElements( linklist, e + 1, insertLinklist.length - 1 );
+	raiseLinkedElements( insertLinklist, 0, e );
+	const coveredby_e = findCoveredElements( linklist, e );
+	const covering_e = linklist[e];
+	let newLinklist = linklist.slice( 0, e ).concat( 
+			insertLinklist, linklist.slice( e + 1 ) );
+	for ( let l = 0; l < coveredby_e.length; l++ ) {
+		let i = coveredby_e[l];
+		let e_index = newLinklist[i].indexOf( e );
+		if ( e_index >= 0 )
+			newLinklist[i].splice( e_index, 1 );
+		newLinklist[i] = newLinklist[i].concat( minimal );
+	}
+	for ( let l = 0; l < maximal.length; l++ ) {
+		let i = maximal[l];
+		newLinklist[i] = newLinklist[i].concat( covering_e );
+	}
+	return newLinklist;
 }
 
 class Poset {
@@ -502,14 +539,45 @@ class Poset {
 		return count;
 	}
 	
+	findMinimalElements() {
+		/* Returns a list of all minimal elements (those that are not preceded by 
+		another element). */
+		let n = this.count();
+		const isMinimal = initializeArray( n, true );
+		for ( let i = 0; i < n; i++ ) {
+			let links_i = this.links[i];
+			for ( let l = 0; l < links_i.length; l++ ) {
+				isMinimal[links_i[l]] = false;
+			}
+		}
+		const minimal = [];
+		for ( let i = 0; i < n; i++ ) {
+			if ( isMinimal[i] )
+				minimal.push( i );
+		}
+		return minimal;
+	}
+	
+	findMaximalElements() {
+		/* Returns a list of all maximal elements (those that are not succeeded by 
+		another element). */
+		let n = this.count();
+		const maximal = [];
+		for ( let i = 0; i < n; i++ ) {
+			if ( this.links[i].length == 0 )
+				maximal.push( i );
+		}
+		return maximal;
+	}
+	
 	getLayerIndices() {
 		/* Returns an the layer index as an array with the length of card(). */
 		const layers = initializeArray( this.count(), 1 );
 		for ( let i = 0; i < layers.length; i++ ) {
-			let links = this.links[i];
+			let links_i = this.links[i];
 			let next_layer = layers[i] + 1;
-			for ( let l = 0; l < links.length; l++ ) {
-				let j = links[l];
+			for ( let l = 0; l < links_i.length; l++ ) {
+				let j = links_i[l];
 				if ( next_layer > layers[j] )
 					layers[j] = next_layer;
 			}
@@ -599,25 +667,12 @@ class Poset {
 		if ( jv <= iv ) return 0;
 		if ( this.links[i].includes( j ) ) {
 			if ( ( this.links[i].length == 0 )
-					|| ( this.findCoveredElements( this.links, j ).length == 0 ) )
+					|| ( findCoveredElements( this.links, j ).length == 0 ) )
 				return 0;
 			return -1;  // can be unlinked
 		}
 		if ( this.isOrdered( i, j ) ) return 0;
 		return 1;  // can be linked
-	}
-	
-	findCoveredElements( linklist, j ) {
-		/* Returns the list of links that go from any element to `j`. Returns an 
-		empty array if `j` does not cover any elements or if `j` is out of bounds. 
-		*/
-		const covered = [];
-		if ( j >= linklist.length ) return covered;
-		for ( let i = 0; i < j; i++ ) {
-			if ( linklist[i].includes( j ) )
-				covered.push( i );
-		}
-		return covered;
 	}
 	
 	pushNewElement() {
@@ -631,47 +686,13 @@ class Poset {
 		this.links.push( [] );
 	}
 	
-	dublicateElement( e, related ) {
-		/* Dublicates the element `e` into a 2-antichain or a 2-chain (if `related` 
-		is true). Raises an error if `e` is out of bounds. */
-		let n = this.count();
-		if ( e < 0 || e >= n )
-			throw new RangeError(
-				"There is no element " + getElementString( e ) + "." );
-		checkAndThrowWarningIfLarge( n + 1 );
-		let v = this.permutation.indexOf( e );
-		for ( let i = 0; i < n; i++ ) {
-			if ( this.permutation[i] >= e )
-				this.permutation[i] += 1;
-		}
-		this.permutation.splice( v + Number( !related ), 0, e );
-		let addLinksTo = related ? [] : [ e + 1 ];
-		for ( let i = 0; i < n; i++ ) {
-			raiseLinkedElements( this.autolinks[i], e, 1, addLinksTo );
-			raiseLinkedElements( this.removedlinks[i], e, 1, addLinksTo );
-			raiseLinkedElements( this.addedlinks[i], e, 1, addLinksTo );
-			raiseLinkedElements( this.links[i], e, 1, addLinksTo );
-		}
-		if ( related ) {
-			this.autolinks.splice( e, 0, [ e + 1 ] );
-			this.removedlinks.splice( e, 0, [] );
-			this.addedlinks.splice( e, 0, [] );
-			this.links.splice( e, 0, [ e + 1 ] );
-		} else {
-			this.autolinks.splice( e + 1, 0, this.autolinks[e].slice() );
-			this.removedlinks.splice( e + 1, 0, this.removedlinks[e].slice() );
-			this.addedlinks.splice( e + 1, 0, this.addedlinks[e].slice() );
-			this.links.splice( e + 1, 0, this.links[e].slice() );
-		}
-	}
-	
 	reset_restoreLinks( e, e_new ) {
 		/* This is a class private method. Resets to auto-links and restores all 
 		removed/added links of the element `e` moved to `e_new` (`NaN` if it is 
 		being removed). */
 		let removedlinks = this.removedlinks;
 		let addedlinks = this.addedlinks;
-		let coveredby_e = this.findCoveredElements( this.links, e );
+		let coveredby_e = findCoveredElements( this.links, e );
 		let e_covering = this.links[e];
 		this.resetLinks( true );
 		this.restoreLinks( removedlinks, false, e, e_new, coveredby_e, e_covering );
@@ -754,7 +775,29 @@ class Poset {
 	
 	insert( e, other ) {
 		/* Insert another poset `other` for an element `e`. */
-		// TODO: Implement replacement of an element by the poset `other`.
+		let n = this.count();
+		let m = other.count();
+		if ( e < 0 || e >= n )
+			throw new RangeError( "The insert position " + getElementString( e ) 
+				+ " is out of range." );
+		checkAndThrowWarningIfLarge( n + m );
+		let v = this.permutation.indexOf( e );
+		let minimal = other.findMinimalElements();
+		let maximal = other.findMaximalElements();
+		raiseElements( this.permutation, e + 1, m - 1 );
+		raiseElements( other.permutation, 0, e );
+		this.permutation = this.permutation.slice( 0, v ).concat( 
+			other.permutation, this.permutation.slice( v + 1 ) );
+		raiseElements( minimal, 0, e );
+		raiseElements( maximal, 0, e );
+		this.autolinks = insertLinks(
+			this.autolinks, e, other.autolinks, minimal, maximal );
+		this.removedlinks = insertLinks(
+			this.removedlinks, e, other.removedlinks, minimal, maximal );
+		this.addedlinks = insertLinks(
+			this.addedlinks, e, other.addedlinks, minimal, maximal );
+		this.links = insertLinks(
+			this.links, e, other.links, minimal, maximal );
 	}
 	
 	moveU( e, moves ) {
@@ -1548,7 +1591,10 @@ function dublicateElement( shift ) {
 	try {
 		let sel = getSelection();
 		if ( isNaN( sel ) ) return;
-		poset.dublicateElement( sel, shift );
+		if ( shift )
+			poset.insert( sel, getPredefined_chain( 2 ) );
+		else
+			poset.insert( sel, getPredefined_antichain( 2 ) );
 		hover = [];
 		updateSelectionBounds();
 		setSelection( sel + 1 );
