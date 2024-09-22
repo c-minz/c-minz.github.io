@@ -1561,7 +1561,7 @@ function moveV( moves ) {
 
 function changeOffset( increase ) {
 	if ( isBusy ) return;
-	if ( increase === 0 ) return;
+	if ( increase == 0 ) return;
 	let sel = getSelection();
 	poset.offset = poset.offset + increase;
 	updateSelectionBounds();
@@ -1570,6 +1570,17 @@ function changeOffset( increase ) {
 	else
 		setSelection( sel );
 	updateExport();
+}
+
+function changeOffsetUnselectAddUndoStep( offset ) {
+	if ( isBusy ) return;
+	if ( offset != 0 ) {
+		poset.offset = poset.offset + offset;
+		updateSelectionBounds();
+	}
+	setSelection( NaN );
+	updateExport();
+	addUndoStep();
 }
 
 function addElement() {
@@ -2091,24 +2102,27 @@ function getFromCoveringList( textfieldvalue ) {
 	return convertCoveringsToPoset( coverings, min1, count1, parallelcount );
 }
 
-function convertCoveringsToPoset( coverings, start1, count1, parallel = 0 ) {
+function convertCoveringsToPoset( coverings, start1, count1, parallel = 0,
+		rearrange = false ) {
 	/* Converts the `coverings` to the 2-layer poset object, where `start1` is 
 	the index of the first element on the first layer, `count1` is the number of 
 	elements on the first layer, and `parallel` is the number of elements that 
-	are form a parallel antichain to the 2-layers (the number of elements that 
+	form a parallel antichain to the 2-layers (the number of elements that 
 	are not covered --- these are not included in `count1`). */
 	if ( parallel < 0 ) parallel = 0;
-	let n = count1 + coverings.length;
-	const permutation = new Array( n + parallel );
+	let n = count1 + coverings.length + parallel;
+	const permutation = new Array( n );
 	let last = count1 + start1 - 1;
+	let shift = parallel;
 	for ( let i = 0; i < count1; i++ )
-		permutation[i + parallel] = last - i;
-	last = last + n;
-	for ( let i = count1; i < n; i++ )
-		permutation[i + parallel] = last - i;
-	n = n + parallel;
+		permutation[i + shift] = last - i;
+	last = count1 + coverings.length + start1 - 1;
+	shift = parallel + count1;
+	for ( let i = 0; i < coverings.length; i++ )
+		permutation[i + shift] = last - i;
+	last = n - 1;
 	for ( let i = 0; i < parallel; i++ )
-		permutation[i] = n - i;
+		permutation[i] = last - i;
 	const links = [];
 	for ( let b = 0; b < coverings.length; b++ ) {
 		let b_coverings = coverings[b];
@@ -2116,7 +2130,9 @@ function convertCoveringsToPoset( coverings, start1, count1, parallel = 0 ) {
 			links.push( [ b_coverings[j], b + count1 + start1 ] );
 		}
 	}
-	// TODO: Move elements to reduce removed links.
+	if ( rearrange ) {
+		// TODO: Move elements to reduce removed links.
+	}
 	return new Poset( permutation, links, false );
 }
 
@@ -2138,34 +2154,62 @@ function countLayeredAntichains( permutation ) {
 	return antichains;
 }
 
+function getCoveringsAndAntichain() {
+	const firstLayer_parallel = poset.findMinimalElements();
+	const secondLayer_parallel = poset.findMaximalElements();
+	const firstLayer = [];
+	const parallel = [];
+	for ( let i = 0; i < firstLayer_parallel.length; i++ ) {
+		let a = firstLayer_parallel[i];
+		if ( poset.links[a].length == 0 )
+			parallel.push( a );
+		else
+			firstLayer.push( a );
+	}
+	const coverings = [];
+	for ( let i = 0; i < secondLayer_parallel.length; i++ ) {
+		let b = secondLayer_parallel[i];
+		if ( parallel.includes( b ) ) continue;
+		let coveredby_b = [];
+		for ( let j = 0; j < firstLayer.length; j++ ) {
+			if ( poset.links[firstLayer[j]].includes( b ) )
+				coveredby_b.push( j );
+		}
+		coverings.push( coveredby_b );
+	}
+	return [ coverings, firstLayer.length, parallel.length ];
+}
+
 function optimize() {
 	if ( isBusy ) return;
 	try {
-		if ( countLayeredAntichains( poset.permutation ) != 2 ) return;
-		// TODO: Generalise to all posets with two layers.
+		if ( poset.countLayers() != 2 ) return;
 		let offset = poset.offset;
-		let minima = [ 0, poset.permutation[0] + 1 ];
-		let counts = [ minima[1], poset.count() - minima[1] ];
+		// Pack into layered poset:
+		let coverings_antichain = getCoveringsAndAntichain();
+		let count1 = coverings_antichain[1];
+		let parallelCount = coverings_antichain[2];
+		poset = convertCoveringsToPoset( coverings_antichain[0], 0, count1,
+			parallelCount, false );
+		changeOffsetUnselectAddUndoStep( offset );
+		// Optimize the layered part of the poset:
+		const minima = [ 0, poset.permutation[parallelCount] + 1 ];
+		const counts = [ minima[1], poset.count() - parallelCount - minima[1] ];
 		let linkings = poset.links.slice( 0, minima[1] );
 		let crossingcount = countLinkCrossings( linkings );
 		const optimized = findLinkCrossingMinimum( linkings, minima, counts,
 			crossingcount, true );
-		if ( optimized[1] == crossingcount ) return;
-		poset = convertCoveringsToPoset( optimized[0], minima[0], counts[0] );
-		if ( offset != 0 ) {
-			changeOffset( offset );
-		} else {
-			setSelection( NaN );
-			updateExport();
-		}
-		addUndoStep();
+		// Convert back to poset with readded parallel elements:
+		poset = convertCoveringsToPoset( optimized[0], minima[0], counts[0], 
+			parallelCount, true );
+		changeOffsetUnselectAddUndoStep( offset );
 	} catch ( e ) {
-		showError( e.message, e instanceof WarningError );
+		showError( e.message + "\n" + e.stack, e instanceof WarningError );
 	}
 }
 
 function findLinkCrossingMinimum( linkings, minima, counts, crossingcount, 
-		finishing_opposite = false ) {
+		doFinishOpposite = false ) {
 	/* Calls `reduceLinkCrossings` repeatedly for a 2-layered poset until a 
 	(local) minimum is reached. As input, it expects `linkings` as the list of 
 	links from one of the layers to the other one, `minima` and `counts` as two 
@@ -2175,7 +2219,7 @@ function findLinkCrossingMinimum( linkings, minima, counts, crossingcount,
 	new array as `linkings` (and the input is modified in place) and its number 
 	of link crossings. By default, the routine finishes on the same layer where 
 	it started, but it can finish on the other layer when setting the flag 
-	`finishing_opposite`. */
+	`doFinishOpposite`. */
 	let i = 0;
 	let optimized_layers = 0;
 	while ( optimized_layers < 2 ) {
@@ -2190,8 +2234,8 @@ function findLinkCrossingMinimum( linkings, minima, counts, crossingcount,
 		linkings = oppositeLinkings( linkings,
 			minima[( i + 1 ) % 2], minima[i % 2], counts[i % 2] );
 	}
-	if ( ( finishing_opposite && ( i % 2 == 0 ) )
-			|| ( !finishing_opposite && ( i % 2 != 0 ) ) ) {
+	if ( ( doFinishOpposite && ( i % 2 == 0 ) )
+			|| ( !doFinishOpposite && ( i % 2 != 0 ) ) ) {
 		linkings = oppositeLinkings( linkings,
 			minima[i % 2], minima[( i + 1 ) % 2], counts[( i + 1 ) % 2] );
 	}
