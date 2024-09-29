@@ -50,6 +50,7 @@ function showError( message, isWarning = false ) {
 	msgError.className = isWarning ? "alert alert-danger" : "alert alert-warning";
 	msgError.hidden = false;
 	msgError.focus();
+	isBusy = false;
 }
 
 function hideLastError() {
@@ -804,8 +805,7 @@ class Poset {
 		/* Moves the element `e` in u-direction by `moves` steps (does nothing if 
 		moves === 0). Raises an error if the current or new position of the element 
 		is out of bounds. Returns the new u-position. */
-		let v = this.permutation.indexOf( e );
-		if ( moves === 0 ) return e;
+		if ( moves == 0 ) return e;
 		let n = this.count();
 		if ( e < 0 || e >= n )
 			throw new RangeError(
@@ -813,6 +813,7 @@ class Poset {
 		let e_new = e + moves;
 		if ( e_new < 0 || e_new >= n )
 			throw new RangeError( "The new position lies outside the diagram." );
+		let v = this.permutation.indexOf( e );
 		let dir = ( moves > 0 ) ? 1 : -1;
 		for ( let i = e + dir; dir * ( e_new - i ) >= 0; i = i + dir ) {
 			let j = this.permutation.indexOf( i );
@@ -828,7 +829,7 @@ class Poset {
 		moves === 0). Raises an error if the current or new position of the element 
 		is out of bounds. Returns the new v-position. */
 		let v = this.permutation.indexOf( e );
-		if ( moves === 0 ) return v;
+		if ( moves == 0 ) return v;
 		let n = this.count();
 		if ( e < 0 || e >= n )
 			throw new RangeError(
@@ -1572,7 +1573,7 @@ function changeOffset( increase ) {
 	updateExport();
 }
 
-function changeOffsetUnselectAddUndoStep( offset ) {
+function changeOffsetAndUnselect( offset ) {
 	if ( isBusy ) return;
 	if ( offset != 0 ) {
 		poset.offset = poset.offset + offset;
@@ -1580,7 +1581,6 @@ function changeOffsetUnselectAddUndoStep( offset ) {
 	}
 	setSelection( NaN );
 	updateExport();
-	addUndoStep();
 }
 
 function addElement() {
@@ -2102,36 +2102,110 @@ function getFromCoveringList( textfieldvalue ) {
 	return convertCoveringsToPoset( coverings, min1, count1, parallelcount );
 }
 
-function convertCoveringsToPoset( coverings, start1, count1, parallel = 0,
-		rearrange = false ) {
+function getRearrangementMoveBounds( coverings, start1, count1 ) {
+	/* Computes the maximal u-moves and v-moves for each element on the first 
+	layer and second layer, respectively, and returns two arrays one for each 
+	layer. */
+	const moves1_u = initializeArray( count1, 0 );
+	for ( let i = 1; i < count1; i++ ) {
+		let a = start1 + i;
+		for ( let j = 0; j < coverings.length; j++ ) {
+			if ( !coverings[j].includes( a ) ) continue;
+			moves1_u[i] = j;
+			break;
+		}
+	}
+	const moves2_v = initializeArray( coverings.length, 0 );
+	for ( let j = 1; j < coverings.length; j++ ) {
+		for ( let i = 0; i < count1; i++ ) {
+			let a = start1 + i;
+			if ( !coverings[j].includes( a ) ) continue;
+			moves2_v[j] = i;
+			break;
+		}
+	}
+	return [ moves1_u, moves2_v ];
+}
+
+function getLayeredPermutation( start1, count1, count2, parallel,
+		doRemapping = false, remapping = 0 ) {
+	let permutation = new Array( count1 + count2 + parallel );
+	// first layer:
+	getLayeredPermutation_setRange( permutation, count1, parallel, start1,
+		count1 - 1, doRemapping, remapping );
+	// second layer:
+	getLayeredPermutation_setRange( permutation, count2, parallel + count1,
+		start1, count1 + count2 - 1, doRemapping, remapping );
+	// parallel antichain:
+	getLayeredPermutation_setRange( permutation, parallel, 0, start1,
+		permutation.length - 1, false, 0 );
+	return permutation;
+}
+
+function getLayeredPermutation_setRange( permutation, count, i_shift, offset, 
+		last, doRemapping, remapping ) {
+	if ( doRemapping ) {
+		for ( let i = 0; i < count; i++ )
+			permutation[i + i_shift] = remapping[last - i] + offset;
+	} else {
+		for ( let i = 0; i < count; i++ )
+			permutation[i + i_shift] = last - i + offset;
+	}
+}
+
+function convertCoveringsToPoset( coverings, start1, count1, parallel,
+		rearrange = true ) {
 	/* Converts the `coverings` to the 2-layer poset object, where `start1` is 
 	the index of the first element on the first layer, `count1` is the number of 
 	elements on the first layer, and `parallel` is the number of elements that 
 	form a parallel antichain to the 2-layers (the number of elements that 
 	are not covered --- these are not included in `count1`). */
-	if ( parallel < 0 ) parallel = 0;
-	let n = count1 + coverings.length + parallel;
-	const permutation = new Array( n );
-	let last = count1 + start1 - 1;
-	let shift = parallel;
-	for ( let i = 0; i < count1; i++ )
-		permutation[i + shift] = last - i;
-	last = count1 + coverings.length + start1 - 1;
-	shift = parallel + count1;
-	for ( let i = 0; i < coverings.length; i++ )
-		permutation[i + shift] = last - i;
-	last = n - 1;
-	for ( let i = 0; i < parallel; i++ )
-		permutation[i] = last - i;
-	const links = [];
-	for ( let b = 0; b < coverings.length; b++ ) {
-		let b_coverings = coverings[b];
-		for ( let j = 0; j < b_coverings.length; j++ ) {
-			links.push( [ b_coverings[j], b + count1 + start1 ] );
+	// u-rearranges (first layer) and remapping:
+	const u_remapping = new Array( count1 + coverings.length );
+	for ( let i = 0; i < u_remapping.length; i++ ) {
+		u_remapping[i] = i;
+	}
+	let rearrangement = [];
+	let maxshift = 0;
+	if ( rearrange ) {
+		rearrangement = getRearrangementMoveBounds( coverings, start1, count1 );
+		maxshift = rearrangement[0][count1 - 1];
+		for ( let i = count1 - 1; i >= 0; i-- ) {
+			if ( maxshift == 0 ) break;
+			let shift = Math.min( rearrangement[0][i], maxshift );
+			u_remapping[i] = u_remapping[i] + shift;
+			for ( let j = count1; j < count1 + shift; j++ )
+				u_remapping[j] = u_remapping[j] - 1;
+			maxshift = shift;
 		}
 	}
+	// Create permutation (u-remapped):
+	if ( parallel < 0 ) parallel = 0;
+	let permutation = getLayeredPermutation( start1, count1, coverings.length,
+		parallel, rearrange, u_remapping );
+	// v-rearranges (second layer) and permutation swaps:
 	if ( rearrange ) {
-		// TODO: Move elements to reduce removed links.
+		maxshift = rearrangement[1][coverings.length - 1];
+		for ( let j = coverings.length - 1; j >= 0; j-- ) {
+			if ( maxshift == 0 ) break;
+			let shift = Math.min( rearrangement[1][j], maxshift );
+			let b = u_remapping[count1 + j] + start1;
+			let b_v = permutation.indexOf( b );
+			permutation = permutation.slice( 0, b_v - shift ).concat( [ b ], 
+				permutation.slice( b_v - shift, b_v ), permutation.slice( b_v + 1 ) );
+			maxshift = shift;
+		}
+	}
+	// Create link list (remapped):
+	const links = [];
+	for ( let i = 0; i < coverings.length; i++ ) {
+		let b_coverings = coverings[i];
+		let b = u_remapping[i + count1] + start1;
+		for ( let j = 0; j < b_coverings.length; j++ ) {
+			let a_index = b_coverings[j] - start1;
+			let a = u_remapping[a_index] + start1;
+			links.push( [ a, b ] );
+		}
 	}
 	return new Poset( permutation, links, false );
 }
@@ -2189,9 +2263,14 @@ function optimize() {
 		let coverings_antichain = getCoveringsAndAntichain();
 		let count1 = coverings_antichain[1];
 		let parallelCount = coverings_antichain[2];
-		poset = convertCoveringsToPoset( coverings_antichain[0], 0, count1,
-			parallelCount, false );
-		changeOffsetUnselectAddUndoStep( offset );
+		let layeredPermutation = getLayeredPermutation( 0, count1,
+			coverings_antichain[0].length, parallelCount );
+		if ( layeredPermutation.toString() != poset.permutation.toString() ) {
+			poset = convertCoveringsToPoset( coverings_antichain[0], 0, count1,
+				parallelCount, false );
+			changeOffsetAndUnselect( offset );
+			addUndoStep();
+		}
 		// Optimize the layered part of the poset:
 		const minima = [ 0, poset.permutation[parallelCount] + 1 ];
 		const counts = [ minima[1], poset.count() - parallelCount - minima[1] ];
@@ -2202,9 +2281,10 @@ function optimize() {
 		// Convert back to poset with readded parallel elements:
 		poset = convertCoveringsToPoset( optimized[0], minima[0], counts[0], 
 			parallelCount, true );
-		changeOffsetUnselectAddUndoStep( offset );
+		changeOffsetAndUnselect( offset );
+		addUndoStep();
 	} catch ( e ) {
-		showError( e.message + "\n" + e.stack, e instanceof WarningError );
+		showError( e.message, e instanceof WarningError );
 	}
 }
 
