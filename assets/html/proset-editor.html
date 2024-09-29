@@ -644,14 +644,14 @@
 </p>
 <p>
 	With the button "Create", the input data is converted to a diagram.
-	A message is shown and the creation interrupted if an error occurs, for 
-	example caused by incorrect syntax.
+	A message is shown and the creation interrupted if an error or warning 
+	occurs, for example, a syntax error caused by an incorrect input.
 </p>
 <p>
 	The button "Insert" is only active if another diagram has already been 
 	created and an element is selected.
-	This function replaces the selected element with the new diagram if it was 
-	generated correctly.
+	This function replaces the selected element with the poset diagram of the 
+	input.
 </p>
 
 <a name="help_toolbar"><h3>Toolbar functions</h3></a>
@@ -722,7 +722,9 @@
 			<div class="col">&#x223A;</div>
 			<div class="col-10">
 				Rearrange the elements of a 2-layered poset to minimize link 
-				crossings. This function is only available when the poset has two 
+				crossings (getting it to a smaller or equal number of link crossing 
+				compared to any element arrangement with a single element swap on 
+				either layer). This function is only available when the poset has two 
 				layers.
 			</div>
 		</div>
@@ -1087,7 +1089,7 @@
 <p class="sticky-bottom mt-5" role="contentinfo">
 	&copy; Copyright 2024, 
 	<a href="https://c-minz.github.io">Christoph Minz</a>.
-	PrOSET editor version v1.1 (revision 2024-09-06).
+	PrOSET editor version v1.1 (revision 2024-09-29).
 	<br />
 	Styled with <a href="https://getbootstrap.com/" target="_blank"
 	rel="external nofollow noopener">Bootstrap</a>.
