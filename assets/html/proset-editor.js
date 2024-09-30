@@ -67,7 +67,8 @@ function startProgress() {
 }
 
 function stepProgress( fraction = 0.0 ) {
-	let percentage_string = Math.round( 100 * fraction ).toString();
+	let percentage = Math.max( 0, Math.min( Math.round( 100 * fraction ), 100 ) );
+	let percentage_string = percentage.toString();
 	document.getElementById( "prgBar" ).ariaValueNow = percentage_string;
 	document.getElementById( "prgBarValue" ).style = 
 		"width: " + percentage_string + "%";
@@ -843,21 +844,24 @@ class Poset {
 		return v_new;
 	}
 	
+	getLinkMatrixRow( i ) {
+		/* Returns the i-th row of the link matrix (boolean vector of element 
+		indices covering the i-th element, where i is zero-based). */
+		let links = this.links[i];
+		let linkrow = initializeArray( this.count(), false );
+		for ( let l = 0; l < links.length; l++ )
+			linkrow[links[l]] = true;
+		return linkrow;
+	}
+	
 	toLinkMatrix() {
 		/* Returns the poset as an n times n, upper-triangular, boolean matrix `M` 
 		where `M[i][j]` is true iff element `i` is linked to `j`. Since elements 
 		are not linked to themselves, the diagonal is `false`. */
 		let n = this.count();
 		let matrix = new Array( n );
-		for ( let i = 0; i < n; i++ ) {
-			let links = this.links[i];
-			let linked_bool = [];
-			for ( let j = 0; j < n; j++ )
-				linked_bool[j] = false;
-			for ( let l = 0; l < links.length; l++ )
-				linked_bool[links[l]] = true;
-			matrix[i] = linked_bool;
-		}
+		for ( let i = 0; i < n; i++ )
+			matrix[i] = this.getLinkMatrixRow( i );
 		return matrix;
 	}
 	
@@ -1812,28 +1816,109 @@ function updateExport() {
 	document.getElementById( "frmExport_pcauset" ).hidden = !export_pcauset;
 	document.getElementById( "frmExport_rcauset" ).hidden = export_pcauset;
 	document.getElementById( "frmExport_causet" ).hidden = export_pcauset;
+	setExportArrayButtonBusyState( false );
 	document.getElementById( "txtExportArray" ).value = "";
 }
 
-function getExportArray() {
-	if ( isBusy ) return;
-	// TODO: Use setTimeout and progress status updates.
-	let type = document.getElementById( "selExportArrayType" ).value;
-	if ( type.endsWith( "matrix" ) ) {
-		let matrix;
-		if ( type.startsWith( "link" ) )
-			matrix = poset.toLinkMatrix();
-		else
-			matrix = poset.toOrderMatrix();
-		function rowmapping( row ) {
-			return row.map( Number ).join( "," );
-		}
-		document.getElementById( "txtExportArray" ).value = 
-			matrix.map( rowmapping ).join( "\n" );
+
+// #############################################################################
+// Export with progress bar
+
+let exportArray_index;
+let exportArray_lines;
+let exportArray_matrix;  // only for 'ordermatrix'
+
+function addExportArrayLine_linkmatrix() {
+	exportArray_lines[exportArray_index] = 
+		poset.getLinkMatrixRow( exportArray_index ).map( Number ).join( "," );
+	nextExportArrayLine( addExportArrayLine_linkmatrix );
+}
+
+function addExportArrayLine_ordermatrix() {
+	let reverse_index = exportArray_lines.length - 1 - exportArray_index;
+	let order_row = poset.getLinkMatrixRow( reverse_index );
+	let links = poset.links[reverse_index];
+	for ( let l = 0; l < links.length; l++ ) {
+		let linked_order_row = exportArray_matrix[links[l]];
+		for ( let i = 0; i < order_row.length; i++ )
+			order_row[i] = order_row[i] || linked_order_row[i];
+	}
+	exportArray_matrix[reverse_index] = order_row;
+	exportArray_lines[reverse_index] = order_row.map( Number ).join( "," );
+	nextExportArrayLine( addExportArrayLine_ordermatrix );
+}
+
+function addExportArrayLine_coveringrelations() {
+	let coverings = findCoveredElements( poset.links, exportArray_index );
+	coverings.sort( function( a, b ){ return a - b; } );
+	exportArray_lines[exportArray_index] = 
+		getElementString( exportArray_index ) + ": " + 
+		coverings.map( getElementString ).join( "," );
+	nextExportArrayLine( addExportArrayLine_coveringrelations );
+}
+
+function addExportArrayLine_coveredbyrelations() {
+	let coveredbys = poset.links[exportArray_index].slice();
+	coveredbys.sort( function( a, b ){ return a - b; } );
+	exportArray_lines[exportArray_index] = 
+		getElementString( exportArray_index ) + ": " + 
+		coveredbys.map( getElementString ).join( "," );
+	nextExportArrayLine( addExportArrayLine_coveredbyrelations );
+}
+
+function nextExportArrayLine( stepfunction ) {
+	if ( !isBusy ) return;  // only continue if not interrupted
+	exportArray_index = exportArray_index + 1;
+	if ( exportArray_index < exportArray_lines.length ) {
+		stepProgress( exportArray_index / exportArray_lines.length );
+		setTimeout( stepfunction, 0 );
 		return;
 	}
-	document.getElementById( "txtExportArray" ).value = "Not implemented.";  
-	// TODO: Implement "coveringrelations" and "coveredbyrelations"
+	document.getElementById( "txtExportArray" ).value = 
+		exportArray_lines.join( "\n" );
+	setExportArrayButtonBusyState( false );
+	finishProgress();
+}
+
+function setExportArrayButtonBusyState( is_computing ) {
+	const butExportArray = document.getElementById( "butExportArray" );
+	if ( is_computing ) {
+		butExportArray.className = "btn btn-danger mb-2";
+		butExportArray.innerHTML = "Cancel";
+	} else {
+		butExportArray.className = "btn btn-secondary mb-2";
+		butExportArray.innerHTML = "Compute";
+	}
+}
+
+function getExportArray() {
+	if ( !poset ) return;
+	if ( isBusy ) { // interrupt
+		setExportArrayButtonBusyState( false );
+		finishProgress();
+		return;
+	}
+	setExportArrayButtonBusyState( true );
+	startProgress();
+	exportArray_index = 0;
+	exportArray_lines = new Array( poset.count() );
+	exportArray_matrix = new Array( poset.count() );
+	let type = document.getElementById( "selExportArrayType" ).value;
+	switch ( type ) {
+		case "linkmatrix":
+			addExportArrayLine_linkmatrix();
+			return;
+		case "ordermatrix":
+			addExportArrayLine_ordermatrix();
+			return;
+		case "coveringrelations":
+			addExportArrayLine_coveringrelations();
+			return;
+		case "coveredbyrelations":
+			addExportArrayLine_coveredbyrelations();
+			return;
+	}
+	document.getElementById( "txtExportArray" ).value = "Not implemented.";
 }
 
 
