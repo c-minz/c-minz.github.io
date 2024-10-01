@@ -2140,6 +2140,12 @@ function getFromCoveringList( textfieldvalue ) {
 			parallelcount = parallelcount + 1;
 			continue;
 		}
+		if ( line.includes( ":" ) ) {
+			throw new SyntaxError( "An explicit labelling of the second layer "
+				+ "elements is not supported! The second layer elements are "
+				+ "automatically labelled starting with the next larger number of all "
+				+ "numbers in the text field. Do not use the colon character!" );
+		}
 		let line_split = line.split( "," ).map( parseIntNotNaN );
 		let element_coverings = [];
 		for ( let j = 0; j < line_split.length; j++ ) {
