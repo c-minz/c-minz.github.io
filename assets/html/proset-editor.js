@@ -1,6 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
+// @version: v1.1 02/10/2024
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -962,6 +963,7 @@ function createInsert() {
 	setSelection( NaN );
 	updateExport();
 	addUndoStep();
+	window.location.href = "#edit";
 }
 
 function generate() {

@@ -10,7 +10,9 @@
 <meta name="author"
 	content="Christoph Minz" />
 <meta name="keywords"
-	content="partial order, partially ordered set, poset, causal set, causet" />
+	content="partial order, partially ordered set, poset, causal set, causet, Hasse diagram" />
+<meta name="application-name"
+	content="PrOSET Editor">
 <title>PrOSET Editor</title>
 
 <link rel="stylesheet" href="proset-editor.css">
@@ -438,7 +440,7 @@
 <a name="export_latex"><h3>LaTeX macros</h3></a>
 <p>
 	To use the diagram in a LaTeX document (in math or text mode), load the 
-	package 'causets' with <code>\usepackage{causets}</code> and use one of the 
+	package 'causets' with <code>\usepackage{causets}</code> and use (one of the) 
 	following macros.
 </p>
 <p>
@@ -457,8 +459,8 @@
 		</div>
 		<div class="form-group" id="frmExport_pcauset" hidden>
 			<label for="txtExport_pcauset">
-				Diagram where the links are generated from the permutation (single 
-				argument):
+				Diagram where the links are generated from the permutation of elements 
+				(single argument):
 			</label>
 			<div class="input-group">
 				<input type="text" class="form-control"
@@ -473,7 +475,7 @@
 		<div class="form-group" id="frmExport_rcauset" hidden>
 			<label for="txtExport_rcauset">
 				Diagram where the links are generated from the permutation (first 
-				argument) except for the list of links given in the second argument:
+				argument) but the links given in the second argument are removed:
 			</label>
 			<div class="input-group">
 				<input type="text" class="form-control"
@@ -535,28 +537,27 @@
 <div class="alert alert-info" role="alert">
 	<a name="help_howto">
 		Note that most posets do not have a unique diagram, though there are only 
-		very few "good" diagrams.
+		very few <i>good</i> diagrams.
 	</a>
 </div>
 <p>
-	The best diagrams are obtained by finding a diagram that is as <b>close to 
-	a 2-order</b> as possible, because 2-orders (posets that are the 
-	intersection of two total orders) can be represented without having any 
-	"removed links". 
-	Represent higher dimensional posets by finding a corresponding 2-order such 
+	A good diagram is as <b>close to a 2-order</b> (a poset that is the 
+	intersection of two total orders) as possible, so that the number of 
+	<i>manually removed and added links</i> is minimal. 
+	To represent higher dimensional posets, find a corresponding 2-order such 
 	that <b>as few links as possible need to be removed</b> from it. 
 	For example, <b>all posets with five elements and all but three posets with 
 	six elements</b> are 2-orders and have diagrams <b>without removed 
 	links</b>. 
-	The removed link counter in the status bar under the canvas shows the error 
-	message "<span class="alert-danger">too many removed links</span>" if a 
-	diagram can be constructed with less removed links
+	The removed link counter in the status bar under the canvas shows the  
+	message "<span class="alert-danger">too many removed links</span>" if it is 
+	likely that a diagram can be constructed with less removed links. 
 	For all posets that are not 2-orders, the editor provides some tools to 
 	construct diagrams while keeping the number of removed (and added) links as 
 	small as possible. 
 </p>
 <p>
-	To find diagrams with as few "removed links"" as possible, you may use the 
+	To find good diagrams, you may use the 
 	<a href="#help_toolbar">toolbar</a>, the 
 	<a href="#help_mouse">mouse/touchpad</a> or the 
 	<a href="#help_keyboard">keyboard</a>.
@@ -564,15 +565,15 @@
 
 <a name="help_import"><h3>Import options</h3></a>
 <p>
-	You can import or generate a diagram from any of the following input types. 
+	Create a diagram from any of the following input types. 
 	Note that the number of elements of a diagram is limited. 
 	<div class="container">
 		<div class="row">
 			<div class="col">predefined type</div>
 			<div class="col-8">
-				Select a predefined type and the cardinality (or order). The numeric 
-				input for n is bounded from above, but a larger value could be 
-				entered via keyboard.
+				Select a predefined type and a numeric value (as cardinality or order 
+				parameter). Note that entering a large value is possible via keyboard, 
+				but may slow down the editor.
 			</div>
 		</div>
 		<div class="row">
@@ -609,6 +610,7 @@
 		<div class="row">
 			<div class="col">list of coverings for a 2-layered poset</div>
 			<div class="col-8">
+				With this input type, only posets with two layers can be generated.
 				For each second-layer element, write a line listing the first-layer 
 				elements (separated with commas) that are covered by this 
 				second-layer element. 
@@ -618,7 +620,7 @@
 				covered by at least one second-layer element). 
 				Empty lines are treated as separate elements that are parallel to the 
 				diagram.
-				Once generated, the diagram is being optimised for a diagram with as 
+				Once generated, the diagram will be optimised for a diagram with as 
 				few crossed links as possible. 
 			</div>
 		</div>
@@ -635,9 +637,9 @@
 				Select an entry from the list to recreate the diagram. 
 				Entries are only available if a previously generated diagram has been 
 				added to the memory (see button &#x2397; below). 
-				Unwanted entries can be removed or copied to the clipboard, and the 
-				entire memory can be cleared or copied to the clipboard with the 
-				buttons under the list. 
+				Entries can be removed or copied to the clipboard, and the entire 
+				memory can be cleared or copied to the clipboard with the buttons under 
+				the list. 
 			</div>
 		</div>
 	</div>
@@ -656,7 +658,6 @@
 
 <a name="help_toolbar"><h3>Toolbar functions</h3></a>
 <p>
-	Above the canvas:
 	<div class="container">
 		<div class="row">
 			<div class="col">&#x2336;</div>
@@ -937,7 +938,7 @@
 				data-bs-toggle="collapse" data-bs-target="#release_notes_v1.1" 
 				aria-expanded="true" aria-controls="release_notes_v1.1"
 				onClick="toggleReleaseNotes( 'v1.1' )">
-				Version 1.1 &mdash; (under development)
+				Version 1.1 &mdash; released 2024-10-02
 			</button>
 		</h4>
 		<div id="release_notes_v1.1" class="accordion-collapse collapse" 
@@ -975,7 +976,7 @@
 					Export covering relations.
 				</li>
 				<li>
-					Showing progress while computing an export array.
+					Showing progress while computing export arrays.
 				</li>
 			</ul>
 			<h5>Modifications</h5>
@@ -999,7 +1000,7 @@
 				data-bs-toggle="collapse" data-bs-target="#release_notes_v1.0" 
 				aria-expanded="true" aria-controls="release_notes_v1.0"
 				onClick="toggleReleaseNotes( 'v1.0' )">
-				Version 1.0 &mdash; released 2024/08/05
+				Version 1.0 &mdash; released 2024-08-05
 			</button>
 		</h4>
 		<div id="release_notes_v1.0" class="accordion-collapse collapse" 
@@ -1067,7 +1068,7 @@
 				data-bs-toggle="collapse" data-bs-target="#release_notes_v0.1" 
 				aria-expanded="true" aria-controls="release_notes_v0.1"
 				onClick="toggleReleaseNotes( 'v0.1' )">
-				Version 0.1 (beta) &mdash; released 2024/05/26
+				Version 0.1 (beta) &mdash; released 2024-05-26
 			</button>
 		</h4>
 		<div id="release_notes_v0.1" class="accordion-collapse collapse" 
@@ -1089,7 +1090,7 @@
 <p class="sticky-bottom mt-5" role="contentinfo">
 	&copy; Copyright 2024, 
 	<a href="https://c-minz.github.io">Christoph Minz</a>.
-	PrOSET editor version v1.1 (revision 2024-09-29).
+	PrOSET editor version v1.1 (revision 2024-10-02).
 	<br />
 	Styled with <a href="https://getbootstrap.com/" target="_blank"
 	rel="external nofollow noopener">Bootstrap</a>.
