@@ -1785,11 +1785,12 @@ function updateExport() {
 		links[1].toString() + ( links[1] == 1 ? " link:" : " links:" );
 	document.getElementById( "txtLinks" ).value = links[0];
 	const lblRemovedLinks = document.getElementById( "lblRemovedLinks" );
+	let nonMaximalChainCount = n - layercount;
 	let tooManyRemovedLinks = 0;
-	if ( n <= 5 || layercount > n - 3 )
+	if ( n <= 5 || nonMaximalChainCount < 3 )
 		tooManyRemovedLinks = removedLinks[1];
-	else if ( n > 5 && removedLinks[1] > n - layercount - 2 )
-		tooManyRemovedLinks = removedLinks[1] - n + layercount + 2;
+	else if ( nonMaximalChainCount < 5 )
+		tooManyRemovedLinks = removedLinks[1] - 2;
 	if ( tooManyRemovedLinks > 0 ) {
 		lblRemovedLinks.className = "input-group-text alert-danger";
 		lblRemovedLinks.innerHTML =
