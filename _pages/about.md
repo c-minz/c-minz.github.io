@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Ph.D. (York). Research assistant at ITP, Leipzig University, Germany.
+subtitle: Ph.D. (York). Research visitor at SISSA, Trieste, Italy.
 
 profile:
   align: right
@@ -14,7 +14,7 @@ selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
-I am a researcher in mathematical and theoretical physics. My current work is on 
+I am a researcher in mathematical and theoretical physics. My research work is on 
 - modular operators, modular Hamiltonian in quantum field theory, using Tomita-Takesaki theory and numerical approximation schemes,
 - quantum field theory on discrete spacetime models, like causal sets, 
 - mathematical aspects of partially ordered sets with applications to causal set theory (an approach to quantum gravity), and 
