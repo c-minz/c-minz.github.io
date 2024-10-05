@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 02/10/2024
+// @version: v1.1 05/10/2024
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -82,6 +82,12 @@ function finishProgress() {
 	isBusy = false;
 }
 
+let isShowingLabels = false;
+let isShowingCross = true;
+let isShowingGrid = false;
+let strAllLinks = "";
+let strAllRemovedLinks = "";
+
 function initializeEditor() {
 	/* Initialize input type, editor canvas size, and settings bottons. */
 	// hide active JavaScript alert:
@@ -107,12 +113,11 @@ function initializeEditor() {
 	butLink.className = "btn btn-secondary";
 	document.getElementById( "txtLinking" ).value = "";
 	document.getElementById( "butSwapLeft" ).disabled = true;
-	updateSettingsButton( "ShowLabels", false );
-	document.getElementById( "chbShowCross" ).checked = true;
-	updateSettingsButton( "ShowCross", false );
-	updateSettingsButton( "ShowGrid", false );
-	document.getElementById( "txtLayers" ).value = "";
-	document.getElementById( "lblPermutation" ).innerHTML = "0 elements:";
+	updateSettingsButton( "ShowLabels", false, false );
+	updateSettingsButton( "ShowCross", false, false );
+	updateSettingsButton( "ShowGrid", false, false );
+	document.getElementById( "lblPermutation" ).innerHTML = 
+		"0 elements on 0 layers:";
 	document.getElementById( "txtPermutation" ).value = "";
 	document.getElementById( "lblLinks" ).innerHTML = "0 links:";
 	document.getElementById( "txtLinks" ).value = "";
@@ -940,7 +945,6 @@ function createNew() {
 	poset = new_poset;
 	updateSelectionBounds();
 	setSelection( NaN );
-	updateExport();
 	addUndoStep();
 	window.location.href = "#edit";
 	if ( document.getElementById( "selInputType" ).value == "coveringslist" )
@@ -961,7 +965,6 @@ function createInsert() {
 	poset.insert( sel, new_poset );
 	updateSelectionBounds();
 	setSelection( NaN );
-	updateExport();
 	addUndoStep();
 	window.location.href = "#edit";
 }
@@ -1222,6 +1225,7 @@ function setSelection( new_sel ) {
 	butLink.disabled = true;
 	linkable = false;
 	redrawPoset();
+	updateExport();
 }
 
 function resetSelection() {
@@ -1302,7 +1306,7 @@ function redrawPoset() {
 	let n = poset.count();
 	initializeCanvas( context, n );  // setup canvas
 	// draw selection cross
-	if ( document.getElementById( "chbShowCross" ).checked ) {
+	if ( isShowingCross ) {
 		context.strokeStyle = selection_cross_color;
 		context.lineWidth = 1.0;
 		context.beginPath();
@@ -1341,7 +1345,7 @@ function redrawPoset() {
 		}
 	}
 	// draw grid
-	if ( document.getElementById( "chbShowGrid" ).checked )
+	if ( isShowingGrid )
 		drawGrid( context, n );
 	// draw links
 	for ( let i = 0; i < n; i++ ) {
@@ -1397,8 +1401,7 @@ function redrawPoset() {
 		context.fill();
 	}
 	// draw element labels
-	let showLabels = document.getElementById( "chbShowLabels" ).checked
-	if ( showLabels ) {
+	if ( isShowingLabels ) {
 		let scaling = canvas.width / n / 2;
 		// context.save();
 		context.setTransform( 1, 0, 0, 1, 0, 0 );
@@ -1431,12 +1434,11 @@ function addUndoStep() {
 	if ( undoindex < undosteps.length - 1 )
 		// delete undo steps that are larger than `undoindex`
 		undosteps.splice( undoindex + 1, undosteps.length - undoindex - 1 );
-	const strPerm = document.getElementById( "txtPermutation" ).value;
+	const strPerm = poset.getPermutationString();
 	if ( strPerm.length > 0 ) {
-		const strLinks = document.getElementById( "txtLinks" ).value;
 		if ( undosteps.length >= undosteps_max )
 			undosteps.splice( 0, undosteps_max - undosteps.length + 1 );
-		undosteps.push( [ strPerm, strLinks ] );
+		undosteps.push( [ strPerm, strAllLinks ] );
 	}
 	undoindex = undosteps.length - 1;
 	document.getElementById( "butUndo" ).disabled = ( undoindex <= 0 );
@@ -1464,7 +1466,6 @@ function resetToUndoStep( dir ) {
 		( undoindex >= undosteps.length - 1 );
 	updateSelectionBounds();
 	setSelection( NaN );
-	updateExport();
 }
 
 function updateHoveredTile( x, y ) {
@@ -1544,7 +1545,6 @@ function moveU( moves ) {
 		if ( isNaN( sel ) ) return;
 		let u = poset.moveU( sel, moves );
 		setSelection( u );
-		updateExport();
 		addUndoStep();
 	} catch ( e ) {
 		showError( e.message, e instanceof WarningError );
@@ -1572,11 +1572,11 @@ function changeOffset( increase ) {
 	let sel = getSelection();
 	poset.offset = poset.offset + increase;
 	updateSelectionBounds();
-	if ( isNaN( sel ) )
+	if ( isNaN( sel ) ) {
 		redrawPoset();
-	else
+		updateExport();
+	} else
 		setSelection( sel );
-	updateExport();
 }
 
 function changeOffsetAndUnselect( offset ) {
@@ -1586,7 +1586,6 @@ function changeOffsetAndUnselect( offset ) {
 		updateSelectionBounds();
 	}
 	setSelection( NaN );
-	updateExport();
 }
 
 function addElement() {
@@ -1596,7 +1595,6 @@ function addElement() {
 		hover = [];
 		updateSelectionBounds();
 		setSelection( poset.count() - 1 );
-		updateExport();
 		addUndoStep();
 	} catch ( e ) {
 		showError( e.message, e instanceof WarningError );
@@ -1615,7 +1613,6 @@ function dublicateElement( shift ) {
 		hover = [];
 		updateSelectionBounds();
 		setSelection( sel + 1 );
-		updateExport();
 		addUndoStep();
 	} catch ( e ) {
 		showError( e.message, e instanceof WarningError );
@@ -1632,7 +1629,6 @@ function removeElement() {
 		hover = [];
 		updateSelectionBounds();
 		setSelection( Math.min( sel, n - 1 ) );
-		updateExport();
 		addUndoStep();
 	} catch ( e ) {
 		showError( e.message, e instanceof WarningError );
@@ -1676,7 +1672,6 @@ function swapLeft() {
 		swapElementPair( poset.removedlinks, sel, new_sel );
 		swapElementPair( poset.addedlinks, sel, new_sel );
 		setSelection( new_sel );
-		updateExport();
 		addUndoStep();
 	} catch ( e ) {
 		showError( e.message, e instanceof WarningError );
@@ -1688,7 +1683,6 @@ function to2Order() {
 	if ( !document.getElementById( "frmExport_pcauset" ).hidden ) return;
 	poset.resetLinks( true );
 	setLinkingSelection( NaN );
-	updateExport();
 	addUndoStep();
 }
 
@@ -1708,7 +1702,6 @@ function turnOpposite() {
 	poset.remapLinks( opposite.toReversed() );
 	hover = [];
 	setSelection( new_sel );
-	updateExport();
 }
 
 function reflect() {
@@ -1728,27 +1721,30 @@ function reflect() {
 	poset.remapLinks( reflected );
 	hover = [];
 	setSelection( new_sel );
-	updateExport();
 }
 
 function revise() {
 	if ( isBusy ) return;
-	let strPermutation = document.getElementById( "txtPermutation" ).value;
+	let strPermutation = poset.getPermutationString();
 	if ( strPermutation == "" ) return;
 	const txtInputPermutation = document.getElementById( "txtInputPermutation" );
 	txtInputPermutation.value = strPermutation;
 	let strInputType = "pcauset";
-	let strRemovedLinks = document.getElementById( "txtRemovedLinks" ).value;
-	if ( strRemovedLinks.length > 0 ) {
+	let strRemovedAndAddedLinks = strAllRemovedLinks;
+	let addedlinks = poset.getAddedLinksStringAndCount();
+	if ( addedlinks[1] > 0 ) {
+		if ( strRemovedAndAddedLinks.length > 0 )
+			strRemovedAndAddedLinks = strRemovedAndAddedLinks + "," + addedlinks[0];
+		else
+			strRemovedAndAddedLinks = addedlinks[0];
+	}
+	if ( strRemovedAndAddedLinks.length > 0 ) {
 		strInputType = "rcauset";
-		let addedlinks = poset.getAddedLinksStringAndCount();
-		if ( addedlinks[1] > 0 )
-			strRemovedLinks = strRemovedLinks + "," + addedlinks[0];
 	}
 	document.getElementById( "selInputType" ).value = strInputType;
-	document.getElementById( "txtInputRemovedLinks" ).value = strRemovedLinks;
-	document.getElementById( "txtInputLinks" ).value = 
-		document.getElementById( "txtLinks" ).value;
+	document.getElementById( "txtInputRemovedLinks" ).value = 
+		strRemovedAndAddedLinks;
+	document.getElementById( "txtInputLinks" ).value = strAllLinks
 	selectInputType();
 	window.location.href = "#import";
 	txtInputPermutation.focus();
@@ -1759,61 +1755,107 @@ function copyToClipboard( textbox ) {
 	navigator.clipboard.writeText( text );
 }
 
-function updateSettingsButton( name, redraw ) {
-	if ( document.getElementById( "chb" + name ).checked )
-		document.getElementById( "lbl" + name ).className = "btn btn-light active";
-	else
-		document.getElementById( "lbl" + name ).className = "btn btn-light";
+function updateSettingsButton( name, redraw, toggle ) {
+	let isActive = false;
+	if ( name == "ShowLabels" ) {
+		if ( toggle ) isShowingLabels = !isShowingLabels;
+		isActive = isShowingLabels;
+	} else if ( name == "ShowCross" ) {
+		if ( toggle ) isShowingCross = !isShowingCross;
+		isActive = isShowingCross;
+	} else if ( name == "ShowGrid" ) {
+		if ( toggle ) isShowingGrid = !isShowingGrid;
+		isActive = isShowingGrid;
+	}
+	document.getElementById( "but" + name ).className = 
+		"btn btn-sm btn-light" + ( isActive ? " active" : "" );
 	if ( redraw )
 		redrawPoset();
 }
 
 function updateExport() {
 	hideLastError();
+	let sel = getSelection();
 	let style = document.getElementById( "selExportLatexStyle" ).value;
 	let strPerm = poset.getPermutationString();
 	let removedLinks = poset.getRemovedLinksStringAndCount();
 	let addedLinks = poset.getAddedLinksStringAndCount();
 	let links = poset.getLinksStringAndCount();
 	let layercount = poset.countLayers();
-	document.getElementById( "txtLayers" ).value = layercount.toString();
 	let n = poset.count();
-	document.getElementById( "lblPermutation" ).innerHTML =
-		n.toString() + ( n == 1 ? " element:" : " elements:" );
-	document.getElementById( "txtPermutation" ).value = strPerm;
-	document.getElementById( "lblLinks" ).innerHTML =
-		links[1].toString() + ( links[1] == 1 ? " link:" : " links:" );
-	document.getElementById( "txtLinks" ).value = links[0];
-	const lblRemovedLinks = document.getElementById( "lblRemovedLinks" );
-	let nonMaximalChainCount = n - layercount;
-	let tooManyRemovedLinks = 0;
-	if ( n <= 5 || nonMaximalChainCount < 3 )
-		tooManyRemovedLinks = removedLinks[1];
-	else if ( nonMaximalChainCount < 5 )
-		tooManyRemovedLinks = removedLinks[1] - 2;
-	if ( tooManyRemovedLinks > 0 ) {
-		lblRemovedLinks.className = "input-group-text alert-danger";
-		lblRemovedLinks.innerHTML =
-			( tooManyRemovedLinks < removedLinks[1] ? "At least " : "" )
-			+ tooManyRemovedLinks.toString() + " of "
-			+ removedLinks[1].toString() + " too many removed links:";
-	} else {
-		lblRemovedLinks.className = "input-group-text";
-		lblRemovedLinks.innerHTML =
-			removedLinks[1].toString() + " removed"
-			+ ( removedLinks[1] == 1 ? " link:" : " links:" );
+	const lblPermutation = document.getElementById( "lblPermutation" );
+	const txtPermutation = document.getElementById( "txtPermutation" );
+	if ( isNaN( sel ) ) {  // no element selected
+		lblPermutation.innerHTML =
+			n.toString() + ( n == 1 ? " element " : " elements " ) + "on "
+			+ layercount.toString() + ( layercount == 1 ? " layer:" : " layers:" );
+		txtPermutation.value = strPerm;
+	} else {  // element selected
+		lblPermutation.innerHTML = "1 of "
+			+ n.toString() + ( n == 1 ? " element " : " elements " ) + "selected:";
+		txtPermutation.value = getElementString( sel );
 	}
-	let strRemovedLinks = removedLinks[0];
-	document.getElementById( "txtRemovedLinks" ).value = strRemovedLinks;
+	const lblLinks = document.getElementById( "lblLinks" );
+	const txtLinks = document.getElementById( "txtLinks" );
+	strAllLinks = links[0];
+	if ( isNaN( sel ) ) {  // no element selected
+		lblLinks.innerHTML =
+			links[1].toString() + ( links[1] == 1 ? " link:" : " links:" );
+		txtLinks.value = links[0];
+	} else {  // element selected
+		let coverings = findCoveredElements( poset.links, sel );
+		coverings.sort( function( a, b ){ return a - b; } );
+		let coveredbys = poset.links[sel];
+		coveredbys.sort( function( a, b ){ return a - b; } );
+		lblLinks.innerHTML = coverings.length.toString() + " and "
+			+ coveredbys.length.toString() + " linked elements:"
+		txtLinks.value = "{" + coverings.map( getElementString ).join( "," )
+			+ "} and {" + coveredbys.map( getElementString ).join( "," ) + "}";
+	}
+	const lblRemovedLinks = document.getElementById( "lblRemovedLinks" );
+	const txtRemovedLinks = document.getElementById( "txtRemovedLinks" );
+	strAllRemovedLinks = removedLinks[0];
+	if ( isNaN( sel ) ) {  // no element selected
+		let nonMaximalChainCount = n - layercount;
+		let tooManyRemovedLinks = 0;
+		if ( n <= 5 || nonMaximalChainCount < 3 )
+			tooManyRemovedLinks = removedLinks[1];
+		else if ( nonMaximalChainCount < 5 )
+			tooManyRemovedLinks = removedLinks[1] - 2;
+		if ( tooManyRemovedLinks > 0 ) {
+			lblRemovedLinks.className = "input-group-text alert-danger";
+			lblRemovedLinks.innerHTML =
+				( tooManyRemovedLinks < removedLinks[1] ? "At least " : "" )
+				+ tooManyRemovedLinks.toString() + " of "
+				+ removedLinks[1].toString() + " too many removed links:";
+		} else {
+			lblRemovedLinks.className = "input-group-text";
+			lblRemovedLinks.innerHTML =
+				removedLinks[1].toString() + " removed"
+				+ ( removedLinks[1] == 1 ? " link:" : " links:" );
+		}
+		txtRemovedLinks.value = strAllRemovedLinks;
+	} else {  // element selected
+		let removedcoverings = findCoveredElements( poset.removedlinks, sel );
+		removedcoverings.sort( function( a, b ){ return a - b; } );
+		let removedcoveredbys = poset.removedlinks[sel];
+		removedcoveredbys.sort( function( a, b ){ return a - b; } );
+		lblRemovedLinks.innerHTML = removedcoverings.length.toString() + " and "
+			+ removedcoveredbys.length.toString() + " unlinked elements:"
+		txtRemovedLinks.value =
+			"{" + removedcoverings.map( getElementString ).join( "," )
+			+ "} and {" + removedcoveredbys.map( getElementString ).join( "," ) + "}";
+	}
+	let strRemovedAndAddedLinks = strAllRemovedLinks;
 	if ( addedLinks[0].length > 0 )
-		strRemovedLinks = strRemovedLinks + "," + addedLinks[0];
+		strRemovedAndAddedLinks = strRemovedAndAddedLinks + "," + addedLinks[0];
 	document.getElementById( "txtExport_pcauset" ).value = 
 		"\\pcauset" + style + "{" + strPerm + "}";
 	document.getElementById( "txtExport_rcauset" ).value = 
-		"\\rcauset" + style + "{" + strPerm + "}{" + strRemovedLinks + "}";
+		"\\rcauset" + style + "{" + strPerm + "}{" + strRemovedAndAddedLinks + "}";
 	document.getElementById( "txtExport_causet" ).value = 
 		"\\causet" + style + "{" + strPerm + "}{" + links[0] + "}";
-	let export_pcauset = ( strRemovedLinks.length == 0 );
+	let export_pcauset = ( strRemovedAndAddedLinks.length == 0 );
 	document.getElementById( "butOptimize" ).disabled = ( layercount != 2 );
 	document.getElementById( "butTo2Order" ).disabled = export_pcauset;
 	document.getElementById( "frmExport_pcauset" ).hidden = !export_pcauset;

@@ -326,38 +326,22 @@
 </div>
 
 <div class="form-group">
-	<div class="input-group" role="toolbar" aria-label="Settings toolbar">
-		<div class="btn-group btn-group-sm input-group btn-group-toggle"
-			data-toggle="buttons">
-			<label class="btn btn-light" id="lblShowLabels">
-				<input type="checkbox" id="chbShowLabels" 
-					data-toggle="tooltip" data-placement="top" 
-					title="Show element labels" 
-					onClick="updateSettingsButton( 'ShowLabels', true )">
-					Labels
-			</label>
-			<label class="btn btn-light active" id="lblShowCross">
-				<input type="checkbox" id="chbShowCross" value="1" 
-					data-toggle="tooltip" data-placement="top" 
-					title="Show selection cross" 
-					onClick="updateSettingsButton( 'ShowCross', true )">
-					Cross
-			</label>
-			<label class="btn btn-light" id="lblShowGrid">
-				<input type="checkbox" id="chbShowGrid" 
-					title="Show poset element grid" 
-					onClick="updateSettingsButton( 'ShowGrid', true )">
-					Grid
-			</label>
-		</div>
-	</div>
-	<div class="input-group input-group-sm">
+	<div class="input-group input-group-sm" role="toolbar"
+		aria-label="Settings toolbar">
+		<button type="button" class="btn btn-sm btn-light" id="butShowLabels"
+			onClick="updateSettingsButton( 'ShowLabels', true, true )">
+			Labels
+		</button>
+		<button type="button" class="btn btn-sm btn-light" id="butShowCross"
+			onClick="updateSettingsButton( 'ShowCross', true, true )">
+			Cross
+		</button>
+		<button type="button" class="btn btn-sm btn-light" id="butShowGrid"
+			onClick="updateSettingsButton( 'ShowGrid', true, true )">
+			Grid
+		</button>
 		<div class="input-group-prepend">
-			<div class="input-group-text">Layers:</div>
-		</div>
-		<input type="text" class="form-control" id="txtLayers" readonly />
-		<div class="input-group-prepend">
-			<div class="input-group-text">Canvas size:</div>
+			<div class="input-group-text">Size:</div>
 		</div>
 		<select class="form-control" id="selRelativeCanvasSize"
 			style="background-color: #e9ecef;" onChange="handleResize()">
@@ -1089,7 +1073,7 @@
 <p class="sticky-bottom mt-5" role="contentinfo">
 	&copy; Copyright 2024, 
 	<a href="https://c-minz.github.io">Christoph Minz</a>.
-	PrOSET editor version v1.1 (revision 2024-10-02).
+	PrOSET editor version v1.1 (revision 2024-10-05).
 	<br />
 	Styled with <a href="https://getbootstrap.com/" target="_blank"
 	rel="external nofollow noopener">Bootstrap</a>.
