@@ -426,94 +426,90 @@
 	package 'causets' with <code>\usepackage{causets}</code> and use (one of the) 
 	following macros.
 </p>
-<p>
-	<div class="form-group" id="frmExportLatex">
-		<div class="form-group">
-			<label for="selExportLatexStyle">
-				Export the LaTeX macros 
-			</label>
-			<select class="form-control" id="selExportLatexStyle" 
-				onChange="updateExport()">
-				<option value="">without labels.</option>
-				<option value="L">with labels.</option>
-				<option value="P">with permutation grid.</option>
-				<option value="X">with permutation grid and labels.</option>
-			</select>
-		</div>
-		<div class="form-group" id="frmExport_pcauset" hidden>
-			<label for="txtExport_pcauset">
-				Diagram where the links are generated from the permutation of elements 
-				(single argument):
-			</label>
-			<div class="input-group">
-				<input type="text" class="form-control"
-					id="txtExport_pcauset" readonly />
-				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportPcauset"
-					onClick="copyToClipboard( 'txtExport_pcauset' )">
-					&#x23CD; <span class="sr-only">Copy pcauset macro</span>
-				</button>
-			</div>
-		</div>
-		<div class="form-group" id="frmExport_rcauset" hidden>
-			<label for="txtExport_rcauset">
-				Diagram where the links are generated from the permutation (first 
-				argument) but the links given in the second argument are removed:
-			</label>
-			<div class="input-group">
-				<input type="text" class="form-control"
-					id="txtExport_rcauset" readonly />
-				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportRcauset"
-					onClick="copyToClipboard( 'txtExport_rcauset' )">
-					&#x23CD; <span class="sr-only">Copy rcauset macro</span>
-				</button>
-			</div>
-		</div>
-		<div class="form-group" id="frmExport_causet" hidden>
-			<label for="txtExport_causet">
-				Diagram where the elements are positioned by the permutation (first 
-				argument) and all links are specified explicitly (second argument):
-			</label>
-			<div class="input-group">
-				<input type="text" class="form-control"
-					id="txtExport_causet" readonly />
-				<button type="button" class="btn btn-sm btn-light"
-					id="butCopyExportCauset"
-					onClick="copyToClipboard( 'txtExport_causet' )">
-					&#x23CD; <span class="sr-only">Copy causet macro</span>
-				</button>
-			</div>
+<div class="form-group" id="frmExportLatex">
+	<div class="form-group">
+		<label for="selExportLatexStyle">
+			Export the LaTeX macros 
+		</label>
+		<select class="form-control" id="selExportLatexStyle" 
+			onChange="updateExport()">
+			<option value="">without labels.</option>
+			<option value="L">with labels.</option>
+			<option value="P">with permutation grid.</option>
+			<option value="X">with permutation grid and labels.</option>
+		</select>
+	</div>
+	<div class="form-group" id="frmExport_pcauset" hidden>
+		<label for="txtExport_pcauset">
+			Diagram where the links are generated from the permutation of elements 
+			(single argument):
+		</label>
+		<div class="input-group">
+			<input type="text" class="form-control"
+				id="txtExport_pcauset" readonly />
+			<button type="button" class="btn btn-sm btn-light"
+				id="butCopyExportPcauset"
+				onClick="copyToClipboard( 'txtExport_pcauset' )">
+				&#x23CD; <span class="sr-only">Copy pcauset macro</span>
+			</button>
 		</div>
 	</div>
-</p>
+	<div class="form-group" id="frmExport_rcauset" hidden>
+		<label for="txtExport_rcauset">
+			Diagram where the links are generated from the permutation (first 
+			argument) but the links given in the second argument are removed:
+		</label>
+		<div class="input-group">
+			<input type="text" class="form-control"
+				id="txtExport_rcauset" readonly />
+			<button type="button" class="btn btn-sm btn-light"
+				id="butCopyExportRcauset"
+				onClick="copyToClipboard( 'txtExport_rcauset' )">
+				&#x23CD; <span class="sr-only">Copy rcauset macro</span>
+			</button>
+		</div>
+	</div>
+	<div class="form-group" id="frmExport_causet" hidden>
+		<label for="txtExport_causet">
+			Diagram where the elements are positioned by the permutation (first 
+			argument) and all links are specified explicitly (second argument):
+		</label>
+		<div class="input-group">
+			<input type="text" class="form-control"
+				id="txtExport_causet" readonly />
+			<button type="button" class="btn btn-sm btn-light"
+				id="butCopyExportCauset"
+				onClick="copyToClipboard( 'txtExport_causet' )">
+				&#x23CD; <span class="sr-only">Copy causet macro</span>
+			</button>
+		</div>
+	</div>
+</div>
 
 <a name="export_matrix"><h3>Matrices and lists</h3></a>
-<p>
-	<div class="form-group" id="frmExportArray">
-		<div class="input-group">
-			<select class="form-control" id="selExportArrayType">
-				<option value="linkmatrix">Link matrix</option>
-				<option value="ordermatrix">Order matrix</option>
-				<option value="coveringrelations">List of covering relations</option>
-				<option value="coveredbyrelations">List of covered by relations</option>
-			</select>
-			<button type="button" class="btn btn-secondary mb-2"
-				id="butExportArray" onClick="getExportArray()" width="auto">
-				Compute
-			</button>
-		</div>
-		<div class="input-group">
-			<textarea class="form-control" id="txtExportArray" rows="7" readonly>
-			</textarea>
-			<button type="button" class="btn btn-sm btn-light"
-				id="butCopyExportArray"
-				onClick="copyToClipboard( 'txtExportArray' )">
-				&#x23CD; <span class="sr-only">Copy array</span>
-			</button>
-		</div>
+<div class="form-group" id="frmExportArray">
+	<div class="input-group">
+		<select class="form-control" id="selExportArrayType">
+			<option value="linkmatrix">Link matrix</option>
+			<option value="ordermatrix">Order matrix</option>
+			<option value="coveringrelations">List of covering relations</option>
+			<option value="coveredbyrelations">List of covered by relations</option>
+		</select>
+		<button type="button" class="btn btn-secondary mb-2"
+			id="butExportArray" onClick="getExportArray()" width="auto">
+			Compute
+		</button>
 	</div>
-</p>
+	<div class="input-group">
+		<textarea class="form-control" id="txtExportArray" rows="7" readonly>
+		</textarea>
+		<button type="button" class="btn btn-sm btn-light"
+			id="butCopyExportArray"
+			onClick="copyToClipboard( 'txtExportArray' )">
+			&#x23CD; <span class="sr-only">Copy array</span>
+		</button>
+	</div>
+</div>
 
 <!--#######################################################################-->
 <a name="help"><h2>Help</h2></a>
@@ -549,84 +545,84 @@
 <a name="help_import"><h3>Import options</h3></a>
 <p>
 	Create a diagram from any of the following input types. 
-	Note that the number of elements of a diagram is limited. 
-	<div class="container">
-		<div class="row">
-			<div class="col">predefined type</div>
-			<div class="col-8">
-				Select a predefined type and a numeric value (as cardinality or order 
-				parameter). Note that entering a large value is possible via keyboard, 
-				but may slow down the editor.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">permutation (for a 2-order)</div>
-			<div class="col-8">
-				Enter a permutation of consecutive integers as a comma-separated list.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">permutation and list of removed links</div>
-			<div class="col-8">
-				Additionally to a permutation, enter a comma-separated list of link 
-				pairs in the format 'number/number' to be excluded when drawing the 
-				automatic links from the permutation.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">permutation and list of links</div>
-			<div class="col-8">
-				The permutation is only used to position the elements. A 
-				comma-separated list of link pairs (in the format 'number/number') is 
-				used to draw links between the elements.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">LaTeX macro</div>
-			<div class="col-8">
-				Paste a LaTeX macro <code>\pcauset</code>, <code>\rcauset</code>, or 
-				<code>\causet</code> followed by (an optional argument enclosed in 
-				square brackets <code>[]</code> and) one or two arguments for the 
-				permutation and links enclosed in braces <code>{}</code>.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">list of coverings for a 2-layered poset</div>
-			<div class="col-8">
-				With this input type, only posets with two layers can be generated.
-				For each second-layer element, write a line listing the first-layer 
-				elements (separated with commas) that are covered by this 
-				second-layer element. 
-				The elements on the first layer have to be numbered with consecutive 
-				integers, so that each first-layer element appears in at least one of 
-				the specified lines in the text field (each first-layer element is 
-				covered by at least one second-layer element). 
-				Empty lines are treated as separate elements that are parallel to the 
-				diagram.
-				Once generated, the diagram will be optimised for a diagram with as 
-				few crossed links as possible. 
-			</div>
-		</div>
-		<div class="row" hidden>
-			<div class="col">order matrix</div>
-			<div class="col-8">
-				Paste a causal matrix, where each row is a comma-separated list of 
-				values 0 and 1, and the rows are separeted by a line break.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">memorized poset</div>
-			<div class="col-8">
-				Select an entry from the list to recreate the diagram. 
-				Entries are only available if a previously generated diagram has been 
-				added to the memory (see button &#x2397; below). 
-				Entries can be removed or copied to the clipboard, and the entire 
-				memory can be cleared or copied to the clipboard with the buttons under 
-				the list. 
-			</div>
+	Note that the number of elements of a diagram is limited.
+</p>
+<div class="container" style="padding-bottom: 10pt;">
+	<div class="row">
+		<div class="col">predefined type</div>
+		<div class="col-8">
+			Select a predefined type and a numeric value (as cardinality or order 
+			parameter). Note that entering a large value is possible via keyboard, 
+			but may slow down the editor.
 		</div>
 	</div>
-</p>
+	<div class="row">
+		<div class="col">permutation (for a 2-order)</div>
+		<div class="col-8">
+			Enter a permutation of consecutive integers as a comma-separated list.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">permutation and list of removed links</div>
+		<div class="col-8">
+			Additionally to a permutation, enter a comma-separated list of link 
+			pairs in the format 'number/number' to be excluded when drawing the 
+			automatic links from the permutation.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">permutation and list of links</div>
+		<div class="col-8">
+			The permutation is only used to position the elements. A 
+			comma-separated list of link pairs (in the format 'number/number') is 
+			used to draw links between the elements.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">LaTeX macro</div>
+		<div class="col-8">
+			Paste a LaTeX macro <code>\pcauset</code>, <code>\rcauset</code>, or 
+			<code>\causet</code> followed by (an optional argument enclosed in 
+			square brackets <code>[]</code> and) one or two arguments for the 
+			permutation and links enclosed in braces <code>{}</code>.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">list of coverings for a 2-layered poset</div>
+		<div class="col-8">
+			With this input type, only posets with two layers can be generated.
+			For each second-layer element, write a line listing the first-layer 
+			elements (separated with commas) that are covered by this 
+			second-layer element. 
+			The elements on the first layer have to be numbered with consecutive 
+			integers, so that each first-layer element appears in at least one of 
+			the specified lines in the text field (each first-layer element is 
+			covered by at least one second-layer element). 
+			Empty lines are treated as separate elements that are parallel to the 
+			diagram.
+			Once generated, the diagram will be optimised for a diagram with as 
+			few crossed links as possible. 
+		</div>
+	</div>
+	<div class="row" hidden>
+		<div class="col">order matrix</div>
+		<div class="col-8">
+			Paste a causal matrix, where each row is a comma-separated list of 
+			values 0 and 1, and the rows are separeted by a line break.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">memorized poset</div>
+		<div class="col-8">
+			Select an entry from the list to recreate the diagram. 
+			Entries are only available if a previously generated diagram has been 
+			added to the memory (see button &#x2397; below). 
+			Entries can be removed or copied to the clipboard, and the entire 
+			memory can be cleared or copied to the clipboard with the buttons under 
+			the list. 
+		</div>
+	</div>
+</div>
 <p>
 	With the button "Create", the input data is converted to a diagram.
 	A message is shown and the creation interrupted if an error or warning 
@@ -640,139 +636,134 @@
 </p>
 
 <a name="help_toolbar"><h3>Toolbar functions</h3></a>
-<p>
-	<div class="container">
-		<div class="row">
-			<div class="col">&#x2336;</div>
-			<div class="col-10">
-				Copy the poset back to the input and revise in the input text fields.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2397;</div>
-			<div class="col-10">
-				Add the poset to the input memory so that it can be created/inserted 
-				later on.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2936;</div>
-			<div class="col-10">
-				Undo the last actions if it was one of the following: generate, 
-				move/remove/add element, remove/add link.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2937;</div>
-			<div class="col-10">
-				Redo the last actions if it was one of the following: generate, 
-				move/remove/add element, remove/add link.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x229E;</div>
-			<div class="col-10">
-				Increase all element labels by 1.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x229F;</div>
-			<div class="col-10">
-				Decrease all element labels by 1.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2B16;</div>
-			<div class="col-10">
-				Mirror the diagram horizontally, which yields an equivalent diagram.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2B19;</div>
-			<div class="col-10">
-				Mirror the diagram vertically, which yields a diagram of the opposite 
-				poset.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x27D0;</div>
-			<div class="col-10">
-				Reset all links to those of a 2-order with the same element 
-				positions. This function is only available when the diagram is not 
-				showing a 2-order.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x223A;</div>
-			<div class="col-10">
-				Rearrange the elements of a 2-layered poset to minimize link 
-				crossings (getting it to a smaller or equal number of link crossing 
-				compared to any element arrangement with a single element swap on 
-				either layer). This function is only available when the poset has two 
-				layers.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x238C;</div>
-			<div class="col-10">
-				Swap the element with the one on the same layer to the left. 
-				This function is only available when an element is selected and the 
-				swap is possible.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2715;</div>
-			<div class="col-10">
-				Delete the selected element. This function is only available when an 
-				element is selected.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x2A52;</div>
-			<div class="col-10">
-				Link/unlink the selected elements. This function is only available 
-				when an element and another link-able element is selected.
-			</div>
+<div class="container" style="padding-bottom: 10pt;">
+	<div class="row">
+		<div class="col">&#x2336;</div>
+		<div class="col-10">
+			Copy the poset back to the input and revise in the input text fields.
 		</div>
 	</div>
-	Below the canvas:
-	<div class="container">
-		<div class="row">
-			<div class="col">Labels</div>
-			<div class="col-9">
-				Show/hide the element labels.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">Cross</div>
-			<div class="col-9">
-				Show/hide the selection cross.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">Grid</div>
-			<div class="col-9">
-				Show/hide the element grid.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">Canvas size</div>
-			<div class="col-9">
-				Set the relative canvas size as percentage of the page width. 
-				Use 'fill' to size the canvas to the maximal value.
-				An absolute height value sets the maximal canvas size. 
-				If 'fill' and 'unbounded' is selected, the canvas is sized to 100% of 
-				the page width. 
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x23CD;</div>
-			<div class="col-9">
-				Copy the value of a text field to the clipboard.
-			</div>
+	<div class="row">
+		<div class="col">&#x2397;</div>
+		<div class="col-10">
+			Add the poset to the input memory so that it can be created/inserted 
+			later on.
 		</div>
 	</div>
-</p>
+	<div class="row">
+		<div class="col">&#x2936;</div>
+		<div class="col-10">
+			Undo the last actions if it was one of the following: generate, 
+			move/remove/add element, remove/add link.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x2937;</div>
+		<div class="col-10">
+			Redo the last actions if it was one of the following: generate, 
+			move/remove/add element, remove/add link.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x229E;</div>
+		<div class="col-10">
+			Increase all element labels by 1.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x229F;</div>
+		<div class="col-10">
+			Decrease all element labels by 1.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x2B16;</div>
+		<div class="col-10">
+			Mirror the diagram horizontally, which yields an equivalent diagram.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x2B19;</div>
+		<div class="col-10">
+			Mirror the diagram vertically, which yields a diagram of the opposite 
+			poset.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x27D0;</div>
+		<div class="col-10">
+			Reset all links to those of a 2-order with the same element 
+			positions. This function is only available when the diagram is not 
+			showing a 2-order.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x223A;</div>
+		<div class="col-10">
+			Rearrange the elements of a 2-layered poset to minimize link 
+			crossings (getting it to a smaller or equal number of link crossing 
+			compared to any element arrangement with a single element swap on 
+			either layer). This function is only available when the poset has two 
+			layers.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x238C;</div>
+		<div class="col-10">
+			Swap the element with the one on the same layer to the left. 
+			This function is only available when an element is selected and the 
+			swap is possible.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x2715;</div>
+		<div class="col-10">
+			Delete the selected element. This function is only available when an 
+			element is selected.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x2A52;</div>
+		<div class="col-10">
+			Link/unlink the selected elements. This function is only available 
+			when an element and another link-able element is selected.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">Labels</div>
+		<div class="col-10">
+			Show/hide the element labels.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">Cross</div>
+		<div class="col-10">
+			Show/hide the selection cross.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">Grid</div>
+		<div class="col-10">
+			Show/hide the element grid.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">Size</div>
+		<div class="col-10">
+			Set the relative canvas size as percentage of the page width. 
+			Use 'fill' to size the canvas to the maximal value.
+			An absolute height value sets the maximal canvas size. 
+			If 'fill' and 'unbounded' is selected, the canvas is sized to 100% of 
+			the page width. 
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x23CD;</div>
+		<div class="col-10">
+			Copy the value of a text field to the clipboard.
+		</div>
+	</div>
+</div>
 
 <a name="help_mouse"><h3>Mouse and touchscreen functions</h4></a>
 <ul>
@@ -801,92 +792,92 @@
 <a name="help_keyboard"><h3>Keyboard functions</h3></a>
 <p>
 	Shortcuts that are bound to the local keyboard configuration:
-	<div class="container">
-		<div class="row">
-			<div class="col">Ctrl Z</div>
-			<div class="col-10">
-				Undo the last action.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">Ctrl Y</div>
-			<div class="col-10">
-				Redo the last action.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">Ctrl &#x21E7; Z</div>
-			<div class="col-10">
-				Redo the last action.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">Del</div>
-			<div class="col-10">
-				Delete the selected element.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">.</div>
-			<div class="col-10">
-				Add a new element to the right of the diagram and select it.
-			</div>
+</p>
+<div class="container" style="padding-bottom: 10pt;">
+	<div class="row">
+		<div class="col">Ctrl Z</div>
+		<div class="col-10">
+			Undo the last action.
 		</div>
 	</div>
-</p>
+	<div class="row">
+		<div class="col">Ctrl Y</div>
+		<div class="col-10">
+			Redo the last action.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">Ctrl &#x21E7; Z</div>
+		<div class="col-10">
+			Redo the last action.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">Del</div>
+		<div class="col-10">
+			Delete the selected element.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">.</div>
+		<div class="col-10">
+			Add a new element to the right of the diagram and select it.
+		</div>
+	</div>
+</div>
 <p>
 	Shortcuts that are bound to the keys of a QWERTY keyboard configuration:
-	<div class="container">
-		<div class="row">
-			<div class="col">W</div>
-			<div class="col-10">
-				Select the next element in north-west direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">A</div>
-			<div class="col-10">
-				Select the next element in south-east direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">S</div>
-			<div class="col-10">
-				Select the next element in south-west direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">D</div>
-			<div class="col-10">
-				Select the next element in north-east direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x21E7; W</div>
-			<div class="col-10">
-				Move the selected element in north-west direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x21E7; A</div>
-			<div class="col-10">
-				Move the selected element in south-east direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x21E7; S</div>
-			<div class="col-10">
-				Move the selected element in south-west direction.
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">&#x21E7; D</div>
-			<div class="col-10">
-				Move the selected element in north-east direction.
-			</div>
+</p>
+<div class="container" style="padding-bottom: 10pt;">
+	<div class="row">
+		<div class="col">W</div>
+		<div class="col-10">
+			Select the next element in north-west direction.
 		</div>
 	</div>
-</p>
+	<div class="row">
+		<div class="col">A</div>
+		<div class="col-10">
+			Select the next element in south-east direction.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">S</div>
+		<div class="col-10">
+			Select the next element in south-west direction.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">D</div>
+		<div class="col-10">
+			Select the next element in north-east direction.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x21E7; W</div>
+		<div class="col-10">
+			Move the selected element in north-west direction.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x21E7; A</div>
+		<div class="col-10">
+			Move the selected element in south-east direction.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x21E7; S</div>
+		<div class="col-10">
+			Move the selected element in south-west direction.
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">&#x21E7; D</div>
+		<div class="col-10">
+			Move the selected element in north-east direction.
+		</div>
+	</div>
+</div>
 
 <a name="help_about"><h3>About</h4></a>
 <p>
