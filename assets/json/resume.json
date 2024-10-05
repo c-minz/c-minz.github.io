@@ -3,7 +3,7 @@
     "name": "Christoph Minz",
     "job": "Research assistant",
     "image": "",
-    "email": "christoph.minz[_at_]itp.uni-leipzig.de",
+    "email": "christoph.minz[_at_]posteo.net",
     "url": "https://c-minz.github.io",
     "location": {
       "address": "Br&uuml;derstr. 16",
@@ -20,6 +20,15 @@
     ]
   },
   "work": [
+    {
+      "name": "Scuola Internazionale Superiore di Studi Avanzati",
+      "position": "Visiting Scientist",
+      "url": "https://www.statphys.sissa.it",
+      "startDate": "2024-10-01",
+      "endDate": "2025-01-31",
+      "summary": "Working with Dr. Erik Tonni (associate professor) in a project on 'Entanglement and von Neumann algebras'.",
+      "highlights": ["Numerical approximations in modular theory"]
+    },
     {
       "name": "Institute of Theoretical Physics, Leipzig University",
       "position": "Research assistant",

@@ -12,7 +12,7 @@ Institute of Theoretical Physics <br />
 Leipzig University <br />
 04103 Leipzig
 
-E-Mail: christoph.minz[_at_]itp.uni-leipzig.de
+E-Mail: christoph.minz[_at_]posteo.net
 
 
 ## Disclaimer
