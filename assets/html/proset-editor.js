@@ -966,7 +966,6 @@ function createInsert() {
 	updateSelectionBounds();
 	setSelection( NaN );
 	addUndoStep();
-	window.location.href = "#edit";
 }
 
 function generate() {
