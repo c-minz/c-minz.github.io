@@ -57,7 +57,7 @@ To find a suitable permutation for a poset diagram while getting a live preview,
 
 The following catalogue lists diagrams for all posets up to cardinality 7.
 The total number of distinct partial orders on sets of $$n$$ elements (corresponding to the total page number of each part of the catalogue) is recorded in the OEIS as sequence [A000112](https://oeis.org/A000112).
-All diagrams in the catalogue below are generated with the LaTeX package and the symmetry properties annotated in the catalogue are defined in {% cite Minz:2024 %}.
+All diagrams in the catalogue below are generated with the LaTeX package and the symmetry properties annotated in the catalogue are defined in {% cite Minz:2024a %}.
 
 Each file of the catalogue contains all partial orders on a given number of elements, one poset per page including the annotated properties:
 - upper left `d`: dimension of the order (as primary page order, descending)
