@@ -7,7 +7,7 @@ nav: true
 nav_order: 3
 ---
 
-Also find my [publications on INSPIRE](https://inspirehep.net/authors/1414160).
+You can also find my [publications on INSPIRE](https://inspirehep.net/authors/1414160).
 
 <div class="publications">
 
