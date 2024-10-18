@@ -7,7 +7,7 @@ nav: true
 nav_order: 3
 ---
 
-You can also find my [publications on INSPIRE](https://inspirehep.net/authors/1414160).
+My publications are also listed [on arXiv](https://arxiv.org/search/?searchtype=author&query=Minz%2C+C) and [on INSPIRE](https://inspirehep.net/authors/1414160).
 
 <div class="publications">
 
