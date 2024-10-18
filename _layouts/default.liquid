@@ -29,10 +29,10 @@
             <div class="col-sm-9">{{ content }}</div>
             <!-- sidebar, which will move to the top on a small screen -->
             <div class="col-sm-3">
-              {% if page.sidebarimage %}
+              {% if page.toc.sidebarimage %}
                 <div style="margin: auto; padding-bottom: 1em;">
                   <img
-                    src="{% sidebarimage %}"
+                    src="{{ page.toc.sidebarimage }}"
                     class="img-fluid z-depth-1 rounded"
                     width="150px"
                     height="auto"
@@ -48,10 +48,10 @@
           <div class="row">
             <!-- sidebar, which will move to the top on a small screen -->
             <div class="col-sm-3">
-              {% if page.sidebarimage %}
+              {% if page.toc.sidebarimage %}
                 <div style="margin: auto; padding-bottom: 1em;">
                   <img
-                    src="{% sidebarimage %}"
+                    src="{{ page.toc.sidebarimage }}"
                     class="img-fluid z-depth-1 rounded"
                     width="150px"
                     height="auto"
