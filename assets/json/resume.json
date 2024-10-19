@@ -37,14 +37,14 @@
       "url": "https://home.uni-leipzig.de/tet/?page_id=2507",
       "startDate": "2021-10-15",
       "endDate": "2024-09-30",
-      "summary": "Working in the Emmy Noether research group of <a href='https://home.uni-leipzig.de/tet/?page_id=2486' target='_blank'>Daniela Cadamuro</a> on 'Der quantisierte Energie-Impuls-Tensor'. Developing a new numerical approximation scheme for modular operators of free, massive quantum fields (<a href='https://c-minz.github.io/projects/modular_operator_numerics'>go to the project page</a>).",
+      "summary": "Working in the <a href='https://home.uni-leipzig.de/tet/?page_id=2507' target='_blank'>Emmy Noether research group</a> of <a href='https://home.uni-leipzig.de/tet/?page_id=2486' target='_blank'>Daniela Cadamuro</a> on 'Der quantisierte Energie-Impuls-Tensor'. Developing a new numerical approximation scheme for modular operators of free, massive quantum fields (<a href='https://c-minz.github.io/projects/modular_operator_numerics'>go to the project page</a>).",
       "highlights": [
         "Supervision of Enzo Ebert (with Rainer Verch, research project and Bachelor thesis 'Tunneling time and entropic measurements', 2023-2024)",
-        "Scientific coorganisation of the <a href='https://www.physik.uni-leipzig.de/~lqp48' target='_blank'>'48th LQP Workshop and Detlev-Fest'</a> (hosted at Leipzig University, 2024.06)",
+        "Scientific co-organisation of the <a href='https://www.physik.uni-leipzig.de/~lqp48' target='_blank'>'48th LQP Workshop and Detlev-Fest'</a> (hosted at Leipzig University, 2024.06)",
         "Co-supervision of Mark Bradshaw, Elija Engelhardt, and Adam Highfield (summer students with Kasia Rejzner at University of York, 2022-2024)",
         "Supervision of Lasse Hertle (with Rainer Verch, research project and Master thesis 'Oscillation Effects in XY Spin Chain Entropies', 2021-2023)",
         "Seminar teaching: 'Theoretische Physik 3: Analytische Mechanik und Elektrodynamik (Lehramt)' (WS 2022)",
-        "Scientific coorganisation of the conference <a href='https://www.physik.uni-leipzig.de/~ecqft' target='_blank'>'Energy conditions in quantum field theory'</a> (hosted at Leipzig University, 2022.09)"
+        "Scientific co-organisation of the conference <a href='https://www.physik.uni-leipzig.de/~ecqft' target='_blank'>'Energy conditions in quantum field theory'</a> (hosted at Leipzig University, 2022.09)"
       ]
     }
   ],
@@ -59,11 +59,12 @@
       "endDate": "2021-09-30",
       "courses": [
         "Co-supervision of Benjamin Threlfall (summer students with Kasia Rejzner, 2021-2022)",
+        "Departmental role as Postgraduate Research Course Representative (2018-2019)",
         "Seminar teaching: 'Applied Mathematics: Classical and Quantum Dynamics' (2019)",
         "Seminar teaching: 'Introduction to Applied Mathematics' (2018, 2019)",
         "Seminar teaching: 'Applied Mathematics: Newtonian Gravity and Special Relativity' (2018)",
-        "Attended lecture: 'Advanced Quantum Theory' (2017-2018)",
-        "Attended online lecture: 'Functional Analysis' and others (2017-2018)"
+        "Courses: 'Advanced Quantum Theory' (2017-2018)",
+        "Online courses: 'Functional Analysis' and other mathematical topics (2017-2018)"
       ]
     },
     {
@@ -73,7 +74,16 @@
       "area": "Thesis: 'Shock Waves in Nonlinear Electrodynamics' supervised by Horst-Heino von Borzeszkowski and Thoralf Chrobok (<a href='https://www1.itp.tu-berlin.de/hellwig/vB/' target='_blank'>Group for Relativity and Quantum Theory</a>)",
       "studyType": "Master of Science in Physics",
       "startDate": "2011-04-01",
-      "endDate": "2014-09-30"
+      "endDate": "2014-09-30",
+      "courses": [
+        "Attended lectures: 'Introduction to String Theory' (HU Berlin)}",
+        "Attended lectures: 'Fortgeschrittene Quantenfeldtheorie' (Advanced Quantum Field Theory) (HU Berlin)}",
+        "Attended lectures: 'Nichtlineare Dynamik und Strukturbildung' (Nonlinear Dynamics and Pattern Formation)",
+        "Courses: 'Allgemeine Relativitätstheorie' (General Relativity)",
+        "Courses: 'Theoretische Physik V, VI - Quantenmechanik 2, Theoretische Optik' (Quantum Mechanics 2, Theoretical Optics)",
+        "Courses: 'Höhere Optik 1 und 2' (Higher Optics 1 and 2)",
+        "Voluntary co-organisation of <a href='http://www.hochschultage.org/hochschultage/hochschultage-2012/berlin-2012' target='_blank'>Hochschultage</a> for eco-social market economy at Technical University of Berlin, organised through the Global Marshall Plan initiative (2012.05-2012.11)."
+      ]
     },
     {
       "institution": "Fakultät Mathematik und Naturwissenschaften, Technische Universität Ilmenau",
@@ -82,7 +92,11 @@
       "area": "Thesis: 'Statistical Properties of Photon Modes in Random Arrays of ZnO Nano-Needles' supervised by <a href='https://www.tu-ilmenau.de/universitaet/fakultaeten/fakultaet-mathematik-und-naturwissenschaften/profil/institute-und-fachgebiete/institut-fuer-physik/profil/fachgebiet-theoretische-physik-1/team/prof-erich-runge' target='_blank'>Erich Runge</a> and David Leipold (<a href='https://www.tu-ilmenau.de/universitaet/fakultaeten/fakultaet-mathematik-und-naturwissenschaften/profil/institute-und-fachgebiete/institut-fuer-physik/profil/fachgebiet-theoretische-physik-1' target='_blank'>Group of Theoretical Physics 1</a>)",
       "studyType": "Bachelor of Science in Technical Physics",
       "startDate": "2007-10-01",
-      "endDate": "2011-09-30"
+      "endDate": "2011-09-30",
+      "courses": [
+        "Research internship at the <a href='https://www.eng.yale.edu/caolab' target='_blank'>Hui Cao Research Laboratory</a> (Department of Applied Physics, Yale University, Connecticut, USA) organised through the <a href='https://www.daad.de/rise/de/rise-weltweit' target='_blank'>exchange program RISE (Research Internships in Science and Engineering)</a> by DAAD, working on structural coloration with experiments and a simulation in MATLAB (2010.08-2010.10).",
+        "Research internship at the <a href='https://www.laser-research.co.za' target='_blank'>Laser Research Institute</a> (Stellenbosch University, Western Cape, South Africa), working with Zephania Birech and programming a measuring software with LabVIEW for a femtosecond experiment (under supervision of <a href='https://www.mpsd.mpg.de/person/50555/2724' target='_blank'>Heinrich Schwörer</a>) (2010.04-2010.07)."
+      ]
     }
   ],
   "skills": [
