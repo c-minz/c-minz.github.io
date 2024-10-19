@@ -6,5 +6,6 @@ nav: true
 nav_order: 4
 toc:
   sidebar: left
-  sidebarimage: /assets/img/c-minz_cv_small.jpg
+  image: c-minz_cv.jpg
+  image_circular: true # crops the image to make it circular
 ---
