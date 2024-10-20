@@ -22,7 +22,7 @@
   },
   "work": [
     {
-      "name": "Scuola Internazionale Superiore di Studi Avanzati",
+      "name": "Scuola Internazionale Superiore di Studi Avanzati (SISSA)",
       "position": "Research visitor",
       "location": "Trieste, Italy",
       "url": "https://www.statphys.sissa.it",
@@ -76,12 +76,10 @@
       "startDate": "2011-04-01",
       "endDate": "2014-09-30",
       "courses": [
-        "Attended lectures: 'Introduction to String Theory' (HU Berlin)",
-        "Attended lectures: 'Fortgeschrittene Quantenfeldtheorie' (Advanced Quantum Field Theory) (HU Berlin)",
-        "Attended lectures: 'Nichtlineare Dynamik und Strukturbildung' (Nonlinear Dynamics and Pattern Formation)",
-        "Courses: 'Allgemeine Relativitätstheorie' (General Relativity)",
-        "Courses: 'Theoretische Physik V, VI - Quantenmechanik 2, Theoretische Optik' (Quantum Mechanics 2, Theoretical Optics)",
+        "Courses: 'Allgemeine Relativitätstheorie 1 und 2' (General Relativity 1 and 2)",
+        "Courses: 'Quantenmechanik 2' and 'Theoretische Optik' (Quantum Mechanics 2, Quantum Field Theory, and Theoretical Optics)",
         "Courses: 'Höhere Optik 1 und 2' (Higher Optics 1 and 2)",
+        "Attended lectures: 'Introduction to String Theory' and 'Fortgeschrittene Quantenfeldtheorie' (Advanced Quantum Field Theory) at HU Berlin",
         "Voluntary co-organisation of <a href='http://www.hochschultage.org/hochschultage/hochschultage-2012/berlin-2012' target='_blank'>Hochschultage</a> for eco-social market economy, organised through the Global Marshall Plan initiative (2012.05 - 2012.11)."
       ]
     },
@@ -95,7 +93,7 @@
       "endDate": "2011-09-30",
       "courses": [
         "Research internship at the <a href='https://www.eng.yale.edu/caolab' target='_blank'>Hui Cao Research Laboratory</a> (Department of Applied Physics, Yale University, Connecticut, USA) organised through the <a href='https://www.daad.de/rise/de/rise-weltweit' target='_blank'>exchange program RISE (Research Internships in Science and Engineering)</a> by DAAD, working on structural coloration with experiments and a simulation in MATLAB (2010.08 - 2010.10).",
-        "Research internship at the <a href='https://www.laser-research.co.za' target='_blank'>Laser Research Institute</a> (Stellenbosch University, Western Cape, South Africa), working with Zephania Birech and programming a measuring software with LabVIEW for a femtosecond experiment (under supervision by <a href='https://www.mpsd.mpg.de/person/50555/2724' target='_blank'>Heinrich Schwörer</a>) (2010.04 - 2010.07)."
+        "Research internship at the <a href='https://www.laser-research.co.za' target='_blank'>Laser Research Institute</a> (Stellenbosch University, Western Cape, South Africa), working with <a href='https://physics.uonbi.ac.ke/staff/dr-zephania-birech' target='_blank'>Zephania Birech</a> and programming a measuring software with LabVIEW for a femtosecond experiment (under supervision by <a href='https://www.mpsd.mpg.de/person/50555/2724' target='_blank'>Heinrich Schwörer</a>) (2010.04 - 2010.07)."
       ]
     }
   ],
