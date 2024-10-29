@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 05/10/2024
+// @version: v1.1 29/10/2024
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
