@@ -54,7 +54,7 @@ To find a suitable permutation for a poset diagram while getting a live preview,
 
 ## Catalogue of finite posets
 
-The following catalogue lists diagrams for all posets up to cardinality 7.
+The following catalogue lists diagrams for all posets up to cardinality 6.
 The total number of distinct partial orders on sets of $$n$$ elements (corresponding to the total page number of each part of the catalogue) is recorded in the OEIS as sequence [A000112](https://oeis.org/A000112).
 All diagrams in the catalogue below are generated with the LaTeX package and the symmetry properties annotated in the catalogue are defined in {% cite Minz:2024a %}.
 
@@ -117,14 +117,6 @@ Each file of the catalogue contains all partial orders on a given number of elem
       <div class="card h-100 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart6_Poset318.png" title="Posets with cardinality 6" class="img-fluid" %}
         <div class="card-body">6&nbsp;elements, 318&nbsp;posets</div>
-      </div>
-    </a>
-  </div>
-  <div class="col">
-    <a href="/assets/pdf/PosetCataloguePart7.pdf">
-      <div class="card h-100 hoverable">
-        {% include figure.liquid path="assets/img/PosetCataloguePart7_Poset2045.png" title="Posets with cardinality 7" class="img-fluid" %}
-        <div class="card-body">7&nbsp;elements, 2045&nbsp;posets</div>
       </div>
     </a>
   </div>
