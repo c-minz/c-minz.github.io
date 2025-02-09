@@ -46,6 +46,28 @@
         "Seminar teaching: 'Theoretische Physik 3: Analytische Mechanik und Elektrodynamik (Lehramt)' (WS 2022)",
         "Scientific co-organisation of the conference <a href='https://www.physik.uni-leipzig.de/~ecqft' target='_blank'>'Energy conditions in quantum field theory'</a> (hosted at Leipzig University, 2022.09)"
       ]
+    },
+    {
+      "name": "PSI Energy Markets GmbH",
+      "position": "Software engineer (Java)",
+      "location": "Berlin, Germany",
+      "url": "https://www.psi.de",
+      "startDate": "2017-09-15",
+      "endDate": "2016-11-15",
+      "summary": "Software development (mainly Java and SQL) as well as customer support for public services, power and gas supply companies, and energy markets."
+    }
+  ],
+  "presentations": [
+    {
+      "event": "DPG Frühjahrestagung, Dresden University of Technology",
+      "eventurl": "https://dresden11.dpg-tagungen.de/",
+      "location": "Dresden, Germany",
+      "startDate": "2011-03-13",
+      "endDate": "2011-03-18",
+      "type": "Poster",
+      "title": "HL 85.13: Statistical Properties of Photon Modes in Random Arrays of ZnO Nano-Needles",
+      "url": "https://www.dpg-verhandlungen.de/year/2011/conference/dresden/part/hl/session/85/contribution/13",
+      "date": "2011-03-17"
     }
   ],
   "education": [
