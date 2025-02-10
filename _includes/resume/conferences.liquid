@@ -42,14 +42,16 @@
               {{ content.event }}
             {% endif %}
           </h6>
-          <h6 class="ml-1 ml-md-4" style="font-size: 0.95rem">
-            <b>{{ content.type }}</b>:
-            {% if content.url %}
-              <a href="{{ content.url }}">{{ content.title }}</a>
-            {% else %}
-              {{ content.title }}
-            {% endif %}
-          </h6>
+          {% if content.title %}
+            <h6 class="ml-1 ml-md-4" style="font-size: 0.95rem">
+              <b>{{ content.type }}</b>:
+              {% if content.url %}
+                <a href="{{ content.url }}">{{ content.title }}</a>
+              {% else %}
+                {{ content.title }}
+              {% endif %}
+            </h6>
+          {% endif %}
           {% if content.summary %}
             <h6 class="ml-1 ml-md-4" style="font-size: 0.95rem; font-style: italic">
               {{ content.summary }}
