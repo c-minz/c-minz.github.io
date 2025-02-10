@@ -59,9 +59,18 @@
   ],
   "conferences": [
     {
+      "event": "Joint SISSA/ICTP seminar",
+      "eventurl": "https://www.statphys.sissa.it/wordpress/?page_id=2626",
+      "location": "Trieste",
+      "type": "Invited talk",
+      "title": "On the mass dependence of modular operators for double cone regions in QFT",
+      "date": "2024-11-19",
+      "summary": "Research visit with another journal club talk 'From classical to quantum fields on discrete spacetimes' to review aspects of causal set theory."
+    },
+    {
       "event": "Seventeenth Marcel Grossmann Meeting (MG17), The Gabriele d'Annunzio University, ICRANet and Aurum",
       "eventurl": "https://indico.icranet.org/event/8",
-      "location": "Pescara, Italy",
+      "location": "Pescara",
       "startDate": "2024-07-07",
       "endDate": "2024-07-12",
       "type": "Contributed talk",
@@ -72,7 +81,7 @@
     {
       "event": "XXI International Congress on Mathematical Physics (ICMP)",
       "eventurl": "https://icmp2024.org",
-      "location": "Strasbourg, France",
+      "location": "Strasbourg",
       "startDate": "2024-07-01",
       "endDate": "2024-07-06",
       "type": "Contributed talk",
@@ -82,25 +91,34 @@
     {
       "event": "48th LQP Workshop and Detlev-Fest, ITP, Leipzig University",
       "eventurl": "https://www.physik.uni-leipzig.de/~lqp48",
-      "location": "Leipzig, Germany",
+      "location": "Leipzig",
       "startDate": "2024-06-05",
       "endDate": "2024-06-08",
-      "date": "2022-09-12",
+      "date": "2024-06-05",
       "summary": "Scientific coorganisation"
     },
     {
-      "event": "Quantum Gravity, Raman Research Institute",
+      "event": "Dublin Institute for Advanced Studies",
+      "location": "Dublin",
+      "type": "Invited talk",
+      "title": "From classical to quantum fields on causal sets",
+      "url": "https://www.dias.ie/2024/05/12/christoph-minz-university-of-leipzig",
+      "date": "2024-05-09",
+      "summary": "Research visit with another journal club talk 'Mass dependence of modular operators for double cones' to review aspects of Tomita-Takesaki modular theory."
+    },
+    {
+      "event": "Quantum Gravity @ Raman Research Institute",
       "eventurl": "https://sites.google.com/view/qgatrri/home",
-      "location": "Bangalore, India",
+      "location": "Bengaluru",
       "startDate": "2023-09-04",
       "endDate": "2023-09-08",
-      "date": "2023-07-11",
+      "date": "2023-09-04",
       "summary": "Invited participation"
     },
     {
       "event": "Quantum Gravity 2023, Radboud University Nijmegen",
       "eventurl": "https://indico.imapp.ru.nl/event/106",
-      "location": "Nijmegen, Netherlands",
+      "location": "Nijmegen",
       "startDate": "2023-07-10",
       "endDate": "2023-07-14",
       "type": "Talk",
@@ -111,7 +129,7 @@
     {
       "event": "Quantum Field Theory in Curved Spacetimes Workshop II",
       "eventurl": "https://sites.google.com/view/qftcsworkshop2023/home",
-      "location": "Granada, Spain",
+      "location": "Granada",
       "startDate": "2023-05-24",
       "endDate": "2023-05-26",
       "type": "Poster",
@@ -121,7 +139,7 @@
     {
       "event": "DPG Frühjahrestagung, Dresden University of Technology",
       "eventurl": "https://smuk23.dpg-tagungen.de",
-      "location": "Dresden, Germany",
+      "location": "Dresden",
       "startDate": "2023-03-20",
       "endDate": "2023-03-24",
       "type": "Talk",
@@ -132,7 +150,7 @@
     {
       "event": "Energy conditions in quantum field theory, ITP, Leipzig University",
       "eventurl": "https://www.physik.uni-leipzig.de/~ecqft",
-      "location": "Leipzig, Germany",
+      "location": "Leipzig",
       "startDate": "2022-09-12",
       "endDate": "2022-09-16",
       "date": "2022-09-12",
@@ -150,7 +168,7 @@
     {
       "event": "Quantum Gravity 2020",
       "eventurl": "https://icmp2024.org",
-      "location": "online (Waterloo, Canada)",
+      "location": "online",
       "startDate": "2020-07-13",
       "endDate": "2020-07-17",
       "type": "Poster",
@@ -160,8 +178,16 @@
       "summary": "Poster price winner, talk: <a href='https://pirsa.org/20070017'>Sprinklings in Causal Set Theory and Local Structures to Discretize Field Propagators</a>"
     },
     {
+      "event": "59th North British Mathematical Physics Seminar",
+      "eventurl": "https://www-users.york.ac.uk/~bv557/NBMPS59.html",
+      "location": "online",
+      "type": "Talk",
+      "title": "Sprinklings in Causal Set Theory and Local Structures to Discretize Field Propagators",
+      "date": "2020-06-22"
+    },
+    {
       "event": "Graduate Research Symposium, Department of Mathematics, University of York",
-      "location": "York, UK",
+      "location": "York",
       "type": "Talk",
       "title": "On the Probability Measure for Sprinkling in Causal Set Theory",
       "date": "2019-05-07",
@@ -170,7 +196,7 @@
     {
       "event": "DPG Frühjahrestagung, Dresden University of Technology",
       "eventurl": "https://dresden11.dpg-tagungen.de",
-      "location": "Dresden, Germany",
+      "location": "Dresden",
       "startDate": "2011-03-13",
       "endDate": "2011-03-18",
       "type": "Poster",
