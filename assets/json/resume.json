@@ -157,6 +157,13 @@
       "summary": "Scientific coorganisation"
     },
     {
+      "event": "Raman Research Institute Seminar",
+      "location": "online (Bengaluru)",
+      "type": "Talk",
+      "title": "Local Structure for the Discretization of the Scalar Field Equations on Sprinkled Causal Sets",
+      "date": "2021-05-17"
+    },
+    {
       "event": "Causal Set Meeting",
       "location": "online",
       "startDate": "2020-08-26",
