@@ -456,10 +456,22 @@
       <div class="form-group">
         <label for="selExportLatexStyle"> Export the LaTeX macros </label>
         <select class="form-control" id="selExportLatexStyle" onChange="updateExport()">
-          <option value="">without labels.</option>
-          <option value="L">with labels.</option>
-          <option value="P">with permutation grid.</option>
-          <option value="X">with permutation grid and labels.</option>
+          <option value="">in default style (normal size).</option>
+          <option value="[labeled]">with labels.</option>
+          <option value="[permutation]">with permutation grid.</option>
+          <option value="[permutation, labeled]">with permutation grid and labels.</option>
+          <option value="[caps]">with caps on links.</option>
+          <option value="[arrows]">with arrows on links.</option>
+          <option value="[tiny]">for a tiny diagram.</option>
+          <option value="[smaller]">for a very small diagram.</option>
+          <option value="[small]">for a small diagram.</option>
+          <option value="[large]">for a large diagram.</option>
+          <option value="[larger]">for a very large diagram.</option>
+          <option value="[huge]">for a huge diagram.</option>
+          <option value="[black colors]">in black/white.</option>
+          <option value="[gray colors]">in shades of gray (default).</option>
+          <option value="[blue colors]">in shades of blue.</option>
+          <option value="[neon colors]">in neon colors.</option>
         </select>
       </div>
       <div class="form-group" id="frmExport_pcauset" hidden>
@@ -887,8 +899,8 @@
     </div>
 
     <p class="sticky-bottom mt-5" role="contentinfo">
-      &copy; Copyright 2024,
-      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2024-10-29).
+      &copy; Copyright 2024-2025,
+      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2025-02-21).
       <br />
       Styled with <a href="https://getbootstrap.com/" target="_blank" rel="external nofollow noopener">Bootstrap</a>. Hosted by
       <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
