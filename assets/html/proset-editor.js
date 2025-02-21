@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 29/10/2024
+// @version: v1.1 21/02/2025
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -1026,7 +1026,7 @@ function getFromLatexMacro(macro) {
     throw new SyntaxError(
       "This value cannot be processed. " +
         "Supported macros are: \\pcauset, \\rcauset and \\causet each followed " +
-        "by an optional L P or X and a square bracket [ or brace {. \n" +
+        "by a square bracket [ or brace {. \n" +
         "Supported macros are also: \\drawpcauset, \\drawrcauset and " +
         "\\drawcauset that must be followed by a brace {."
     );
