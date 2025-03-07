@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 21/02/2025
+// @version: v1.1 07/03/2025
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -90,10 +90,17 @@ function initializeEditor() {
   document.getElementById("butCopyMemoryEntry").disabled = true;
   document.getElementById("butCopyMemory").disabled = true;
   document.getElementById("butCreateInsert").disabled = true;
+  document.getElementById("butRevise").disabled = true;
+  document.getElementById("butMemorize").disabled = true;
   document.getElementById("butUndo").disabled = true;
   document.getElementById("butRedo").disabled = true;
+  document.getElementById("butRaiseOffset").disabled = true;
+  document.getElementById("butLowerOffset").disabled = true;
+  document.getElementById("butReflect").disabled = true;
+  document.getElementById("butOpposite").disabled = true;
   document.getElementById("butOptimize").disabled = true;
   document.getElementById("butTo2Order").disabled = true;
+  document.getElementById("butAddElement").disabled = true;
   const butRemoveElement = document.getElementById("butRemoveElement");
   butRemoveElement.disabled = true;
   butRemoveElement.className = "btn btn-secondary";
@@ -851,6 +858,13 @@ function createNew() {
   addUndoStep();
   window.location.href = "#edit";
   if (document.getElementById("selInputType").value == "coveringslist") optimize();
+  document.getElementById("butRevise").disabled = false;
+  document.getElementById("butMemorize").disabled = false;
+  document.getElementById("butRaiseOffset").disabled = false;
+  document.getElementById("butLowerOffset").disabled = false;
+  document.getElementById("butReflect").disabled = false;
+  document.getElementById("butOpposite").disabled = false;
+  document.getElementById("butAddElement").disabled = false;
 }
 
 function createInsert() {

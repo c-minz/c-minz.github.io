@@ -48,7 +48,7 @@
     <p id="subtitle"><b>p</b>artially (<b>r</b>e)<b>o</b>rdered <b>set</b> editor v1.1</p>
     <div class="alert alert-danger" role="alert" id="msgJavascript">This editor uses JavaScript. Please activated it.</div>
 
-    <!--#######################################################################-->
+    <!--#####################################################################-->
     <a name="import"><h2>Import</h2></a>
     <form>
       <div class="form-group">
@@ -176,7 +176,7 @@
     </form>
     <div class="alert alert-warning" role="alert" id="msgError" hidden></div>
 
-    <!--#######################################################################-->
+    <!--#####################################################################-->
     <a name="edit"><h2>Edit</h2></a>
     <div class="btn-toolbar" role="toolbar" aria-label="Edit toolbar">
       <div class="btn-group mr-2" role="group" aria-label="Global actions">
@@ -188,6 +188,7 @@
           title="Revise the poset as text input"
           id="butRevise"
           onClick="revise()"
+          disabled
         >
           &#x2336; <span class="sr-only">Revise</span>
         </button>
@@ -199,6 +200,7 @@
           title="Add the poset to the input memory"
           id="butMemorize"
           onClick="memorize()"
+          disabled
         >
           &#x2397; <span class="sr-only">Memorize</span>
         </button>
@@ -207,24 +209,24 @@
           class="btn btn-secondary"
           data-toggle="tooltip"
           data-placement="bottom"
-          title="Undo the last action (generate, move/remove/add element/link)"
+          title="Undo the last change (Ctrl+Z)"
           id="butUndo"
           onClick="resetToUndoStep( -1 )"
           disabled
         >
-          &#x2936; <span class="sr-only">Undo</span>
+          &#x276E; <span class="sr-only">Undo</span>
         </button>
         <button
           type="button"
           class="btn btn-secondary"
           data-toggle="tooltip"
           data-placement="bottom"
-          title="Redo the last action (generate, move/remove/add element/link)"
+          title="Redo the last change (Ctrl+Y)"
           id="butRedo"
           onClick="resetToUndoStep( 1 )"
           disabled
         >
-          &#x2937; <span class="sr-only">Redo</span>
+          &#x276F; <span class="sr-only">Redo</span>
         </button>
         <button
           type="button"
@@ -234,6 +236,7 @@
           title="Increase all labels by 1"
           id="butRaiseOffset"
           onClick="changeOffset( 1 )"
+          disabled
         >
           &#x229E; <span class="sr-only">Raise labels</span>
         </button>
@@ -245,6 +248,7 @@
           title="Decrease all labels by 1"
           id="butLowerOffset"
           onClick="changeOffset( -1 )"
+          disabled
         >
           &#x229F; <span class="sr-only">Lower labels</span>
         </button>
@@ -256,6 +260,7 @@
           title="Mirror the diagram horizontally"
           id="butReflect"
           onClick="reflect()"
+          disabled
         >
           &#x2B16; <span class="sr-only">Reflect</span>
         </button>
@@ -267,6 +272,7 @@
           title="Mirror the diagram vertically to get the opposite poset"
           id="butOpposite"
           onClick="turnOpposite()"
+          disabled
         >
           &#x2B19; <span class="sr-only">Opposite</span>
         </button>
@@ -302,6 +308,20 @@
             class="btn btn-secondary"
             data-toggle="tooltip"
             data-placement="bottom"
+            title="Add new element on the right (.)"
+            id="butAddElement"
+            onClick="addElement()"
+            disabled
+          >
+            &#x271B; <span class="sr-only">Add</span>
+          </button>
+        </div>
+        <div class="input-group-prepend">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-toggle="tooltip"
+            data-placement="bottom"
             title="Swap with element to the left"
             id="butSwapLeft"
             onClick="swapLeft()"
@@ -314,7 +334,7 @@
             class="btn btn-secondary"
             data-toggle="tooltip"
             data-placement="bottom"
-            title="Delete the selected element"
+            title="Delete the selected element (Del)"
             id="butRemoveElement"
             onClick="removeElement()"
             disabled
@@ -445,7 +465,7 @@
       </div>
     </div>
 
-    <!--#######################################################################-->
+    <!--#####################################################################-->
     <a name="export"><h2>Export</h2></a>
     <a name="export_latex"><h3>LaTeX macros</h3></a>
     <p>
@@ -526,7 +546,7 @@
       </div>
     </div>
 
-    <!--#######################################################################-->
+    <!--#####################################################################-->
     <a name="help"><h2>Help</h2></a>
     <div class="alert alert-info" role="alert">
       <a name="help_howto"> Note that most posets do not have a unique diagram, though there are only very few <i>good</i> diagrams. </a>
@@ -625,12 +645,12 @@
         <div class="col-10">Add the poset to the input memory so that it can be created/inserted later on.</div>
       </div>
       <div class="row">
-        <div class="col">&#x2936;</div>
-        <div class="col-10">Undo the last actions if it was one of the following: generate, move/remove/add element, remove/add link.</div>
+        <div class="col">&#x276E;</div>
+        <div class="col-10">Undo the last actions (generate/insert poset, move/remove/add element, remove/add link).</div>
       </div>
       <div class="row">
-        <div class="col">&#x2937;</div>
-        <div class="col-10">Redo the last actions if it was one of the following: generate, move/remove/add element, remove/add link.</div>
+        <div class="col">&#x276F;</div>
+        <div class="col-10">Redo the last actions (generate/insert poset, move/remove/add element, remove/add link).</div>
       </div>
       <div class="row">
         <div class="col">&#x229E;</div>
@@ -661,6 +681,10 @@
           Rearrange the elements of a 2-layered poset to minimize link crossings (getting it to a smaller or equal number of link crossing compared to
           any element arrangement with a single element swap on either layer). This function is only available when the poset has two layers.
         </div>
+      </div>
+      <div class="row">
+        <div class="col">&#x271B;</div>
+        <div class="col-10">Add a new element to the right of the diagram.</div>
       </div>
       <div class="row">
         <div class="col">&#x238C;</div>
@@ -900,7 +924,7 @@
 
     <p class="sticky-bottom mt-5" role="contentinfo">
       &copy; Copyright 2024-2025,
-      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2025-02-21).
+      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2025-03-07).
       <br />
       Styled with <a href="https://getbootstrap.com/" target="_blank" rel="external nofollow noopener">Bootstrap</a>. Hosted by
       <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
