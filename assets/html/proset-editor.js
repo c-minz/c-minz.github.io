@@ -1092,8 +1092,7 @@ function setSelection(new_sel) {
   if (new_sel >= 0 && new_sel < n) {
     strSel = String(new_sel + poset.offset);
     let i = poset.permutation.indexOf(new_sel);
-    butSwapLeft.disabled = (i > n - 2) 
-      || (poset.permutation[i + 1] != new_sel - 1);
+    butSwapLeft.disabled = i > n - 2 || poset.permutation[i + 1] != new_sel - 1;
   }
   const butRemoveElement = document.getElementById("butRemoveElement");
   butRemoveElement.disabled = strSel == "" || n == 1;
