@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 07/03/2025
+// @version: v1.1 02/04/2025
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -1092,7 +1092,8 @@ function setSelection(new_sel) {
   if (new_sel >= 0 && new_sel < n) {
     strSel = String(new_sel + poset.offset);
     let i = poset.permutation.indexOf(new_sel);
-    butSwapLeft.disabled = i > n - 2 || poset.permutation[i + 1] != new_sel - 1;
+    butSwapLeft.disabled = (i > n - 2) 
+      || (poset.permutation[i + 1] != new_sel - 1);
   }
   const butRemoveElement = document.getElementById("butRemoveElement");
   butRemoveElement.disabled = strSel == "" || n == 1;
@@ -1414,8 +1415,7 @@ function moveV(moves) {
     let sel = getSelection();
     if (isNaN(sel)) return;
     poset.moveV(sel, moves);
-    redrawPoset();
-    updateExport();
+    setSelection(sel);
     addUndoStep();
   } catch (e) {
     showError(e.message, e instanceof WarningError);
