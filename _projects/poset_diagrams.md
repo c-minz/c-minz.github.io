@@ -73,138 +73,90 @@ Each file of the catalogue contains all partial orders on a given number of elem
 <div class="container">
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCatalogueLegend.pdf">
-            {% include figure.liquid path="assets/img/PosetCatalogueLegend.png" title="Singleton" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Legend</h5>
-            <p class="card-text">Format and legend of each page in the catalogue, showing the diagram in the centre with the LaTeX macro below, as well as some properties in the corners of the page.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCatalogueLegend.pdf">
+        {% include figure.liquid path="assets/img/PosetCatalogueLegend.png" title="Singleton" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Legend</h5>
+        <p class="card-text">Format and legend of each page in the catalogue, showing the diagram in the centre with the LaTeX macro below, as well as some properties in the corners of the page.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart1.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart1_Poset1.png" title="Singleton" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 1</h5>
-            <p class="card-text">The singleton is the only poset with cardinality 1, which is also locally unsymmetric.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart1.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart1_Poset1.png" title="Singleton" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 1</h5>
+        <p class="card-text">The singleton is the only poset with cardinality 1, which is also locally unsymmetric.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart1.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart2_Poset2.png" title="2-chain poset" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 2</h5>
-            <p class="card-text">The file shows diagrams for the 2 posets with cardinality 2, where the 2-chain is locally unsymmetric.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart1.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart2_Poset2.png" title="2-chain poset" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 2</h5>
+        <p class="card-text">The file shows diagrams for the 2 posets with cardinality 2, where the 2-chain is locally unsymmetric.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart3.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart3_Poset5.png" title="3-chain poset" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 3</h5>
-            <p class="card-text">The file shows diagrams for all 5 posets with cardinality 3, including 2 locally unsymmetric posets.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart3.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart3_Poset5.png" title="3-chain poset" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 3</h5>
+        <p class="card-text">The file shows diagrams for all 5 posets with cardinality 3, including 2 locally unsymmetric posets.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart4.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart4_Poset16.png" title="4-chain poset" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 4</h5>
-            <p class="card-text">The file shows diagrams for all 16 posets with cardinality 4, including 5 locally unsymmetric posets.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart4.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart4_Poset16.png" title="4-chain poset" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 4</h5>
+        <p class="card-text">The file shows diagrams for all 16 posets with cardinality 4, including 5 locally unsymmetric posets.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart5.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart5_Poset63.png" title="5-chain poset" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 5</h5>
-            <p class="card-text">The file shows diagrams for all 63 posets with cardinality 5, including 19 locally unsymmetric posets.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart5.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart5_Poset63.png" title="5-chain poset" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 5</h5>
+        <p class="card-text">The file shows diagrams for all 63 posets with cardinality 5, including 19 locally unsymmetric posets.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart6.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart6_Poset318.png" title="6-chain poset" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 6</h5>
-            <p class="card-text">The file shows diagrams for all 318 posets with cardinality 6, including 102 locally unsymmetric posets.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart6.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart6_Poset318.png" title="6-chain poset" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 6</h5>
+        <p class="card-text">The file shows diagrams for all 318 posets with cardinality 6, including 102 locally unsymmetric posets.</p>
       </div>
     </div>
   </div>
   <div class="col">
-    <div class="card mb-3" style="max-width: 500px;">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <a href="/assets/pdf/PosetCataloguePart7.pdf">
-            {% include figure.liquid path="assets/img/PosetCataloguePart7_Poset2045.png" title="7-chain poset" class="img-fluid" %}
-          </a>
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Posets with cardinality 7</h5>
-            <p class="card-text">The file shows diagrams for all 2045 posets with cardinality 7, including 730 locally unsymmetric posets.</p>
-          </div>
-        </div>
+    <div class="card mb-3">
+      <a href="/assets/pdf/PosetCataloguePart7.pdf">
+        {% include figure.liquid path="assets/img/PosetCataloguePart7_Poset2045.png" title="7-chain poset" class="card-img-top" %}
+      </a>
+      <div class="card-body">
+        <h5 class="card-title">Posets with cardinality 7</h5>
+        <p class="card-text">The file shows diagrams for all 2045 posets with cardinality 7, including 730 locally unsymmetric posets.</p>
       </div>
     </div>
   </div>
