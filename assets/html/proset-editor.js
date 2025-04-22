@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 02/04/2025
+// @version: v1.1 22/04/2025
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -1533,6 +1533,7 @@ function to2Order() {
   if (!document.getElementById("frmExport_pcauset").hidden) return;
   poset.resetLinks(true);
   setLinkingSelection(NaN);
+  updateExport();
   addUndoStep();
 }
 
