@@ -2,7 +2,6 @@
 layout: page
 permalink: /projects/
 title: Projects
-description: List of projects from my past, present and future research
 nav: true
 nav_order: 1
 display_categories: [Main research, Side research]
