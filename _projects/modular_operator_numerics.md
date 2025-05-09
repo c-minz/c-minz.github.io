@@ -21,7 +21,7 @@ It is known that one component of the massless modular generator is a multiplica
 
 Taking a very similar approach now for free (Majorana) fermions in two dimensions, the modular Hamiltonian is again well-known as long as the fermions are massless.
 Using a perturbative approach, we computed first-order corrections for free fermions with a small mass.
-We found that the mass corrections to the modular Hamiltonian also include non-local terms, some of which were previously unknown {% cite CadamuroFroebMinz:2023 %}.
+We found that the mass corrections to the modular Hamiltonian also include non-local terms, some of which were previously unknown {% cite CadamuroFroebMinz:2024 %}.
 
 ## Free, massive fermions on a double cone in two dimensions
 
