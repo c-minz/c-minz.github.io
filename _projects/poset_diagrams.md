@@ -9,18 +9,18 @@ related_publications: true
 ---
 
 A [Hasse diagram](https://en.wikipedia.org/wiki/Hasse_diagram) is a graphical representation of a partially ordered set (a set with a transitive, reflexive, antisymmetric ordering), where all elements are drawn as vertices and edges (directed towards the top of the page) connect pairs of vertices $$x$$ and $$y$$ if $$x < y$$ and there is no other element $$z$$ such that $$x < z < y$$.
-Partially ordered sets (or posets for short) appear as an abstract structure in many areas of mathematics, though Hasse diagrams are mostly useful for finite posets.
+Partially ordered sets (or _posets_ for short) appear as an abstract structure in many areas of mathematics, though Hasse diagrams are mostly useful for finite posets.
 
-Apart from pure maths, posets find many applications, for example, spacetime manifolds in physics are equipped with a causal structure that partially orders the elements referred to as spacetime events.
-One may also take discrete spacetime models, like lattices or causal sets.
-A causal set is a poset that is locally finite (where every interval or set of elements $$z$$ between a pair of events $$x < z < y$$ is finite).
-Such structures are not only used for discrete spacetime models, but are also the central objects in the quantum gravity approach of causal set theory, where a spacetime manifold is assumed to be the macroscopic counterpart to ensembles of causal sets (or causets for short).
+In gravitational physics, a spacetime manifold is a poset where the ordering is given by its causal structure that partially orders the spacetime points (events).
+Their discrete analogous are lattices and causal sets (or _causets_ for short), which are locally finite posets, so every set of elements $$z$$ between a pair of events $$x < z < y$$ is finite and thus representable with a Hasse diagram.
+Causal sets are the central objects in an approach to quantum gravity, where a spacetime manifold is considered to be the macroscopic counterpart to ensembles of causal sets at a microscopic level.
 
-Below I give a brief introduction to some tools to create Hasse diagrams for posets and causal sets.
+Below I give a brief introduction to some tools to create and type-set Hasse diagrams for posets and causal sets.
 
 ## LaTeX package: causets
 
-The LaTeX package `causets` {% cite Minz:2020 %} provides macros to draw Hasse diagrams of partially ordered sets (posets) and causal sets (causets). It is available through [CTAN](https://ctan.org/pkg/causets), but if you have a recent full LaTeX installation, then it might be already installed on your system.
+The LaTeX package `causets` {% cite Minz:2020 %} provides macros to type-set Hasse diagrams of partially ordered sets (posets) and causal sets (causets), and use them in graphics.
+It is available through [CTAN](https://ctan.org/pkg/causets), but if you have a recent full LaTeX installation, then it might be already installed on your system.
 For example, it is ready to use on Overleaf.
 Just load the package with
 
@@ -42,8 +42,8 @@ For example, use
 \pcauset{7,6,...,1}  % to insert a 7-antichain
 ```
 
-The diagrams are created with TikZ, so that there are plenty of additional options to label, restyle, and combine the graphics with other TikZ code.
-You may find more information in the [package manual on CTAN](https://ctan.org/pkg/causets) and the [package repository on GitHub](https://github.com/c-minz/LaTeX-causets).
+The diagrams are type-set with TikZ, so that there are plenty of additional options to label, restyle, and combine the graphics with other TikZ code.
+You may find more information in the [package manual via CTAN](http://mirrors.ctan.org/graphics/pgf/contrib/causets/causets.pdf) and the [package repository on GitHub](https://github.com/c-minz/LaTeX-causets).
 
 ## Online editor: PrOSET
 
@@ -74,7 +74,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
   <div class="col">
     <a href="/assets/pdf/PosetCatalogueLegend.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCatalogueLegend.png" title="Legend" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Legend</h5>
@@ -85,7 +85,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart1.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart1_Poset1.png" title="Example page for the singleton" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 1</h5>
@@ -96,7 +96,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart2.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart2_Poset2.png" title="Example page for the 2-chain" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 2</h5>
@@ -107,7 +107,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart3.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart3_Poset5.png" title="Example page for the 3-chain" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 3</h5>
@@ -118,7 +118,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart4.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart4_Poset16.png" title="4-chain poset" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 4</h5>
@@ -129,7 +129,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart5.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart5_Poset63.png" title="Example page for the 5-chain" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 5</h5>
@@ -140,7 +140,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart6.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart6_Poset318.png" title="Example page for the 6-chain" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 6</h5>
@@ -151,7 +151,7 @@ Each file of the catalogue contains all partial orders on a given number of elem
   </div>
   <div class="col">
     <a href="/assets/pdf/PosetCataloguePart7.pdf">
-      <div class="card mb-3">
+      <div class="card mb-3 hoverable">
         {% include figure.liquid path="assets/img/PosetCataloguePart7_Poset2045.png" title="Example page for the 7-chain" class="card-img-top" %}
         <div class="card-body">
           <h5 class="card-title">Posets with cardinality 7</h5>
