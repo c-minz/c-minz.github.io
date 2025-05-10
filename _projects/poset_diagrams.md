@@ -8,11 +8,11 @@ category: side
 related_publications: true
 ---
 
-A [Hasse diagram](https://en.wikipedia.org/wiki/Hasse_diagram) is a graphical representation of a partially ordered set (a set with a transitive, reflexive, antisymmetric ordering), where all elements are drawn as vertices and edges (directed towards the top of the page) connect pairs of vertices $$x$$ and $$y$$ if $$x < y$$ and there is no other element $$z$$ such that $$x < z < y$$.
+A [Hasse diagram](https://en.wikipedia.org/wiki/Hasse_diagram) is a graphical representation of a partially ordered set (a set with a transitive, reflexive, antisymmetric ordering), where all elements are drawn as vertices and edges (directed towards the top of the page) connect pairs of vertices x and y if x < y and there is no other element z such that x < z < y.
 Partially ordered sets (or _posets_ for short) appear as an abstract structure in many areas of mathematics, though Hasse diagrams are mostly useful for finite posets.
 
 In gravitational physics, a spacetime manifold is a poset where the ordering is given by its causal structure that partially orders the spacetime points (events).
-Their discrete analogous are lattices and causal sets (or _causets_ for short), which are locally finite posets, so every set of elements $$z$$ between a pair of events $$x < z < y$$ is finite and thus representable with a Hasse diagram.
+Their discrete analogous are lattices and causal sets (or _causets_ for short), which are locally finite posets, so every set of elements z between a pair of events x < z < y is finite and thus representable with a Hasse diagram.
 Causal sets are the central objects in an approach to quantum gravity, where a spacetime manifold is considered to be the macroscopic counterpart to ensembles of causal sets at a microscopic level.
 
 Below I give a brief introduction to some tools to create and type-set Hasse diagrams for posets and causal sets.
