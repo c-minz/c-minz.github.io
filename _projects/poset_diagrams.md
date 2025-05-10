@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Hasse diagrams
-description: Tools to draw Hasse diagrams of posets and causal sets -the LaTeX package causets, the PrOSET editor, and a catalogue of diagrams
+description: Online tools to create and type-set diagrams of partially ordered sets and causal sets
 img: assets/img/PosetCatalogue_3Crown.png
 importance: 2
 category: side
