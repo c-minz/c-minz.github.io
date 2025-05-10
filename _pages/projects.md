@@ -2,7 +2,7 @@
 layout: page
 permalink: /projects/
 title: Projects
-description: The following project pages summarise some of my (past and ongoing) research projects and provide some additional materials.
+description: The following project pages summarise some of my research projects and provide additional materials.
 nav: true
 nav_order: 1
 display_categories: [Main research, Side research]
