@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Causet sprinkling and field discretization
+title: Sprinkling and local structures
 description: Investigation of the sprinkling process and local structures for the discretization of fields on causal sets
 img: assets/img/CausetLocalStructure.png
 importance: 3
