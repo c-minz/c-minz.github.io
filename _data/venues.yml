@@ -25,3 +25,7 @@
 "IOP: JPA":
   url: https://iopscience.iop.org/journal/1751-8121
   color: "#009434"
+
+"World Scientific: IJMPD":
+  url: https://www.worldscientific.com/worldscinet/ijmpd
+  color: "#0071A3"
