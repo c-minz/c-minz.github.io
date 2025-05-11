@@ -11,6 +11,6 @@ My publications are also listed [on arXiv](https://arxiv.org/search/?searchtype=
 
 <div class="publications">
 
-{% bibliography %}
+{% bibliography --file papers.bib %}
 
 </div>
