@@ -6,6 +6,10 @@
   url: https://ctan.org
   color: "#cccccc"
 
+"DPG Spring Meetings":
+  url: https://www.dpg-physik.de/aktivitaeten-und-programme/tagungen/fruehjahrstagungen
+  color: "#00519d"
+
 "Elsevier: Ann. Phys.":
   url: https://www.sciencedirect.com/journal/annals-of-physics
   color: "#0272b1"
