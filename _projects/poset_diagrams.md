@@ -2,7 +2,7 @@
 layout: page
 title: Hasse diagrams
 description: Tools to create and type-set diagrams of partially ordered sets and causal sets
-img: assets/img/PosetCatalogue_3Crown.png
+img: assets/img/PosetDiagrams_3Crown.png
 importance: 2
 category: side
 related_publications: true
