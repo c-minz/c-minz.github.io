@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Now there is a new separate page with a list of [seminar talks and conference contributions](/talks/) that includes links and some talk materials (for example, handout versions of slides).
+Information about my [seminar talks and conference contributions](/talks/) is now on a new page, which includes links and some talk materials (for example, handout versions of slides).
