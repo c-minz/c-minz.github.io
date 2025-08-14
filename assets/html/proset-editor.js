@@ -1,7 +1,7 @@
 // @author: Christoph Minz
 // @created: 19/02/2024
 // @license: BSD 3-Clause
-// @version: v1.1 22/04/2025
+// @version: v1.1 14/08/2025
 
 // #############################################################################
 // Error handling, progress updates, editor initialization
@@ -1145,21 +1145,6 @@ function initializeCanvas(context, n) {
   context.rotate((45 * Math.PI) / 180);
 }
 
-function drawGrid(context, n) {
-  context.strokeStyle = "#c0c0c0";
-  context.lineWidth = 0.05;
-  for (let i = 0; i <= n; i++) {
-    context.beginPath();
-    context.moveTo(0, i);
-    context.lineTo(n, i);
-    context.stroke();
-    context.beginPath();
-    context.moveTo(i, 0);
-    context.lineTo(i, n);
-    context.stroke();
-  }
-}
-
 const event_size = 0.25;
 const link_width = 0.08;
 const linking_width = 0.14;
@@ -1174,61 +1159,63 @@ const event_linking_color = "#007bff";
 const unlinked_color = "#d0ebff";
 const link_color = "#6c757d";
 
-function redrawPoset() {
-  if (isBusy) return;
-  let canvas = document.getElementById("cnvPoset");
-  let context = canvas.getContext("2d");
-  let sel = getSelection();
-  let sel_v = poset.permutation.indexOf(sel);
-  let linksel = getLinkingSelection();
-  let linksel_v = poset.permutation.indexOf(linksel);
-  let n = poset.count();
-  initializeCanvas(context, n); // setup canvas
-  // draw selection cross
-  if (isShowingCross) {
-    context.strokeStyle = selection_cross_color;
-    context.lineWidth = 1.0;
+function drawCross(context, gridSize, selectionIndex) {
+  context.strokeStyle = selection_cross_color;
+  context.lineWidth = 1.0;
+  context.beginPath();
+  context.moveTo(selectionIndex + 0.5, 0);
+  context.lineTo(selectionIndex + 0.5, gridSize);
+  for (let i = 0; i < gridSize; i++) {
+    if (poset.permutation[i] != selectionIndex) continue;
+    context.moveTo(0, i + 0.5);
+    context.lineTo(gridSize, i + 0.5);
+  }
+  context.stroke();
+}
+
+function drawHoveredTile(context, selectionIndex, hoveredIndex) {
+  let selV = poset.permutation.indexOf(selectionIndex);
+  let u = hover[0];
+  let v = hover[1];
+  if (hoveredIndex === -1) {
+    context.fillStyle = relocation_color;
     context.beginPath();
-    context.moveTo(sel + 0.5, 0);
-    context.lineTo(sel + 0.5, n);
-    for (let i = 0; i < n; i++) {
-      if (poset.permutation[i] != sel) continue;
-      context.moveTo(0, i + 0.5);
-      context.lineTo(n, i + 0.5);
-    }
+    context.ellipse(u + 0.5, v + 0.5, event_hover_size, event_hover_size, 0, 0, 2 * Math.PI);
+    context.ellipse(selectionIndex + 0.5, selV + 0.5, event_hover_size, event_hover_size, 0, 0, 2 * Math.PI);
+    context.fill();
+  } else if (hoveredIndex != selectionIndex) {
+    context.fillStyle = selection_color;
+    context.beginPath();
+    context.ellipse(u + 0.5, v + 0.5, event_hover_size, event_hover_size, 0, 0, 2 * Math.PI);
+    context.fill();
+  }
+}
+
+function drawGrid(context, gridSize) {
+  context.strokeStyle = "#c0c0c0";
+  context.lineWidth = 0.05;
+  for (let i = 0; i <= gridSize; i++) {
+    context.beginPath();
+    context.moveTo(0, i);
+    context.lineTo(gridSize, i);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(i, 0);
+    context.lineTo(i, gridSize);
     context.stroke();
   }
-  // draw howered tile:
-  let hovered_event = -1;
-  let is_hovering = hover.length == 2;
-  if (is_hovering) {
-    let u = hover[0];
-    let v = hover[1];
-    let p = poset.permutation.indexOf(u);
-    if (p === v) hovered_event = u;
-    if (hovered_event === -1) {
-      context.fillStyle = relocation_color;
-      context.beginPath();
-      context.ellipse(u + 0.5, v + 0.5, event_hover_size, event_hover_size, 0, 0, 2 * Math.PI);
-      context.ellipse(sel + 0.5, sel_v + 0.5, event_hover_size, event_hover_size, 0, 0, 2 * Math.PI);
-      context.fill();
-    } else if (hovered_event != sel) {
-      context.fillStyle = selection_color;
-      context.beginPath();
-      context.ellipse(u + 0.5, v + 0.5, event_hover_size, event_hover_size, 0, 0, 2 * Math.PI);
-      context.fill();
-    }
-  }
-  // draw grid
-  if (isShowingGrid) drawGrid(context, n);
-  // draw links
-  for (let i = 0; i < n; i++) {
+}
+
+function drawLinks(context, gridSize, selectionIndex, linkedIndex) {
+  let selV = poset.permutation.indexOf(selectionIndex);
+  let linkedV = poset.permutation.indexOf(linkedIndex);
+  for (let i = 0; i < gridSize; i++) {
     let linked_elements = poset.links[i];
     for (let l = 0; l < linked_elements.length; l++) {
       let j = linked_elements[l];
       context.lineWidth = link_width;
       context.strokeStyle = link_color;
-      if (sel === i && linksel === j) {
+      if (selectionIndex === i && linkedIndex === j) {
         if (linkable === -1) {
           context.lineWidth = linking_width;
           context.strokeStyle = event_linking_color;
@@ -1240,51 +1227,75 @@ function redrawPoset() {
       context.stroke();
     }
   }
-  if (!isNaN(sel) && !isNaN(linksel) && !poset.links[sel].includes(linksel)) {
+  let isLinkPairSelected = !isNaN(selectionIndex) && !isNaN(linkedIndex);
+  if (isLinkPairSelected && !poset.links[selectionIndex].includes(linkedIndex)) {
     context.lineWidth = link_width;
     context.strokeStyle = unlinked_color;
     context.beginPath();
-    context.moveTo(sel + 0.5, sel_v + 0.5);
-    context.lineTo(linksel + 0.5, linksel_v + 0.5);
+    context.moveTo(selectionIndex + 0.5, selV + 0.5);
+    context.lineTo(linkedIndex + 0.5, linkedV + 0.5);
     context.stroke();
   }
-  // draw poset elements (events)
-  for (let i = 0; i < n; i++) {
+}
+
+function drawEventNodes(context, gridSize, selectionIndex, linkedIndex, isHovering, hoveredIndex) {
+  let linkedV = poset.permutation.indexOf(linkedIndex);
+  for (let i = 0; i < gridSize; i++) {
     let p = poset.permutation[i];
     context.fillStyle = event_color;
-    if (hovered_event != sel && hovered_event === p) context.fillStyle = event_hover_color;
-    else if (is_hovering && hovered_event === -1 && p === sel) context.fillStyle = selection_cross_color;
-    else if (p === linksel) context.fillStyle = event_linking_color;
-    else if (p === sel) context.fillStyle = selection_color;
+    if (hoveredIndex != selectionIndex && hoveredIndex === p) context.fillStyle = event_hover_color;
+    else if (isHovering && hoveredIndex === -1 && p === selectionIndex) context.fillStyle = selection_cross_color;
+    else if (p === linkedIndex) context.fillStyle = event_linking_color;
+    else if (p === selectionIndex) context.fillStyle = selection_color;
     context.beginPath();
     context.ellipse(p + 0.5, i + 0.5, event_size, event_size, 0, 0, 2 * Math.PI);
     context.fill();
   }
-  if (!isNaN(linksel) && (!is_hovering || linksel != hover[0] || linksel_v != hover[1])) {
+  if (!isNaN(linkedIndex) && (!isHovering || linkedIndex != hover[0] || linkedV != hover[1])) {
     context.fillStyle = event_color;
     context.beginPath();
-    context.ellipse(linksel + 0.5, linksel_v + 0.5, event_linking_size, event_linking_size, 0, 0, 2 * Math.PI);
+    context.ellipse(linkedIndex + 0.5, linkedV + 0.5, event_linking_size, event_linking_size, 0, 0, 2 * Math.PI);
     context.fill();
   }
-  // draw element labels
-  if (isShowingLabels) {
-    let scaling = canvas.width / n / 2;
-    // context.save();
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.translate(canvas.width / 2, canvas.height);
-    context.font = (canvas.width / n / 3).toString() + "px Arial";
-    context.textAlign = "right";
-    for (let i = 0; i < n; i++) {
-      let p = poset.permutation[i];
-      let x = (p - i - 0.5) * scaling;
-      let y = (p + i + 0.2) * scaling;
-      context.fillStyle = event_color;
-      if (p === sel) context.fillStyle = selection_color;
-      context.beginPath();
-      context.fillText(p + poset.offset, x, -y);
-    }
-    // context.restore();
+}
+
+function drawLabels(canvas, context, gridSize, selectionIndex) {
+  let scaling = canvas.width / gridSize / 2;
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.translate(canvas.width / 2, canvas.height);
+  context.font = (canvas.width / gridSize / 3).toString() + "px Arial";
+  context.textAlign = "right";
+  for (let i = 0; i < gridSize; i++) {
+    let p = poset.permutation[i];
+    let x = (p - i - 0.5) * scaling;
+    let y = (p + i + 0.2) * scaling;
+    context.fillStyle = event_color;
+    if (p === selectionIndex) context.fillStyle = selection_color;
+    context.beginPath();
+    context.fillText(p + poset.offset, x, -y);
   }
+}
+
+function redrawPoset() {
+  if (isBusy) return;
+  let canvas = document.getElementById("cnvPoset");
+  let context = canvas.getContext("2d");
+  let sel = getSelection();
+  let linksel = getLinkingSelection();
+  let n = poset.count();
+  initializeCanvas(context, n);
+  if (isShowingCross) drawCross(context, n, sel);
+  let hovered_event = -1;
+  let is_hovering = hover.length == 2;
+  if (is_hovering) {
+    let p = poset.permutation.indexOf(hover[0]);
+    if (p === hover[1]) hovered_event = hover[0];
+    drawHoveredTile(context, sel, hovered_event);
+  }
+  if (isShowingGrid) drawGrid(context, n);
+  drawLinks(context, n, sel, linksel);
+  drawEventNodes(context, n, sel, linksel, is_hovering, hovered_event);
+  if (isShowingLabels) drawLabels(canvas, context, n, sel);
 }
 
 // #############################################################################
