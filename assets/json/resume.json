@@ -22,16 +22,25 @@
   },
   "work": [
     {
+      "name": "Riemann Center for Geometry and Physics, Leibniz-Universität Hannover",
+      "position": "Riemann fellow",
+      "location": "Hanover, Germany",
+      "url": "https://www.rc.uni-hannover.de",
+      "startDate": "2025-10-15",
+      "endDate": "2026-02-15",
+      "summary": "Working with <a href='https://www.analysis.uni-hannover.de/de/institut/personenverzeichnis/personen-detailansicht/institut-fur-analysis-pkkpg/wissenschaftliche-mitarbeiterinnen-und-mitarbeiter-1-1/dr-jacobus-ambrosius-sanders' target='_blank'>Ko Sanders</a> on bounds of modular Hamiltonians in quantum field theory."
+    },
+    {
       "name": "Scuola Internazionale Superiore di Studi Avanzati (SISSA)",
       "position": "Research visitor",
       "location": "Trieste, Italy",
       "url": "https://www.statphys.sissa.it",
       "startDate": "2024-10-01",
       "endDate": "2025-10-05",
-      "summary": "Working with <a href='https://www.statphys.sissa.it/wordpress/?page_id=1725' target='_blank'>Erik Tonni</a> in a project on entanglement Hamiltonians in quantum field theories, comparing different numerical methods and investigating standard subspaces for a free boson in Minkowski spacetimes with a boundary and higher dimensions."
+      "summary": "Working with <a href='https://www.statphys.sissa.it/wordpress/?page_id=1725' target='_blank'>Erik Tonni</a> on entanglement Hamiltonians in quantum field theory, comparing different numerical methods and investigating standard subspaces for a free boson in Minkowski spacetimes with a boundary and higher dimensions."
     },
     {
-      "name": "Institut für Theoretische Physik, Universität Leipzig (Leipzig University)",
+      "name": "Institut für Theoretische Physik, Universität Leipzig",
       "position": "Research assistant",
       "location": "Leipzig, Germany",
       "url": "https://home.uni-leipzig.de/tet/?page_id=2507",
