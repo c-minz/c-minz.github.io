@@ -22,13 +22,13 @@
   },
   "work": [
     {
-      "name": "Riemann Center for Geometry and Physics, Leibniz-Universität Hannover",
+      "name": "Institut für Analysis (and Riemann Center for Geometry and Physics), Leibniz-Universität Hannover",
       "position": "Riemann fellow",
       "location": "Hanover, Germany",
       "url": "https://www.rc.uni-hannover.de",
       "startDate": "2025-10-15",
       "endDate": "2026-02-15",
-      "summary": "Working with <a href='https://www.analysis.uni-hannover.de/de/institut/personenverzeichnis/personen-detailansicht/institut-fur-analysis-pkkpg/wissenschaftliche-mitarbeiterinnen-und-mitarbeiter-1-1/dr-jacobus-ambrosius-sanders' target='_blank'>Ko Sanders</a> on bounds of modular Hamiltonians in quantum field theory."
+      "summary": "Investigating bounds for relative entropy and modular Hamiltonians in quantum field theory, in collaboration with <a href='https://www.analysis.uni-hannover.de/de/institut/personenverzeichnis/personen-detailansicht/institut-fur-analysis-pkkpg/wissenschaftliche-mitarbeiterinnen-und-mitarbeiter-1-1/dr-jacobus-ambrosius-sanders' target='_blank'>Ko Sanders</a>."
     },
     {
       "name": "Scuola Internazionale Superiore di Studi Avanzati (SISSA)",
@@ -37,16 +37,16 @@
       "url": "https://www.statphys.sissa.it",
       "startDate": "2024-10-01",
       "endDate": "2025-10-05",
-      "summary": "Working with <a href='https://www.statphys.sissa.it/wordpress/?page_id=1725' target='_blank'>Erik Tonni</a> on entanglement Hamiltonians in quantum field theory, comparing different numerical methods and investigating standard subspaces for a free boson in Minkowski spacetimes with a boundary and higher dimensions."
+      "summary": "Extended the previously developed numerical scheme to approximate the modular Hamiltonian of quantum field theories with boundaries and defects, in collaboration with <a href='https://www.statphys.sissa.it/wordpress/?page_id=1725' target='_blank'>Erik Tonni</a>."
     },
     {
-      "name": "Institut für Theoretische Physik, Universität Leipzig",
+      "name": "<a href='https://home.uni-leipzig.de/tet/?page_id=2507' target='_blank'>Emmy Noether research group</a> of <a href='https://home.uni-leipzig.de/tet/?page_id=2486' target='_blank'>Daniela Cadamuro</a>, Institut für Theoretische Physik, Universität Leipzig",
       "position": "Research assistant",
       "location": "Leipzig, Germany",
       "url": "https://home.uni-leipzig.de/tet/?page_id=2507",
       "startDate": "2021-10-15",
       "endDate": "2024-09-30",
-      "summary": "Working in the <a href='https://home.uni-leipzig.de/tet/?page_id=2507' target='_blank'>Emmy Noether research group</a> of <a href='https://home.uni-leipzig.de/tet/?page_id=2486' target='_blank'>Daniela Cadamuro</a> on 'Der quantisierte Energie-Impuls-Tensor'. Developing a new numerical approximation scheme for modular operators of free, massive quantum fields (<a href='https://c-minz.github.io/projects/modular_operator_numerics'>go to the project page</a>).",
+      "summary": "Established a numerical scheme and used analytic perturbation techniques to approximate modular Hamiltonians for (massive) quantum fields in setups where (exact) analytic solutions remain unknown. (<a href='https://c-minz.github.io/projects/modular_operator_numerics'>go to the project page</a>).",
       "highlights": [
         "Supervision of Enzo Ebert (with Rainer Verch, research project and Bachelor thesis 'Tunneling time and entropic measurements', 2023-2024)",
         "Co-supervision of Mark Bradshaw, Elija Engelhardt, and Adam Highfield (summer students with Kasia Rejzner at University of York, 2022-2024)",
@@ -61,7 +61,7 @@
       "url": "https://www.psi.de",
       "startDate": "2016-11-15",
       "endDate": "2017-09-15",
-      "summary": "Software development (mainly Java and SQL) as well as customer support for public services, power and gas supply companies, and energy markets."
+      "summary": "Maintained the PSI software (using Java and SQL) and implemented new customer requests. Rolled out updates and hotfixes to customers (power/gas supply companies and energy markets)."
     }
   ],
   "events": [

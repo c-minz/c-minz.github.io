@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Ph.D. (York). Research visitor at SISSA, Trieste, Italy.
+subtitle: Ph.D. (York). Research in theoretical and mathematical physics.
 
 profile:
   align: right
@@ -16,10 +16,11 @@ social: true # includes social icons at the bottom of the page
 
 I am a researcher in mathematical and theoretical physics. My research work is on
 
-- modular operators, modular Hamiltonian in quantum field theory, using Tomita-Takesaki theory and numerical approximation schemes,
+- modular operators and modular Hamiltonian in quantum field theory,
+- application of modular theory to relative entropy and other entanglement measures,
 - quantum field theory on discrete spacetime models, like causal sets,
-- mathematical aspects of partially ordered sets with applications to causal set theory (an approach to quantum gravity), and
-- other aspects, like relative entropy of states, in quantum field theory mostly using the algebraic framework.
+- mathematical properties of partially ordered sets and causal sets (and their embedding in spacetime manifolds), and
+- other aspects of quantum field theory and other approaches to quantum gravity.
 
 I received my PhD from the University of York, UK in July 2022, where I worked on problems of classical and quantum field theory on causal sets. Many of my research projects involve numerical methods. The source code of these projects and further developments are available through my [repositories](/repositories/).
 
