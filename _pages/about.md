@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: Ph.D. (York). Research in theoretical and mathematical physics.
+subtitle: Ph.D. (York). Researcher in theoretical and mathematical physics.
 
 profile:
   align: right
