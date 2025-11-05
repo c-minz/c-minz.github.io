@@ -170,8 +170,19 @@
             </div>
           </div>
         </div>
-        <button type="button" class="btn btn-primary mb-2" id="butCreateNew" onClick="createNew()">&#x27E1; Create</button>
-        <button type="button" class="btn btn-outline-secondary mb-2" id="butCreateInsert" onClick="createInsert()" disabled>&#x2386; Insert</button>
+        <button type="button" class="btn btn-primary mb-2" id="butCreateNew" title="Create a diagram from the specified input" onClick="createNew()">
+          &#x27E1; Create
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary mb-2"
+          id="butCreateInsert"
+          title="Replace the selected element below with the specified input"
+          onClick="createInsert()"
+          disabled
+        >
+          &#x2386; Insert
+        </button>
       </div>
     </form>
     <div class="alert alert-warning" role="alert" id="msgError" hidden></div>
@@ -185,7 +196,7 @@
           class="btn btn-secondary"
           data-toggle="tooltip"
           data-placement="bottom"
-          title="Revise the poset as text input"
+          title="Copy the poset to the import to revise manually"
           id="butRevise"
           onClick="revise()"
           disabled
@@ -394,11 +405,33 @@
 
     <div class="form-group">
       <div class="input-group input-group-sm" role="toolbar" aria-label="Settings toolbar">
-        <button type="button" class="btn btn-sm btn-light" id="butShowLabels" onClick="updateSettingsButton( 'ShowLabels', true, true )">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butShowLabels"
+          title="Show/hide element labels"
+          onClick="updateSettingsButton( 'ShowLabels', true, true )"
+        >
           Labels
         </button>
-        <button type="button" class="btn btn-sm btn-light" id="butShowCross" onClick="updateSettingsButton( 'ShowCross', true, true )">Cross</button>
-        <button type="button" class="btn btn-sm btn-light" id="butShowGrid" onClick="updateSettingsButton( 'ShowGrid', true, true )">Grid</button>
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butShowCross"
+          title="Show/hide selection cross"
+          onClick="updateSettingsButton( 'ShowCross', true, true )"
+        >
+          Cross
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butShowGrid"
+          title="Show/hide grid lines"
+          onClick="updateSettingsButton( 'ShowGrid', true, true )"
+        >
+          Grid
+        </button>
         <div class="input-group-prepend">
           <div class="input-group-text">Size:</div>
         </div>
@@ -441,7 +474,13 @@
           <div class="input-group-text" id="lblPermutation">0 elements:</div>
         </div>
         <input type="text" class="form-control" id="txtPermutation" readonly />
-        <button type="button" class="btn btn-sm btn-light" id="butCopyPermutation" onClick="copyToClipboard( 'txtPermutation' )">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butCopyPermutation"
+          title="Copy permutation"
+          onClick="copyToClipboard( 'txtPermutation' )"
+        >
           &#x23CD; <span class="sr-only">Copy permutation</span>
         </button>
       </div>
@@ -450,7 +489,7 @@
           <div class="input-group-text" id="lblLinks">0 links:</div>
         </div>
         <input type="text" class="form-control" id="txtLinks" readonly />
-        <button type="button" class="btn btn-sm btn-light" id="butCopyLinks" onClick="copyToClipboard( 'txtLinks' )">
+        <button type="button" class="btn btn-sm btn-light" id="butCopyLinks" title="Copy links" onClick="copyToClipboard( 'txtLinks' )">
           &#x23CD; <span class="sr-only">Copy links</span>
         </button>
       </div>
@@ -459,7 +498,13 @@
           <div class="input-group-text" id="lblRemovedLinks">0 removed links:</div>
         </div>
         <input type="text" class="form-control" id="txtRemovedLinks" readonly />
-        <button type="button" class="btn btn-sm btn-light" id="butCopyRemovedLinks" onClick="copyToClipboard( 'txtRemovedLinks' )">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butCopyRemovedLinks"
+          title="Copy removed links"
+          onClick="copyToClipboard( 'txtRemovedLinks' )"
+        >
           &#x23CD; <span class="sr-only">Copy removed links</span>
         </button>
       </div>
@@ -498,8 +543,14 @@
         <label for="txtExport_pcauset"> Diagram where the links are generated from the permutation of elements (single argument): </label>
         <div class="input-group">
           <input type="text" class="form-control" id="txtExport_pcauset" readonly />
-          <button type="button" class="btn btn-sm btn-light" id="butCopyExportPcauset" onClick="copyToClipboard( 'txtExport_pcauset' )">
-            &#x23CD; <span class="sr-only">Copy pcauset macro</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            id="butCopyExportPcauset"
+            title="Copy as pcauset macro"
+            onClick="copyToClipboard( 'txtExport_pcauset' )"
+          >
+            &#x23CD; <span class="sr-only">Copy as pcauset macro</span>
           </button>
         </div>
       </div>
@@ -509,8 +560,14 @@
         </label>
         <div class="input-group">
           <input type="text" class="form-control" id="txtExport_rcauset" readonly />
-          <button type="button" class="btn btn-sm btn-light" id="butCopyExportRcauset" onClick="copyToClipboard( 'txtExport_rcauset' )">
-            &#x23CD; <span class="sr-only">Copy rcauset macro</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            id="butCopyExportRcauset"
+            title="Copy as rcauset macro"
+            onClick="copyToClipboard( 'txtExport_rcauset' )"
+          >
+            &#x23CD; <span class="sr-only">Copy as rcauset macro</span>
           </button>
         </div>
       </div>
@@ -520,8 +577,14 @@
         </label>
         <div class="input-group">
           <input type="text" class="form-control" id="txtExport_causet" readonly />
-          <button type="button" class="btn btn-sm btn-light" id="butCopyExportCauset" onClick="copyToClipboard( 'txtExport_causet' )">
-            &#x23CD; <span class="sr-only">Copy causet macro</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            id="butCopyExportCauset"
+            title="Copy as causet macro"
+            onClick="copyToClipboard( 'txtExport_causet' )"
+          >
+            &#x23CD; <span class="sr-only">Copy as causet macro</span>
           </button>
         </div>
       </div>
@@ -536,12 +599,27 @@
           <option value="coveringrelations">List of covering relations</option>
           <option value="coveredbyrelations">List of covered by relations</option>
         </select>
-        <button type="button" class="btn btn-secondary mb-2" id="butExportArray" onClick="getExportArray()" width="auto">Compute</button>
+        <button
+          type="button"
+          class="btn btn-secondary mb-2"
+          id="butExportArray"
+          title="Start/cancel computing the matrix or list"
+          onClick="getExportArray()"
+          width="auto"
+        >
+          Compute
+        </button>
       </div>
       <div class="input-group">
         <textarea class="form-control" id="txtExportArray" rows="7" readonly> </textarea>
-        <button type="button" class="btn btn-sm btn-light" id="butCopyExportArray" onClick="copyToClipboard( 'txtExportArray' )">
-          &#x23CD; <span class="sr-only">Copy array</span>
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butCopyExportArray"
+          title="Copy the matrix or list"
+          onClick="copyToClipboard( 'txtExportArray' )"
+        >
+          &#x23CD; <span class="sr-only">Copy the matrix or list</span>
         </button>
       </div>
     </div>
@@ -870,7 +948,7 @@
           </button>
         </h4>
         <div id="release_notes_v1.0" class="accordion-collapse collapse" data-bs-parent="#release_notes">
-          <p>Graphical overhaul and full support for diagrams of any dimenion.</p>
+          <p>Graphical overhaul and full support for diagrams of any dimension.</p>
           <h5>New features</h5>
           <ul>
             <li>Predefined input types: n-chain, n-antichain, random 2-order with n elements, n-fence, n-crown poset, n-sided polygon poset.</li>
@@ -921,7 +999,7 @@
 
     <p class="sticky-bottom mt-5" role="contentinfo">
       &copy; Copyright 2024-2025,
-      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2025-08-14).
+      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2025-11-05).
       <br />
       Styled with <a href="https://getbootstrap.com/" target="_blank" rel="external nofollow noopener">Bootstrap</a>. Hosted by
       <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
