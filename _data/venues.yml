@@ -1,9 +1,39 @@
-"AJP":
-  url: https://aapt.scitation.org/journal/ajp
-  color: "#00369f"
+"APS: PRD":
+  url: https://journals.aps.org/prd
+  color: "#467e91"
 
-"PhysRev":
-  url: https://journals.aps.org/
+"arXiv":
+  url: https://arxiv.org
+  color: "#b31b1b"
 
-"Vision":
-  color: "#009f36"
+"CTAN":
+  url: https://ctan.org
+  color: "#cccccc"
+
+"DPG Spring Meetings":
+  url: https://www.dpg-physik.de/aktivitaeten-und-programme/tagungen/fruehjahrstagungen
+  color: "#00519d"
+
+"Elsevier: Ann. Phys.":
+  url: https://www.sciencedirect.com/journal/annals-of-physics
+  color: "#0272b1"
+
+"IOP: CQG":
+  url: https://iopscience.iop.org/journal/0264-9381
+  color: "#88cabb"
+
+"IOP: JPA":
+  url: https://iopscience.iop.org/journal/1751-8121
+  color: "#009434"
+
+"Springer: AHP":
+  url: https://link.springer.com/journal/23
+  color: "#002457"
+
+"Whiterose":
+  url: https://etheses.whiterose.ac.uk
+  color: "#587898"
+
+"World Scientific: IJMPD":
+  url: https://www.worldscientific.com/worldscinet/ijmpd
+  color: "#0071A3"

@@ -1,34 +1,47 @@
-"adams":
-  - firstname: ["Edwin", "E.", "E. P.", "Edwin Plimpton"]
-    url: https://en.wikipedia.org/wiki/Edwin_Plimpton_Adams
+"borzeszkowski":
+  - firstname: ["Horst-Heino", "H.H.", "H.-H."]
+    url: https://inspirehep.net/authors/2289195
 
-"podolsky":
-  - firstname: ["Boris", "B.", "B. Y.", "Boris Yakovlevich"]
-    url: https://en.wikipedia.org/wiki/Boris_Podolsky
+"bostelmann":
+  - firstname: ["Henning", "H."]
+    url: https://inspirehep.net/authors/1054286
 
-"rosen":
-  - firstname: ["Nathan", "N."]
-    url: https://en.wikipedia.org/wiki/Nathan_Rosen
+"cadamuro":
+  - firstname: ["Daniela", "D."]
+    url: https://inspirehep.net/authors/1259950
 
-"bach":
-  - firstname: ["Johann Sebastian", "J. S."]
-    url: https://en.wikipedia.org/wiki/Johann_Sebastian_Bach
+"chialastri":
+  - firstname: ["Adriano", "A."]
+    url: https://inspirehep.net/authors/3066550
 
-  - firstname: ["Carl Philipp Emanuel", "C. P. E."]
-    url: https://en.wikipedia.org/wiki/Carl_Philipp_Emanuel_Bach
+"chrobok":
+  - firstname: ["Thoralf", "T."]
+    url: https://inspirehep.net/authors/2194670
 
-"przibram":
-  - firstname: ["Karl"]
-    url: https://link.springer.com/article/10.1007/s00016-019-00242-z
+"fewster":
+  - firstname: ["Christopher", "C.", "Christopher J.", "C. J.", "Chris"]
+    url: https://inspirehep.net/authors/1010045
 
-"schrodinger":
-  - firstname: ["Erwin"]
-    url: https://en.wikipedia.org/wiki/Erwin_Schr%C3%B6dinger
+"froeb":
+  - firstname: ["Markus", "M.", "Markus B.", "M. B."]
+    url: https://inspirehep.net/authors/1190040
 
-"lorentz":
-  - firstname: ["Hendrik Antoon"]
-    url: https://en.wikipedia.org/wiki/Hendrik_Lorentz
+"hawkins":
+  - firstname: ["Eli", "Eli John", "E.", "E. J."]
+    url: https://inspirehep.net/authors/1006446
 
-"planck":
-  - firstname: ["Max"]
-    url: https://en.wikipedia.org/wiki/Max_Planck
+"rejzner":
+  - firstname: ["Katarzyna", "K.", "Katarzyna Anna", "Kasia"]
+    url: https://inspirehep.net/authors/1073520
+
+"sanders":
+  - firstname: ["Jacobus", "J. A.", Ko", "K."]
+    url: https://inspirehep.net/authors/1050879
+
+"schellstede":
+  - firstame: ["Gerold", "Gerold O.", "G.", "G. O."]
+    url: https://inspirehep.net/authors/2316171
+
+"tonni":
+  - firstname: ["Erik", "E."]
+    url: https://inspirehep.net/authors/1028903

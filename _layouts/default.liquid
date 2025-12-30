@@ -21,6 +21,14 @@
     {% include header.liquid %}
 
     <!-- Content -->
+    {% if page.toc and page.toc.image %}
+      {% assign toc_image_path = page.toc.image | prepend: 'assets/img/' %}
+      {% if page.toc.image_circular %}
+        {% assign toc_image_class = 'img-fluid z-depth-1 rounded-circle' %}
+      {% else %}
+        {% assign toc_image_class = 'img-fluid z-depth-1 rounded' %}
+      {% endif %}
+    {% endif %}
     <div class="container mt-5" role="main">
       {% if page.toc and page.toc.sidebar %}
         {% if page.toc.sidebar == 'right' %}
@@ -29,6 +37,12 @@
             <div class="col-sm-9">{{ content }}</div>
             <!-- sidebar, which will move to the top on a small screen -->
             <div class="col-sm-3">
+              {% if page.toc.image %}
+                {%
+                  include figure.liquid width="150px" height="auto" loading="eager" style="padding-bottom: 1em;" path=toc_image_path class=toc_image_class alt=page.toc.image
+                  cache_bust=true
+                %}
+              {% endif %}
               <nav id="toc-sidebar" class="sticky-top"></nav>
             </div>
           </div>
@@ -36,6 +50,12 @@
           <div class="row">
             <!-- sidebar, which will move to the top on a small screen -->
             <div class="col-sm-3">
+              {% if page.toc.image %}
+                {%
+                  include figure.liquid width="150px" height="auto" loading="eager" style="padding-bottom: 1em;" path=toc_image_path class=toc_image_class alt=page.toc.image
+                  cache_bust=true
+                %}
+              {% endif %}
               <nav id="toc-sidebar" class="sticky-top"></nav>
             </div>
             <!-- main content area -->

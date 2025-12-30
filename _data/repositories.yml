@@ -1,14 +1,9 @@
-github_users:
-  - torvalds
-  - alshedivat
-
 repo_description_lines_max: 2
 
 github_repos:
-  - alshedivat/al-folio
-  - jekyll/jekyll
-  - twbs/bootstrap
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - mathjax/MathJax
-  - jpswalsh/academicons
+  - c-minz/LaTeX-causets
+  - c-minz/Python-causets
+  - c-minz/Python-causets-examples
+  - c-minz/MATLAB-causets
+  - c-minz/diamondsprinkling
+  - c-minz/diamondresults
