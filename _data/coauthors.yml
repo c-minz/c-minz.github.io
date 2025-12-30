@@ -38,9 +38,17 @@
   - firstname: ["Eli", "Eli John", "E.", "E. J."]
     url: https://inspirehep.net/authors/1006446
 
+"leipold":
+  - firstname: ["David", "D."]
+    url: https://www.researchgate.net/profile/David-Leipold
+
 "rejzner":
-  - firstname: ["Katarzyna", "K.", "Katarzyna Anna", "Kasia"]
+  - firstname: ["Katarzyna", "K.", "Katarzyna Anna", "K. A.", "Kasia"]
     url: https://inspirehep.net/authors/1073520
+
+"runge":
+  - firstname: ["Erich", "E."]
+    url: https://inspirehep.net/authors/2951786
 
 "sanders":
   - firstname: ["Jacobus", "J. A.", Ko", "K."]
