@@ -22,6 +22,14 @@
   - firstname: ["Christopher", "C.", "Christopher J.", "C. J.", "Chris"]
     url: https://inspirehep.net/authors/1010045
 
+"frob":
+  - firstname: ["Markus", "M.", "Markus B.", "M. B."]
+    url: https://inspirehep.net/authors/1190040
+
+"fröb":
+  - firstname: ["Markus", "M.", "Markus B.", "M. B."]
+    url: https://inspirehep.net/authors/1190040
+
 "froeb":
   - firstname: ["Markus", "M.", "Markus B.", "M. B."]
     url: https://inspirehep.net/authors/1190040
