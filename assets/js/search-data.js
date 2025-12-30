@@ -44,7 +44,37 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{id: "projects-modular-operator-numerics",
+        },{id: "news-first-launch-of-the-website",
+          title: 'First launch of the website.',
+          description: "",
+          section: "News",},{id: "news-the-proset-editor-is-now-available-for-online-use",
+          title: 'The PrOSET Editor is now available for online use.',
+          description: "",
+          section: "News",},{id: "news-more-information-on-my-projects-are-now-available-on-separate-pages-the-first-project-page-includes-a-catalogue-of-the-hasse-diagrams-of-all-posets-up-to-cardinality-7-as-supplemental-material-to-my-recent-preprint-local-symmetries-in-partially-ordered-sets",
+          title: 'More information on my projects are now available on separate pages. The first...',
+          description: "",
+          section: "News",},{id: "news-the-proset-editor-received-an-overhaul-and-can-now-visualise-diagrams-for-partially-ordered-sets-of-any-dimension-many-new-options-are-now-available-in-version-v1-0",
+          title: 'The PrOSET Editor received an overhaul and can now visualise diagrams for partially...',
+          description: "",
+          section: "News",},{id: "news-the-second-part-of-my-phd-research-quantization-dequantization-and-distinguished-states-has-now-been-published",
+          title: 'The second part of my PhD research ‘Quantization, dequantization and distinguished states’ has...',
+          description: "",
+          section: "News",},{id: "news-release-of-proset-editor-version-v1-1-including-new-functions-to-create-and-optimise-diagrams-for-2-layer-posets",
+          title: 'Release of PrOSET Editor version v1.1, including new functions to create and optimise...',
+          description: "",
+          section: "News",},{id: "news-release-of-the-latex-package-causets-version-v1-5-with-added-references-to-the-proset-editor-and-preparation-for-the-future-support-by-latexml-for-the-conversion-of-tex-files-to-xml-and-html-see-also-latexml-on-github",
+          title: 'Release of the LaTeX package ‘causets’ version v1.5, with added references to the...',
+          description: "",
+          section: "News",},{id: "news-information-about-my-seminar-talks-and-conference-contributions-are-now-on-a-separate-page-which-includes-links-and-some-talk-materials-for-example-handout-versions-of-slides",
+          title: 'Information about my seminar talks and conference contributions are now on a separate...',
+          description: "",
+          section: "News",},{id: "news-i-have-received-a-riemann-fellowship-to-work-with-ko-sanders-at-the-leibniz-university-hannover-through-the-riemann-center-for-geometry-and-physics",
+          title: 'I have received a Riemann fellowship to work with Ko Sanders at the...',
+          description: "",
+          section: "News",},{id: "news-the-results-of-my-project-with-erik-tonni-are-now-available-on-the-arxiv-in-the-article-modular-hamiltonian-of-the-massive-scalar-field-on-the-half-line-a-numerical-approach",
+          title: 'The results of my project with Erik Tonni are now available on the...',
+          description: "",
+          section: "News",},{id: "projects-modular-operator-numerics",
           title: 'Modular operator numerics',
           description: "Numeric approach to modular operators of free, massive bosons and fermions.",
           section: "Projects",handler: () => {
@@ -60,13 +90,6 @@ ninja.data = [{
           section: "Projects",handler: () => {
               window.location.href = "/projects/sprinkling_discretization/";
             },},{
-        id: 'social-arxiv',
-        title: 'arXiv',
-        section: 'Socials',
-        handler: () => {
-          window.open("https://arxiv.org/a/christoph.minz.html", "_blank");
-        },
-      },{
         id: 'social-email',
         title: 'email',
         section: 'Socials',
