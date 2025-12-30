@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Editor for diagrams of partially ordered sets" />
+    <meta name="author" content="Christoph Minz" />
+    <meta name="keywords" content="partial order, partially ordered set, poset, causal set, causet, Hasse diagram" />
+    <meta name="application-name" content="PrOSET Editor" />
+    <title>PrOSET Editor</title>
+
+    <link rel="stylesheet" href="proset-editor.css" />
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <script type="text/javascript" src="proset-editor.js"></script>
+  </head>
+
+  <body class="fixed-top-nav sticky-bottom-footer container mt-5" style="padding-top: 1.5rem" onload="initializeEditor()">
+    <header>
+      <div class="container fixed-top justify-content-end header-nav-progress">
+        <div
+          class="progress"
+          role="progressbar"
+          aria-label="Progress bar"
+          id="prgBar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="height: 2px"
+        >
+          <div id="prgBarValue" class="progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+      <nav class="nav container fixed-top justify-content-end" role="navigation">
+        <ul class="nav">
+          <li class="nav-item">
+            <div id="prgSymbol" class="progress-symbol"></div>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#import">Import</a></li>
+          <li class="nav-item"><a class="nav-link" href="#edit">Edit</a></li>
+          <li class="nav-item"><a class="nav-link" href="#export">Export</a></li>
+          <li class="nav-item"><a class="nav-link" href="#help">Help</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <h1>P&#x2277;OSET Editor</h1>
+    <p id="subtitle"><b>p</b>artially (<b>r</b>e)<b>o</b>rdered <b>set</b> editor v1.1</p>
+    <div class="alert alert-danger" role="alert" id="msgJavascript">This editor uses JavaScript. Please activated it.</div>
+
+    <!--#####################################################################-->
+    <a name="import"><h2>Import</h2></a>
+    <form>
+      <div class="form-group">
+        <div class="form-group">
+          <label for="selInputType"> Generate a diagram of a partially ordered set from a </label>
+          <select class="form-control" id="selInputType" onChange="selectInputType()">
+            <option value="predefined" selected>predefined type</option>
+            <option value="pcauset">permutation (for a 2-order)</option>
+            <option value="rcauset">permutation and list of removed links</option>
+            <option value="causet">permutation and list of links</option>
+            <option value="latex">LaTeX macro</option>
+            <option value="coveringslist">list of covering relations (for a 2-layered poset)</option>
+            <option value="matrix" hidden>causal matrix</option>
+            <option value="memory">memorized poset</option>
+          </select>
+        </div>
+        <div class="form-group" id="frmInputPredefined" onChange="hideLastError()">
+          <label for="selInputPredefinedType">Predefined type:</label>
+          <div class="form-row">
+            <div class="col-7">
+              <select class="form-control" id="selInputPredefinedType">
+                <option value="chain" selected>n-chain</option>
+                <option value="antichain">n-antichain</option>
+                <option value="random">random 2-order with n elements</option>
+                <option value="fence">n-fence</option>
+                <option value="crown">n-crown poset</option>
+                <option value="polygon">n-sided polygon poset</option>
+                <option value="2lattice">n &times; n lattice subset</option>
+                <option value="simplex" hidden>n-simplex</option>
+              </select>
+            </div>
+            <div class="col-2">
+              <div class="input-group-text" id="lblInputOrder" onClick="txtInputOrder.focus()">n =</div>
+            </div>
+            <div class="col-3">
+              <input type="number" class="form-control" id="txtInputOrder" value="5" min="1" max="50" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="frmInputPermutation">
+          <label for="txtInputPermutation"> Permutation: </label>
+          <input type="text" class="form-control" id="txtInputPermutation" value="1,2,3" />
+        </div>
+        <div class="form-group" id="frmInputRemovedLinks" hidden>
+          <label id="lblInputRemovedLinks" for="txtInputRemovedLinks"> Links removed (from the permutation-generated links): </label>
+          <input type="text" class="form-control" id="txtInputRemovedLinks" />
+        </div>
+        <div class="form-group" id="frmInputLinks" hidden>
+          <label id="lblInputLinks" for="txtInputLinks"> Links: </label>
+          <input type="text" class="form-control" id="txtInputLinks" />
+        </div>
+        <div class="form-group" id="frmInputLatex" hidden>
+          <label id="lblInputLatex" for="txtInputLatex"> LaTeX macro: </label>
+          <input type="text" class="form-control" id="txtInputLatex" />
+        </div>
+        <div class="form-group" id="frmInputCoveringList">
+          <label id="lblInputCoveringList" for="txtInputCoveringList"> List of covering relations: </label>
+          <textarea class="form-control" id="txtInputCoveringList" rows="5"></textarea>
+        </div>
+        <div class="form-group" id="frmInputMatrix" hidden>
+          <label id="lblInputMatrix" for="txtInputMatrix"> Order matrix: </label>
+          <textarea class="form-control" id="txtInputMatrix" rows="5"></textarea>
+        </div>
+        <div class="form-group" id="frmInputMemory">
+          <label id="lblInputMemory" for="selInputMemory"> Poset diagrams in memory: </label>
+          <select class="form-control" id="selInputMemory" size="4"></select>
+          <div class="form-group" role="toolbar" aria-label="Memory toolbar">
+            <div class="input-group mr-2" role="group" aria-label="Memory actions">
+              <div class="btn-group btn-group-sm input-group">
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Remove selected memory entry"
+                  disabled
+                  id="butRemoveMemoryEntry"
+                  onClick="removeMemoryEntry()"
+                >
+                  Remove entry
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Clear the memory"
+                  disabled
+                  id="butClearMemory"
+                  onClick="clearMemory()"
+                >
+                  Remove all
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Copy selected memory entry to the clipboard"
+                  disabled
+                  id="butCopyMemoryEntry"
+                  onClick="copyMemoryEntry()"
+                >
+                  Copy entry
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Copy all memory entries to the clipboard"
+                  disabled
+                  id="butCopyMemory"
+                  onClick="copyMemory()"
+                >
+                  Copy all
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary mb-2" id="butCreateNew" title="Create a diagram from the specified input" onClick="createNew()">
+          &#x27E1; Create
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary mb-2"
+          id="butCreateInsert"
+          title="Replace the selected element below with the specified input"
+          onClick="createInsert()"
+          disabled
+        >
+          &#x2386; Insert
+        </button>
+      </div>
+    </form>
+    <div class="alert alert-warning" role="alert" id="msgError" hidden></div>
+
+    <!--#####################################################################-->
+    <a name="edit"><h2>Edit</h2></a>
+    <div class="btn-toolbar" role="toolbar" aria-label="Edit toolbar">
+      <div class="btn-group mr-2" role="group" aria-label="Global actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Copy the poset to the import to revise manually"
+          id="butRevise"
+          onClick="revise()"
+          disabled
+        >
+          &#x2336; <span class="sr-only">Revise</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Add the poset to the input memory"
+          id="butMemorize"
+          onClick="memorize()"
+          disabled
+        >
+          &#x2397; <span class="sr-only">Memorize</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Undo the last change (Ctrl+Z)"
+          id="butUndo"
+          onClick="resetToUndoStep( -1 )"
+          disabled
+        >
+          &#x276E; <span class="sr-only">Undo</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Redo the last change (Ctrl+Y)"
+          id="butRedo"
+          onClick="resetToUndoStep( 1 )"
+          disabled
+        >
+          &#x276F; <span class="sr-only">Redo</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Increase all labels by 1"
+          id="butRaiseOffset"
+          onClick="changeOffset( 1 )"
+          disabled
+        >
+          &#x229E; <span class="sr-only">Raise labels</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Decrease all labels by 1"
+          id="butLowerOffset"
+          onClick="changeOffset( -1 )"
+          disabled
+        >
+          &#x229F; <span class="sr-only">Lower labels</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Mirror the diagram horizontally"
+          id="butReflect"
+          onClick="reflect()"
+          disabled
+        >
+          &#x2B16; <span class="sr-only">Reflect</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Mirror the diagram vertically to get the opposite poset"
+          id="butOpposite"
+          onClick="turnOpposite()"
+          disabled
+        >
+          &#x2B19; <span class="sr-only">Opposite</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Reset links to those of a 2-order"
+          id="butTo2Order"
+          onClick="to2Order()"
+          disabled
+        >
+          &#x27D0; <span class="sr-only">Auto-link</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Rearrange elements to minimize link crossings"
+          id="butOptimize"
+          onClick="optimize()"
+          disabled
+        >
+          &#x223A; <span class="sr-only">Optimize</span>
+        </button>
+      </div>
+      <div class="input-group" role="group" aria-label="Element actions">
+        <div class="input-group-prepend">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Add new element on the right (.)"
+            id="butAddElement"
+            onClick="addElement()"
+            disabled
+          >
+            &#x271B; <span class="sr-only">Add</span>
+          </button>
+        </div>
+        <div class="input-group-prepend">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Swap with element to the left"
+            id="butSwapLeft"
+            onClick="swapLeft()"
+            disabled
+          >
+            &#x238C; <span class="sr-only">Swap left</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Delete the selected element (Del)"
+            id="butRemoveElement"
+            onClick="removeElement()"
+            disabled
+          >
+            &#x2715; <span class="sr-only">Delete</span>
+          </button>
+        </div>
+        <input
+          type="number"
+          class="form-control"
+          width="auto"
+          style="width: 5rem"
+          aria-label="Selected element"
+          aria-describedby="lblSelection"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Selected element"
+          id="txtSelection"
+          onChange="resetSelection()"
+          value=""
+          min="0"
+          max="10"
+        />
+        <div class="input-group-prepend">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Link/unlink the selected elements"
+            id="butLink"
+            onClick="changeLink()"
+            disabled
+          >
+            &#x2A52; <span class="sr-only">Link/unlink</span>
+          </button>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          width="auto"
+          style="width: 3.5rem"
+          aria-label="Linked element"
+          aria-describedby="lblLinked"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Selected linked/unlinked element"
+          id="txtLinking"
+          readonly
+        />
+      </div>
+    </div>
+
+    <div class="posetcontainer" id="cnvPosetContainer">
+      <canvas id="cnvPoset" width="720" height="720"></canvas>
+    </div>
+
+    <div class="form-group">
+      <div class="input-group input-group-sm" role="toolbar" aria-label="Settings toolbar">
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butShowLabels"
+          title="Show/hide element labels"
+          onClick="updateSettingsButton( 'ShowLabels', true, true )"
+        >
+          Labels
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butShowCross"
+          title="Show/hide selection cross"
+          onClick="updateSettingsButton( 'ShowCross', true, true )"
+        >
+          Cross
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butShowGrid"
+          title="Show/hide grid lines"
+          onClick="updateSettingsButton( 'ShowGrid', true, true )"
+        >
+          Grid
+        </button>
+        <div class="input-group-prepend">
+          <div class="input-group-text">Size:</div>
+        </div>
+        <select class="form-control" id="selRelativeCanvasSize" style="background-color: #e9ecef" onChange="handleResize()">
+          <option value="fill">fill</option>
+          <option value="25">25%</option>
+          <option value="50">50%</option>
+          <option value="75">75%</option>
+          <option value="100" selected>100%</option>
+          <option value="150">150%</option>
+          <option value="200">200%</option>
+          <option value="300">300%</option>
+          <option value="500">500%</option>
+          <option value="750">750%</option>
+          <option value="1000">1000%</option>
+        </select>
+        <div class="input-group-prepend">
+          <div class="input-group-text">to</div>
+        </div>
+        <select class="form-control" id="selAbsoluteCanvasSize" style="background-color: #e9ecef" onChange="handleResize()">
+          <option value="unbounded">unbounded</option>
+          <option value="200">200px</option>
+          <option value="320">320px</option>
+          <option value="480">480px (VGA)</option>
+          <option value="720" selected>720px (HD)</option>
+          <option value="800">800px</option>
+          <option value="960">960px</option>
+          <option value="1080">1080px (Full HD)</option>
+          <option value="1200">1200px</option>
+          <option value="1440">1440px</option>
+          <option value="1600">1600px</option>
+          <option value="2160">2160px (4K UHD)</option>
+          <option value="2400">2400px</option>
+          <option value="2880">2880px (5K UHD)</option>
+          <option value="4320">4320px (8K UHD)</option>
+        </select>
+      </div>
+      <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+          <div class="input-group-text" id="lblPermutation">0 elements:</div>
+        </div>
+        <input type="text" class="form-control" id="txtPermutation" readonly />
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butCopyPermutation"
+          title="Copy permutation"
+          onClick="copyToClipboard( 'txtPermutation' )"
+        >
+          &#x23CD; <span class="sr-only">Copy permutation</span>
+        </button>
+      </div>
+      <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+          <div class="input-group-text" id="lblLinks">0 links:</div>
+        </div>
+        <input type="text" class="form-control" id="txtLinks" readonly />
+        <button type="button" class="btn btn-sm btn-light" id="butCopyLinks" title="Copy links" onClick="copyToClipboard( 'txtLinks' )">
+          &#x23CD; <span class="sr-only">Copy links</span>
+        </button>
+      </div>
+      <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+          <div class="input-group-text" id="lblRemovedLinks">0 removed links:</div>
+        </div>
+        <input type="text" class="form-control" id="txtRemovedLinks" readonly />
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butCopyRemovedLinks"
+          title="Copy removed links"
+          onClick="copyToClipboard( 'txtRemovedLinks' )"
+        >
+          &#x23CD; <span class="sr-only">Copy removed links</span>
+        </button>
+      </div>
+    </div>
+
+    <!--#####################################################################-->
+    <a name="export"><h2>Export</h2></a>
+    <a name="export_latex"><h3>LaTeX macros</h3></a>
+    <p>
+      To use the diagram in a LaTeX document (in math or text mode), load the package <q>causets</q> with <code>\usepackage{causets}</code> and use
+      (one of the) following macros.
+    </p>
+    <div class="form-group" id="frmExportLatex">
+      <div class="form-group">
+        <label for="selExportLatexStyle"> Export the LaTeX macros </label>
+        <select class="form-control" id="selExportLatexStyle" onChange="updateExport()">
+          <option value="">in default style (normal size).</option>
+          <option value="[labeled]">with labels.</option>
+          <option value="[permutation]">with permutation grid.</option>
+          <option value="[permutation, labeled]">with permutation grid and labels.</option>
+          <option value="[caps]">with caps on links.</option>
+          <option value="[arrows]">with arrows on links.</option>
+          <option value="[tiny]">for a tiny diagram.</option>
+          <option value="[smaller]">for a very small diagram.</option>
+          <option value="[small]">for a small diagram.</option>
+          <option value="[large]">for a large diagram.</option>
+          <option value="[larger]">for a very large diagram.</option>
+          <option value="[huge]">for a huge diagram.</option>
+          <option value="[black colors]">in black/white.</option>
+          <option value="[gray colors]">in shades of gray (default).</option>
+          <option value="[blue colors]">in shades of blue.</option>
+          <option value="[neon colors]">in neon colors.</option>
+        </select>
+      </div>
+      <div class="form-group" id="frmExport_pcauset" hidden>
+        <label for="txtExport_pcauset"> Diagram where the links are generated from the permutation of elements (single argument): </label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="txtExport_pcauset" readonly />
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            id="butCopyExportPcauset"
+            title="Copy as pcauset macro"
+            onClick="copyToClipboard( 'txtExport_pcauset' )"
+          >
+            &#x23CD; <span class="sr-only">Copy as pcauset macro</span>
+          </button>
+        </div>
+      </div>
+      <div class="form-group" id="frmExport_rcauset" hidden>
+        <label for="txtExport_rcauset">
+          Diagram where the links are generated from the permutation (first argument) but the links given in the second argument are removed:
+        </label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="txtExport_rcauset" readonly />
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            id="butCopyExportRcauset"
+            title="Copy as rcauset macro"
+            onClick="copyToClipboard( 'txtExport_rcauset' )"
+          >
+            &#x23CD; <span class="sr-only">Copy as rcauset macro</span>
+          </button>
+        </div>
+      </div>
+      <div class="form-group" id="frmExport_causet" hidden>
+        <label for="txtExport_causet">
+          Diagram where the elements are positioned by the permutation (first argument) and all links are specified explicitly (second argument):
+        </label>
+        <div class="input-group">
+          <input type="text" class="form-control" id="txtExport_causet" readonly />
+          <button
+            type="button"
+            class="btn btn-sm btn-light"
+            id="butCopyExportCauset"
+            title="Copy as causet macro"
+            onClick="copyToClipboard( 'txtExport_causet' )"
+          >
+            &#x23CD; <span class="sr-only">Copy as causet macro</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <a name="export_matrix"><h3>Matrices and lists</h3></a>
+    <div class="form-group" id="frmExportArray">
+      <div class="input-group">
+        <select class="form-control" id="selExportArrayType">
+          <option value="linkmatrix">Link matrix</option>
+          <option value="ordermatrix">Order matrix</option>
+          <option value="coveringrelations">List of covering relations</option>
+          <option value="coveredbyrelations">List of covered by relations</option>
+        </select>
+        <button
+          type="button"
+          class="btn btn-secondary mb-2"
+          id="butExportArray"
+          title="Start/cancel computing the matrix or list"
+          onClick="getExportArray()"
+          width="auto"
+        >
+          Compute
+        </button>
+      </div>
+      <div class="input-group">
+        <textarea class="form-control" id="txtExportArray" rows="7" readonly> </textarea>
+        <button
+          type="button"
+          class="btn btn-sm btn-light"
+          id="butCopyExportArray"
+          title="Copy the matrix or list"
+          onClick="copyToClipboard( 'txtExportArray' )"
+        >
+          &#x23CD; <span class="sr-only">Copy the matrix or list</span>
+        </button>
+      </div>
+    </div>
+
+    <!--#####################################################################-->
+    <a name="help"><h2>Help</h2></a>
+    <div class="alert alert-info" role="alert">
+      <a name="help_howto"> Note that most posets do not have a unique diagram, though there are only very few <i>good</i> diagrams. </a>
+    </div>
+    <p>
+      A good diagram is as <b>close to a 2-order</b> (a poset that is the intersection of two total orders) as possible, so that the number of
+      <i>manually removed and added links</i> is minimal. To represent higher dimensional posets, find a corresponding 2-order such that
+      <b>as few links as possible need to be removed</b> from it. For example,
+      <b>all posets with five elements and all but three posets with six elements</b> are 2-orders and have diagrams <b>without removed links</b>. The
+      removed link counter in the status bar under the canvas shows the message <q>too many removed links</q> if it is likely that a diagram can be
+      constructed with less removed links.
+    </p>
+    <p>
+      To find good diagrams, you may use the
+      <a href="#help_toolbar">toolbar</a>, the <a href="#help_mouse">mouse/touchpad</a> or the <a href="#help_keyboard">keyboard</a>.
+    </p>
+
+    <a name="help_import"><h3>Import options</h3></a>
+    <p>Create a diagram from any of the following input types. Note that the number of elements of a diagram is limited.</p>
+    <div class="container" style="padding-bottom: 10pt">
+      <div class="row">
+        <div class="col">predefined type</div>
+        <div class="col-8">
+          Select a predefined type and a numeric value (as cardinality or order parameter). Note that entering a large value is possible via keyboard,
+          but may slow down the editor.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">permutation (for a 2-order)</div>
+        <div class="col-8">Enter a permutation of consecutive integers as a comma-separated list.</div>
+      </div>
+      <div class="row">
+        <div class="col">permutation and list of removed links</div>
+        <div class="col-8">
+          Additionally to a permutation, enter a comma-separated list of link pairs in the format <q>number/number</q> to be excluded when drawing the
+          automatic links from the permutation.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">permutation and list of links</div>
+        <div class="col-8">
+          The permutation is only used to position the elements. A comma-separated list of link pairs (in the format <q>number/number</q>) is used to
+          draw links between the elements.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">LaTeX macro</div>
+        <div class="col-8">
+          Paste a LaTeX macro <code>\pcauset</code>, <code>\rcauset</code>, or <code>\causet</code> followed by (an optional argument enclosed in
+          square brackets <code>[]</code> and) one or two arguments for the permutation and links enclosed in braces <code>{}</code>.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">list of coverings for a 2-layered poset</div>
+        <div class="col-8">
+          With this input type, only posets with two layers can be generated. For each second-layer element, write a line listing the first-layer
+          elements (separated with commas) that are covered by this second-layer element. The elements on the first layer have to be numbered with
+          consecutive integers, so that each first-layer element appears in at least one of the specified lines in the text field (each first-layer
+          element is covered by at least one second-layer element). Empty lines are treated as separate elements that are parallel to the diagram.
+          Once generated, the diagram will be optimised for a diagram with as few crossed links as possible.
+        </div>
+      </div>
+      <div class="row" hidden>
+        <div class="col">order matrix</div>
+        <div class="col-8">
+          Paste a causal matrix, where each row is a comma-separated list of values 0 and 1, and the rows are separeted by a line break.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">memorized poset</div>
+        <div class="col-8">
+          Select an entry from the list to recreate the diagram. Entries are only available if a previously generated diagram has been added to the
+          memory (see button &#x2397; below). Entries can be removed or copied to the clipboard, and the entire memory can be cleared or copied to the
+          clipboard with the buttons under the list.
+        </div>
+      </div>
+    </div>
+    <p>
+      With the button <q>Create</q>, the input data is converted to a diagram. A message is shown and the creation interrupted if an error or warning
+      occurs, for example, a syntax error caused by an incorrect input.
+    </p>
+    <p>
+      The button <q>Insert</q> is only active if another diagram has already been created and an element is selected. This function replaces the
+      selected element with the poset diagram of the input.
+    </p>
+
+    <a name="help_toolbar"><h3>Toolbar functions</h3></a>
+    <div class="container" style="padding-bottom: 10pt">
+      <div class="row">
+        <div class="col">&#x2336;</div>
+        <div class="col-10">Copy the poset back to the input and revise in the input text fields.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x2397;</div>
+        <div class="col-10">Add the poset to the input memory so that it can be created/inserted later on.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x276E;</div>
+        <div class="col-10">Undo the last actions (generate/insert poset, move/remove/add element, remove/add link).</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x276F;</div>
+        <div class="col-10">Redo the last actions (generate/insert poset, move/remove/add element, remove/add link).</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x229E;</div>
+        <div class="col-10">Increase all element labels by 1.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x229F;</div>
+        <div class="col-10">Decrease all element labels by 1.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x2B16;</div>
+        <div class="col-10">Mirror the diagram horizontally, which yields an equivalent diagram.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x2B19;</div>
+        <div class="col-10">Mirror the diagram vertically, which yields a diagram of the opposite poset.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x27D0;</div>
+        <div class="col-10">
+          Reset all links to those of a 2-order with the same element positions. This function is only available when the diagram is not showing a
+          2-order.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">&#x223A;</div>
+        <div class="col-10">
+          Rearrange the elements of a 2-layered poset to minimize link crossings (getting it to a smaller or equal number of link crossing compared to
+          any element arrangement with a single element swap on either layer). This function is only available when the poset has two layers.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">&#x271B;</div>
+        <div class="col-10">Add a new element to the right of the diagram.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x238C;</div>
+        <div class="col-10">
+          Swap the element with the one on the same layer to the left. This function is only available when an element is selected and the swap is
+          possible.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">&#x2715;</div>
+        <div class="col-10">Delete the selected element. This function is only available when an element is selected.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x2A52;</div>
+        <div class="col-10">
+          Link/unlink the selected elements. This function is only available when an element and another link-able element is selected.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">Labels</div>
+        <div class="col-10">Show/hide the element labels.</div>
+      </div>
+      <div class="row">
+        <div class="col">Cross</div>
+        <div class="col-10">Show/hide the selection cross.</div>
+      </div>
+      <div class="row">
+        <div class="col">Grid</div>
+        <div class="col-10">Show/hide the element grid.</div>
+      </div>
+      <div class="row">
+        <div class="col">Size</div>
+        <div class="col-10">
+          Set the relative canvas size as percentage of the page width. Use <q>fill</q> to size the canvas to the maximal value. An absolute height
+          value sets the maximal canvas size. If <q>fill</q> and 'unbounded' is selected, the canvas is sized to 100% of the page width.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">&#x23CD;</div>
+        <div class="col-10">Copy the value of a text field to the clipboard.</div>
+      </div>
+    </div>
+
+    <a name="help_mouse"><h3>Mouse and touchscreen functions</h3></a>
+    <ul>
+      <li>
+        Click on an element (highlighted with a red mark on hover) to select it. If another element is already selected, clicking on a succeeding
+        element that can be linked (connected by an edge) in the diagram, the (possible) link will be selected as well.
+      </li>
+      <li>Click along the row/column going in 45 degree angles away from the selected element to move it there.</li>
+      <li>Click on an empty area to unselect.</li>
+      <li>Double click on an element to replace it by a 2-antichain.</li>
+      <li>Double click on an element while holding the shift key to replace it by a 2-chain.</li>
+    </ul>
+
+    <a name="help_keyboard"><h3>Keyboard functions</h3></a>
+    <p>Shortcuts that are bound to the local keyboard configuration:</p>
+    <div class="container" style="padding-bottom: 10pt">
+      <div class="row">
+        <div class="col">Ctrl Z</div>
+        <div class="col-10">Undo the last action.</div>
+      </div>
+      <div class="row">
+        <div class="col">Ctrl Y</div>
+        <div class="col-10">Redo the last action.</div>
+      </div>
+      <div class="row">
+        <div class="col">Ctrl &#x21E7; Z</div>
+        <div class="col-10">Redo the last action.</div>
+      </div>
+      <div class="row">
+        <div class="col">Del</div>
+        <div class="col-10">Delete the selected element.</div>
+      </div>
+      <div class="row">
+        <div class="col">.</div>
+        <div class="col-10">Add a new element to the right of the diagram and select it.</div>
+      </div>
+    </div>
+    <p>Shortcuts that are bound to the keys of a QWERTY keyboard configuration:</p>
+    <div class="container" style="padding-bottom: 10pt">
+      <div class="row">
+        <div class="col">W</div>
+        <div class="col-10">Select the next element in north-west direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">A</div>
+        <div class="col-10">Select the next element in south-east direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">S</div>
+        <div class="col-10">Select the next element in south-west direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">D</div>
+        <div class="col-10">Select the next element in north-east direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x21E7; W</div>
+        <div class="col-10">Move the selected element in north-west direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x21E7; A</div>
+        <div class="col-10">Move the selected element in south-east direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x21E7; S</div>
+        <div class="col-10">Move the selected element in south-west direction.</div>
+      </div>
+      <div class="row">
+        <div class="col">&#x21E7; D</div>
+        <div class="col-10">Move the selected element in north-east direction.</div>
+      </div>
+    </div>
+
+    <a name="help_about"><h3>About</h3></a>
+    <p>
+      The purpose of this editor is the visualisation of finite partially ordered sets (posets) with Hasse diagrams. Its development started from a
+      research project and it uses the same principle as the
+      <a href="https://ctan.org/pkg/causets" target="_blank">LaTeX package causets</a>. This editor shall serve as a tool to help drawing diagrams
+      with the package, while the package offers many more options to draw, style and modify Hasse diagrams. More information are given in the package
+      manual.
+    </p>
+
+    <a name="help_disclaimer"><h3>Disclaimer</h3></a>
+    <p>This web tool has been tested, but I do not take responsibility for incorrectly represented data.</p>
+    <p>
+      <b>Report a problem or make a suggestion:</b>
+      Please send me a comprehensive problem description and information of your browser (name and version) if you encounter a problem with the
+      editor. I also welcome any suggestions to improve the tool. My <a href="https://c-minz.github.io">contact details</a> are in the bottom of my
+      start page.
+    </p>
+
+    <a name="help_release_notes"><h3>Release notes</h3></a>
+    <div class="accordion" id="release_notes">
+      <div class="accordion-item">
+        <h4 class="accordion-header">
+          <button
+            type="button"
+            class="accordion-button"
+            data-bs-toggle="collapse"
+            data-bs-target="#release_notes_v1.1"
+            aria-expanded="true"
+            aria-controls="release_notes_v1.1"
+            onClick="toggleReleaseNotes( 'v1.1' )"
+          >
+            Version 1.1 &mdash; released 2024-10-02
+          </button>
+        </h4>
+        <div id="release_notes_v1.1" class="accordion-collapse collapse" data-bs-parent="#release_notes">
+          <p>Support of covering relations for 2-layer posets, composition and memorization of diagrams.</p>
+          <h5>New features</h5>
+          <ul>
+            <li>Predefined input type: n &times; n lattice subset.</li>
+            <li>Input types: list of covering relations (for a 2-layer poset), memorized posets.</li>
+            <li>Option to insert a diagram at a selected element.</li>
+            <li>Memorization of diagrams.</li>
+            <li>Functions to optimize and rearrange elements in a 2-layer poset.</li>
+            <li>Shortcut support for undo/redo.</li>
+            <li>Status bar information: layer count (length of the longest chain), link count, removed link count.</li>
+            <li>Export covering relations.</li>
+            <li>Showing progress while computing export arrays.</li>
+          </ul>
+          <h5>Modifications</h5>
+          <ul>
+            <li>Elements can be unlinked even if it makes them maximal/minimal for more flexibility when linking.</li>
+            <li>Improved link recovering, when moving elements.</li>
+            <li>Updated button symbols.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h4 class="accordion-header">
+          <button
+            type="button"
+            class="accordion-button"
+            data-bs-toggle="collapse"
+            data-bs-target="#release_notes_v1.0"
+            aria-expanded="true"
+            aria-controls="release_notes_v1.0"
+            onClick="toggleReleaseNotes( 'v1.0' )"
+          >
+            Version 1.0 &mdash; released 2024-08-05
+          </button>
+        </h4>
+        <div id="release_notes_v1.0" class="accordion-collapse collapse" data-bs-parent="#release_notes">
+          <p>Graphical overhaul and full support for diagrams of any dimension.</p>
+          <h5>New features</h5>
+          <ul>
+            <li>Predefined input types: n-chain, n-antichain, random 2-order with n elements, n-fence, n-crown poset, n-sided polygon poset.</li>
+            <li>Input types: permutation and list of removed links, permutation and list of links, LaTeX macro.</li>
+            <li>Support of an integer permutation with an arbitrary lower bound. Element labels can be raise and lower via the toolbar.</li>
+            <li>Syntax checking of input, and warning if a large diagram is being generated.</li>
+            <li>Full mouse/touchscreen support to select, move, and dublicate elements.</li>
+            <li>Undo/redo functionality.</li>
+            <li>Linking/unlinking pairs of elements. Reset links to those of a 2-order.</li>
+            <li>Status bars with information on cardinality, permutation, links, and removed links.</li>
+            <li>Canvas size setting (relative and absolute) in status bar.</li>
+            <li>Export order matrix and link matrix.</li>
+          </ul>
+          <h5>Modifications</h5>
+          <ul>
+            <li>
+              Export to LaTeX macros can be chosen with a selector to get a diagram without labels, with labels, with permutation grid, or with
+              permutation grid and labels.
+            </li>
+            <li>Settings to show/hide labels, selection cross, and grid are below the canvas.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h4 class="accordion-header">
+          <button
+            type="button"
+            class="accordion-button"
+            data-bs-toggle="collapse"
+            data-bs-target="#release_notes_v0.1"
+            aria-expanded="true"
+            aria-controls="release_notes_v0.1"
+            onClick="toggleReleaseNotes( 'v0.1' )"
+          >
+            Version 0.1 (beta) &mdash; released 2024-05-26
+          </button>
+        </h4>
+        <div id="release_notes_v0.1" class="accordion-collapse collapse" data-bs-parent="#release_notes">
+          <p>
+            Beta version to draw diagrams of 2-orders from a permutation input (required to start with 1) and without syntax check. The elements of a
+            diagram could be selected and moved, removed and new ones added (by keyboard and button controls). The diagram could be converted into its
+            opposite (reflected vertically) and reflected horizontally. The export output only supported the <code>\pcauset</code> macro. It was under
+            development as alpha version since 2024/02/22.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="sticky-bottom mt-5" role="contentinfo">
+      &copy; Copyright 2024-2025,
+      <a href="https://c-minz.github.io">Christoph Minz</a>. PrOSET editor version v1.1 (revision 2025-11-05).
+      <br />
+      Styled with <a href="https://getbootstrap.com/" target="_blank" rel="external nofollow noopener">Bootstrap</a>. Hosted by
+      <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+      <a href="https://c-minz.github.io/impressum">Impressum</a>.
+    </p>
+  </body>
+</html>
