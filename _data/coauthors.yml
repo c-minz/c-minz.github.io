@@ -2,6 +2,10 @@
   - firstname: ["Horst-Heino", "H.H.", "H.-H."]
     url: https://inspirehep.net/authors/2289195
 
+"von borzeszkowski":
+  - firstname: ["Horst-Heino", "H.H.", "H.-H."]
+    url: https://inspirehep.net/authors/2289195
+
 "bostelmann":
   - firstname: ["Henning", "H."]
     url: https://inspirehep.net/authors/1054286
@@ -55,7 +59,7 @@
     url: https://inspirehep.net/authors/1050879
 
 "schellstede":
-  - firstame: ["Gerold", "Gerold O.", "G.", "G. O."]
+  - firstname: ["Gerold", "Gerold O.", "G.", "G. O."]
     url: https://inspirehep.net/authors/2316171
 
 "tonni":
