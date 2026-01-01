@@ -23,3 +23,9 @@ $max-content-width: {{ site.max_width }};
   "tabler-icons/tabler-icons-filled.scss",
   "tabler-icons/tabler-icons-outline.scss"
 ;
+
+pre,
+pre code {
+  white-space: pre-wrap !important;
+}
+
