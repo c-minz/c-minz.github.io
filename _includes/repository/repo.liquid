@@ -1,47 +1,71 @@
 {% assign repo_url = include.repository | split: '/' %}
-{% if site.data.repositories.github_users contains repo_url.first %}
-  {% assign show_owner = false %}
-{% else %}
-  {% assign show_owner = true %}
-{% endif %}
+{% assign data = site.data.github_repos.repos[include.repository] %}
 
-{% assign lang = site.lang | split: '-' | first %}
-
-{% case lang %}
-  {% when 'pt' %}
-    {% assign lang = site.lang %}
-
-  {% when 'zh' %}
-    {% assign lang_last = site.lang | split: '-' | last %}
-    {% case lang_last %}
-      {% when 'cn', 'sg', 'my', 'hans' %}
-        {% assign lang = 'cn' %}
-      {% when 'tw', 'hk', 'mo', 'hant' %}
-        {% assign lang = 'zh-tw' %}
-    {% endcase %}
-
-    {% comment %} Add a new language using when... if needed {% endcomment %}
-    {% comment %} If you still encounter language-display issues, check the available locale codes in github-readme-stats (different from ISO-639 standard used in your website) {% endcomment %}
-    {% comment %} https://github.com/anuraghazra/github-readme-stats?tab=readme-ov-file#available-locales {% endcomment %}
-{% endcase %}
-
-{% if site.data.repositories.repo_description_lines_max %}
-  {% assign max_lines = site.data.repositories.repo_description_lines_max %}
-{% else %}
-  {% assign max_lines = 2 %}
-{% endif %}
-
-<div class="repo p-2 text-center">
-  <a href="https://github.com/{{ include.repository }}">
-    <img
-      class="only-light w-100"
-      alt="{{ include.repository }}"
-      src="https://github-readme-stats.vercel.app/api/pin/?username={{ repo_url[0] }}&repo={{ repo_url[1] }}&theme={{ site.repo_theme_light }}&locale={{ lang }}&show_owner={{ show_owner }}&description_lines_count={{ max_lines }}"
-    >
-    <img
-      class="only-dark w-100"
-      alt="{{ include.repository }}"
-      src="https://github-readme-stats.vercel.app/api/pin/?username={{ repo_url[0] }}&repo={{ repo_url[1] }}&theme={{ site.repo_theme_dark }}&locale={{ lang }}&show_owner={{ show_owner }}&description_lines_count={{ max_lines }}"
-    >
-  </a>
+<div class="col">
+  <div class="card mb-3 hoverable">
+    <div class="card-body">
+      <a href="https://github.com/{{ include.repository }}">
+        <h3 class="card-title">{{ repo_url[1] }}</h3>
+      </a>
+      <p class="card-text">{{ data.description }}</p>
+      {% if data.homepage %}
+        <p>
+          <i class="sr-only">Link</i>
+          <i class="fa-solid fa-link fa-sm"></i>
+          <a href="{{ data.homepage }}" title="Homepage">{{ data.homepage }}</a>
+        </p>
+      {% endif %}
+      {% if data.latest_release %}
+        <p>
+          <i class="sr-only">Latest release</i>
+          <i class="fa-solid fa-tag fa-sm"></i>
+          <a href="https://github.com/{{ include.repository }}/releases/{{ data.latest_release_tag }}" title="Latest release">
+            {{- data.latest_release -}}
+          </a>
+        </p>
+      {% endif %}
+      {% if data.topics %}
+        <p>
+          {% for topic in data.topics %}
+            <a href="https://github.com/topics/{{ topic }}" title="Topic: {{ topic }}" class="badge badge-primary">
+              {{ topic }}
+            </a>
+          {% endfor %}
+        </p>
+      {% endif %}
+      <p>
+        {% if data.languages and data.languages.size > 1 %}
+          <i class="sr-only">Languages</i>
+          <i class="fa-solid fa-code fa-sm" title="Languages"></i>
+          {% for language in data.languages limit: 3 %}
+            {{ language }}
+            &nbsp;
+          {% endfor %}
+          &nbsp;&nbsp;
+        {% elsif data.main_language %}
+          <span style="white-space: nowrap">
+            <i class="sr-only">Language</i>
+            <i class="fa-solid fa-code fa-sm" title="Language"></i>
+            {{ data.main_language }}
+          </span>
+          &nbsp;&nbsp;
+        {% endif %}
+        {% if data.stargazers_count and data.stargazers_count > 0 %}
+          <span style="white-space: nowrap">
+            <i class="sr-only">Stars</i>
+            <i class="fa-regular fa-star fa-sm" title="Stargazers count"></i>
+            {{ data.stargazers_count }}
+          </span>
+          &nbsp;&nbsp;
+        {% endif %}
+        {% if data.forks_count and data.forks_count > 0 %}
+          <span style="white-space: nowrap">
+            <i class="sr-only">Forks</i>
+            <i class="fa-solid fa-code-fork fa-sm" title="Forks count"></i>
+            {{ data.forks_count }}
+          </span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
 </div>

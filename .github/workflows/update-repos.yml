@@ -1,0 +1,96 @@
+name: Update GitHub repo data
+
+on:
+  schedule:
+    - cron: "0 0 * * 5" # Friday
+  workflow_dispatch:
+
+jobs:
+  update-repos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          echo "🔧 Installing dependencies..."
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Save current github_repos.yml hash
+        id: before
+        run: |
+          echo "📦 Checking existing github_repos.yml hash..."
+          if [ -f _data/github_repos.yml ]; then
+            sha_before=$(sha256sum _data/github_repos.yml | awk '{print $1}')
+            echo "sha_before=$sha_before" >> $GITHUB_OUTPUT
+            echo "📝 SHA before: $sha_before"
+          else
+            echo "sha_before=none" >> $GITHUB_OUTPUT
+            echo "📝 No existing github_repos.yml file found."
+          fi
+
+      - name: Run repos update script
+        id: run_github_repos
+        shell: bash
+        run: |
+          set +e
+          echo "🚀 Running repos update script (single attempt)..."
+          start_time=$(date)
+          timeout 90 python bin/update_github_repos.py
+          status=$?
+          end_time=$(date)
+          if [ $status -eq 0 ]; then
+            echo "✅ Repos update succeeded (started at $start_time, ended at $end_time)."
+            echo "✅ Repos update succeeded." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Repos update script failed with exit code $status (started at $start_time, ended at $end_time)."
+            echo "❌ Repos update script failed with exit code $status." >> $GITHUB_STEP_SUMMARY
+          fi
+          set -e
+
+      - name: Save new github_repos.yml hash
+        id: after
+        run: |
+          echo "🔍 Checking updated github_repos.yml hash..."
+          if [ -f _data/github_repos.yml ]; then
+            sha_after=$(sha256sum _data/github_repos.yml | awk '{print $1}')
+            echo "sha_after=$sha_after" >> $GITHUB_OUTPUT
+            echo "📝 SHA after: $sha_after"
+          else
+            echo "sha_after=none" >> $GITHUB_OUTPUT
+            echo "📝 github_repos.yml was not created or is missing."
+          fi
+
+      - name: Report github_repos.yml change in summary
+        run: |
+          echo "📋 Comparing repos file hashes..."
+          if [ "${{ steps.before.outputs.sha_before }}" != "${{ steps.after.outputs.sha_after }}" ]; then
+            echo "✅ _data/github_repos.yml was updated."
+            echo "✅ _data/github_repos.yml was updated." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ _data/github_repos.yml was not changed."
+            echo "ℹ️ _data/github_repos.yml was not changed." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          echo "🔧 Git configured."
+
+      - name: Commit and push if changed
+        run: |
+          git add _data/github_repos.yml
+          git diff --staged --quiet || (
+            echo "📤 Committing and pushing changes..."
+            git commit -m "Update GitHub repos metadata"
+            git push
+          )

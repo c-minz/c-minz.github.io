@@ -7,6 +7,7 @@ _site
 .ruby-version
 .tweet-cache
 .project
+.pydevproject
 .settings/
 public/
 Gemfile.lock
