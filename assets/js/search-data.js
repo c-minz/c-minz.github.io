@@ -111,6 +111,13 @@ ninja.data = [{
           window.open("https://inspirehep.net/authors/1414160", "_blank");
         },
       },{
+        id: 'social-mastodon',
+        title: 'Mastodon',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://mastodon.social/@cminz", "_blank");
+        },
+      },{
         id: 'social-orcid',
         title: 'ORCID',
         section: 'Socials',
