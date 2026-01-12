@@ -1,9 +1,10 @@
 repo_description_lines_max: 2
 
 github_repos:
-  - c-minz/LaTeX-causets
   - c-minz/Python-causets
   - c-minz/Python-causets-examples
+  - c-minz/LaTeX-causets
+  - c-minz/LaTeXML
   - c-minz/MATLAB-causets
   - c-minz/diamondsprinkling
   - c-minz/diamondresults

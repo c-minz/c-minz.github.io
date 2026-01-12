@@ -1,12 +1,26 @@
+{% assign github_username = site.data.socials.github_username %}
 {% assign repo_url = include.repository | split: '/' %}
 {% assign data = site.data.github_repos.repos[include.repository] %}
 
 <div class="col">
   <div class="card mb-3 hoverable">
     <div class="card-body">
-      <a href="https://github.com/{{ include.repository }}">
-        <h3 class="card-title">{{ repo_url[1] }}</h3>
-      </a>
+      {% if github_username == repo_url[0] %}
+        <a href="https://github.com/{{ include.repository }}">
+          <h3 class="card-title">{{ repo_url[1] }}</h3>
+        </a>
+      {% else %}
+        <a href="https://github.com/{{ include.repository }}">
+          <h3 class="card-title">
+            <span style="color: var(--global-theme-color);">{{ repo_url[0] }}</span>/{{ repo_url[1] }}
+          </h3>
+        </a>
+      {% endif %}
+      {% if data.fork %}
+        <p class="card-text">
+          forked from <a href="https://github.com/{{ data.parent_full_name }}">{{ data.parent_full_name }}</a>
+        </p>
+      {% endif %}
       <p class="card-text">{{ data.description }}</p>
       {% if data.homepage %}
         <p>
@@ -55,6 +69,14 @@
             <i class="sr-only">Stars</i>
             <i class="fa-regular fa-star fa-sm" title="Stargazers count"></i>
             {{ data.stargazers_count }}
+          </span>
+          &nbsp;&nbsp;
+        {% endif %}
+        {% if data.subscribers_count and data.subscribers_count > 0 %}
+          <span style="white-space: nowrap">
+            <i class="sr-only">Subscribers</i>
+            <i class="fa-regular fa-eye fa-sm" title="Subscribers count"></i>
+            {{ data.subscribers_count }}
           </span>
           &nbsp;&nbsp;
         {% endif %}

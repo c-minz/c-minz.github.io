@@ -17,10 +17,13 @@ def fetch_github_repo_data(repo_full_name: str) -> dict:
     Returns:
         dict: {
             "description": str | None,
+            "fork": bool,
+            "parent_full_name": str | None, (optional)
             "homepage": str, (optional)
             "main_language": str | None,
             "stargazers_count": int,
             "watchers_count": int,
+            "subscribers_count": int,
             "forks_count": int,
             "topics": list[str],
             "languages": list[str], (optional),
@@ -50,14 +53,18 @@ def fetch_github_repo_data(repo_full_name: str) -> dict:
     data = response.json()
     selected_data = {
         "description": data.get("description"),
+        "fork": data.get("fork", False),
         "main_language": data.get("language"),
         "stargazers_count": data.get("stargazers_count", 0),
         "watchers_count": data.get("watchers_count", 0),
+        "subscribers_count": data.get("subscribers_count", 0),
         "forks_count": data.get("forks_count", 0),
         "topics": data.get("topics", []),
     }
     if ("homepage" in data) and data.get("homepage"):
         selected_data["homepage"] = data.get("homepage")
+    if ("parent" in data) and data.get("parent"):
+        selected_data["parent_full_name"] = data.get("parent").get("full_name")
     
     # Get languages:
     url = f"https://api.github.com/repos/{repo_full_name}/languages"

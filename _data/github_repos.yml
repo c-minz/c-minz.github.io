@@ -1,18 +1,20 @@
 metadata:
-  last_updated: '2026-01-09'
+  last_updated: '2026-01-12'
 repos:
   c-minz/LaTeX-causets:
     description: Package of macros to typeset (Hasse) diagrams of partially ordered sets in LaTeX, with main application to causal sets (causets). The package uses TikZ and includes various style options to customize the diagrams.
+    fork: false
     forks_count: 0
     homepage: https://ctan.org/pkg/causets
     languages:
-    - TeX&nbsp;(53.4%)
-    - HTML&nbsp;(45.9%)
-    - Perl&nbsp;(0.7%)
+    - HTML&nbsp;(67.2%)
+    - TeX&nbsp;(32.4%)
+    - Perl&nbsp;(0.4%)
     latest_release: v1.5, 2025-02-24
     latest_release_tag: v1.5
-    main_language: TeX
+    main_language: HTML
     stargazers_count: 2
+    subscribers_count: 1
     topics:
     - causal-set-theory
     - causal-sets
@@ -28,13 +30,38 @@ repos:
     - poset
     - posets
     watchers_count: 2
+  c-minz/LaTeXML:
+    description: 'LaTeXML: a TeX and LaTeX to XML/HTML/ePub/MathML translator.'
+    fork: true
+    forks_count: 0
+    homepage: http://dlmf.nist.gov/LaTeXML/
+    languages:
+    - Perl&nbsp;(85.7%)
+    - TeX&nbsp;(8.7%)
+    - XSLT&nbsp;(4.5%)
+    - CSS&nbsp;(0.6%)
+    - HTML&nbsp;(0.2%)
+    - Shell&nbsp;(0.1%)
+    - Tcl&nbsp;(0.1%)
+    - Dockerfile&nbsp;(0.1%)
+    - Raku&nbsp;(0.1%)
+    - Python&nbsp;(0.0%)
+    - JavaScript&nbsp;(0.0%)
+    main_language: null
+    parent_full_name: brucemiller/LaTeXML
+    stargazers_count: 0
+    subscribers_count: 1
+    topics: []
+    watchers_count: 0
   c-minz/MATLAB-causets:
     description: Classes and functions to generate and visualize causal sets, and analyze their properties in MATLAB. The class structure is identical to the Python library in the repository c-minz/Python-causets (which was developed later).
+    fork: false
     forks_count: 0
     languages:
     - MATLAB&nbsp;(100.0%)
     main_language: MATLAB
     stargazers_count: 0
+    subscribers_count: 1
     topics:
     - causal-sets
     - causets
@@ -42,24 +69,28 @@ repos:
     watchers_count: 0
   c-minz/Python-causets:
     description: Modules with classes and functions to generate and visualize causal sets with Python (written in version 3.8 with mypy typing support).
+    fork: false
     forks_count: 3
     languages:
     - Python&nbsp;(100.0%)
     main_language: Python
-    stargazers_count: 6
+    stargazers_count: 7
+    subscribers_count: 1
     topics:
     - causal-sets
     - causets
     - quantum-gravity
     - sprinkling
-    watchers_count: 6
+    watchers_count: 7
   c-minz/Python-causets-examples:
     description: Plot and animation examples for the repository c-minz/Python-causets written in Python (version 3.8 with mypy typing support).
+    fork: false
     forks_count: 1
     languages:
     - Python&nbsp;(100.0%)
     main_language: Python
     stargazers_count: 2
+    subscribers_count: 1
     topics:
     - causal-set-theory
     - causal-sets
@@ -68,12 +99,14 @@ repos:
     watchers_count: 2
   c-minz/diamondresults:
     description: Source code for the plotting of results from the causal set sprinkling simulations with MATLAB and LaTeX, developed during my PhD research at the University of York. Part 2/2 (see Readme file for more information).
+    fork: false
     forks_count: 0
     languages:
     - TeX&nbsp;(65.4%)
     - MATLAB&nbsp;(34.6%)
     main_language: TeX
     stargazers_count: 0
+    subscribers_count: 1
     topics:
     - causal-sets
     - causets
@@ -85,12 +118,14 @@ repos:
     watchers_count: 0
   c-minz/diamondsprinkling:
     description: Source code for the causal set sprinkling simulations with MATLAB, developed during my PhD research at the University of York. Part 1/2 (see Readme file for more information).
+    fork: false
     forks_count: 0
     languages:
     - MATLAB&nbsp;(93.5%)
     - Shell&nbsp;(6.5%)
     main_language: MATLAB
     stargazers_count: 1
+    subscribers_count: 1
     topics:
     - causal-sets
     - causets
