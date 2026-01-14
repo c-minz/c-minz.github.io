@@ -5,17 +5,23 @@
 <div class="col">
   <div class="card mb-3 hoverable">
     <div class="card-body">
-      {% if github_username == repo_url[0] %}
-        <a href="https://github.com/{{ include.repository }}">
-          <h3 class="card-title">{{ repo_url[1] }}</h3>
-        </a>
-      {% else %}
-        <a href="https://github.com/{{ include.repository }}">
+      <a href="https://github.com/{{ include.repository }}">
+        {% if github_username == repo_url[0] %}
+          {% if data.fork %}
+            <h3 class="card-title">
+              <i class="fa-solid fa-code-fork fa-sm"></i>
+              {{ repo_url[1] }}
+            </h3>
+          {% else %}
+            <h3 class="card-title">{{ repo_url[1] }}</h3>
+          {% endif %}
+        {% else %}
           <h3 class="card-title">
+            <i class="fa-regular fa-share-from-square fa-sm"></i>
             <span style="color: var(--global-theme-color);">{{ repo_url[0] }}</span>/{{ repo_url[1] }}
           </h3>
-        </a>
-      {% endif %}
+        {% endif %}
+      </a>
       {% if data.fork %}
         <p class="card-text">
           forked from <a href="https://github.com/{{ data.parent_full_name }}">{{ data.parent_full_name }}</a>
