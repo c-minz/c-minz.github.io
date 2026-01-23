@@ -64,35 +64,6 @@
       "summary": "Maintained the PSI software (using Java and SQL) and implemented new customer requests. Rolled out updates and hotfixes to customers (power/gas supply companies and energy markets)."
     }
   ],
-  "events": [
-    {
-      "event": "48th LQP Workshop and Detlev-Fest, ITP, Leipzig University",
-      "eventurl": "https://www.physik.uni-leipzig.de/~lqp48",
-      "location": "ITP Leipzig",
-      "startDate": "2024-06-05",
-      "endDate": "2024-06-08",
-      "date": "2024-06-05",
-      "summary": "Scientific coorganisation"
-    },
-    {
-      "event": "Energy conditions in quantum field theory, ITP, Leipzig University",
-      "eventurl": "https://www.physik.uni-leipzig.de/~ecqft",
-      "location": "ITP Leipzig",
-      "startDate": "2022-09-12",
-      "endDate": "2022-09-16",
-      "date": "2022-09-12",
-      "summary": "Scientific coorganisation"
-    },
-    {
-      "event": "Hochschultage for eco-social market economy",
-      "eventurl": "http://www.hochschultage.org/hochschultage/hochschultage-2012/berlin-2012",
-      "location": "TU Berlin",
-      "startDate": "2012-11-20",
-      "endDate": "2012-11-21",
-      "date": "2012-11-20",
-      "summary": "Voluntary coorganisation, organised through the Global Marshall Plan initiative"
-    }
-  ],
   "education": [
     {
       "institution": "Department of Mathematics, University of York",
