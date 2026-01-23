@@ -36,4 +36,10 @@
 
 "World Scientific: IJMPD":
   url: https://www.worldscientific.com/worldscinet/ijmpd
-  color: "#0071A3"
+  color: "#0071a3"
+
+"Conference":
+  color: "#666666"
+
+"Event organization":
+  color: "#487548"
