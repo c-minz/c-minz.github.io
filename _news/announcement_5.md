@@ -6,4 +6,4 @@ related_posts: false
 related_publications: true
 ---
 
-The second part of my PhD research ['Quantization, dequantization and distinguished states'](https://c-minz.github.io/publications/#HawkinsMinzRejzner:2024) has now been published.
+The second part of my PhD research ['Quantization, dequantization and distinguished states'](https://iopscience.iop.org/article/10.1088/1751-8121/ad7427) has now been published.
