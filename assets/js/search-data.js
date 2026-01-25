@@ -111,6 +111,13 @@ ninja.data = [{
           window.open("https://inspirehep.net/authors/1414160", "_blank");
         },
       },{
+        id: 'social-linkedin',
+        title: 'LinkedIn',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://www.linkedin.com/in/christoph-minz-0b016591", "_blank");
+        },
+      },{
         id: 'social-mastodon',
         title: 'Mastodon',
         section: 'Socials',
@@ -137,6 +144,13 @@ ninja.data = [{
         section: 'Socials',
         handler: () => {
           window.open("https://youtube.com/@c-minz", "_blank");
+        },
+      },{
+        id: 'social-zotero',
+        title: 'Zotero',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://www.zotero.org/c-minz", "_blank");
         },
       },{
       id: 'light-theme',
