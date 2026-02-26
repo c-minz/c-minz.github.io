@@ -27,12 +27,12 @@
       "location": "Hanover, Germany",
       "url": "https://www.rc.uni-hannover.de",
       "startDate": "2025-10-15",
-      "endDate": "2026-02-15",
+      "endDate": "2026-03-30",
       "summary": "Investigating bounds for relative entropy and modular Hamiltonians in quantum field theory, in collaboration with <a href='https://www.analysis.uni-hannover.de/de/institut/personenverzeichnis/personen-detailansicht/institut-fur-analysis-pkkpg/wissenschaftliche-mitarbeiterinnen-und-mitarbeiter-1-1/dr-jacobus-ambrosius-sanders' target='_blank'>Ko Sanders</a> (and <a href='https://sites.google.com/view/adrianochialastri/home' target='_blank'>Adriano Chialastri</a>)."
     },
     {
       "name": "Scuola Internazionale Superiore di Studi Avanzati (SISSA)",
-      "position": "Research assistant",
+      "position": "Research visitor",
       "location": "Trieste, Italy",
       "url": "https://www.statphys.sissa.it",
       "startDate": "2024-10-01",
@@ -62,6 +62,14 @@
       "startDate": "2016-11-15",
       "endDate": "2017-09-15",
       "summary": "Maintained the PSI software (using Java and SQL) and implemented new customer requests. Rolled out updates and hotfixes to customers (power/gas supply companies and energy markets)."
+    },
+    {
+      "name": "Mentorium GmbH",
+      "position": "Tutor",
+      "location": "Berlin, Germany",
+      "startDate": "2016-02-08",
+      "endDate": "2016-11-15",
+      "summary": "Tutored mathematical methods, statistics and programming to university students in private lessons."
     }
   ],
   "education": [
