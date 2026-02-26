@@ -146,13 +146,6 @@ ninja.data = [{
           window.open("https://youtube.com/@c-minz", "_blank");
         },
       },{
-        id: 'social-zotero',
-        title: 'Zotero',
-        section: 'Socials',
-        handler: () => {
-          window.open("https://www.zotero.org/c-minz", "_blank");
-        },
-      },{
       id: 'light-theme',
       title: 'Change theme to light',
       description: 'Change the theme of the site to Light',
