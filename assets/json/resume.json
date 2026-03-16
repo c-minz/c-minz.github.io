@@ -28,7 +28,7 @@
       "url": "https://www.rc.uni-hannover.de",
       "startDate": "2025-10-15",
       "endDate": "2026-03-30",
-      "summary": "Investigating bounds for relative entropy and modular Hamiltonians in quantum field theory, in collaboration with <a href='https://www.analysis.uni-hannover.de/de/institut/personenverzeichnis/personen-detailansicht/institut-fur-analysis-pkkpg/wissenschaftliche-mitarbeiterinnen-und-mitarbeiter-1-1/dr-jacobus-ambrosius-sanders' target='_blank'>Ko Sanders</a> (and <a href='https://sites.google.com/view/adrianochialastri/home' target='_blank'>Adriano Chialastri</a>)."
+      "summary": "Investigating bounds for relative entropy and modular Hamiltonians in quantum field theory, in collaboration with <a href='https://www.analysis.uni-hannover.de/institut/personenverzeichnis/personen-detailansicht/institut-fuer-analysis/wissenschaftliche-mitarbeiterinnen-und-mitarbeiter-2/jacobus-ambrosius-sanders' target='_blank'>Ko Sanders</a> (and <a href='https://sites.google.com/view/adrianochialastri/home' target='_blank'>Adriano Chialastri</a>)."
     },
     {
       "name": "Scuola Internazionale Superiore di Studi Avanzati (SISSA)",
@@ -67,6 +67,7 @@
       "name": "Mentorium GmbH",
       "position": "Tutor",
       "location": "Berlin, Germany",
+      "url": "https://www.mentorium.de",
       "startDate": "2016-02-08",
       "endDate": "2016-11-15",
       "summary": "Tutored mathematical methods, statistics and programming to university students in private lessons."
@@ -77,7 +78,7 @@
       "institution": "Department of Mathematics, University of York",
       "location": "York, UK",
       "url": "https://www.york.ac.uk/maths",
-      "area": "<a href='https://etheses.whiterose.ac.uk/29866' target='_blank'>Thesis: 'Algebraic Field Theory on Causal Sets: Local Structures and Quantization Methods'</a> supervised by <a href='https://www.york.ac.uk/maths/people/kasia-rejzner', target='_blank'>Kasia Rejzner</a> and <a href='https://www.york.ac.uk/maths/people/eli-hawkins' target='_blank'>Eli Hawkins</a> (<a href='https://www.york.ac.uk/maths/research/mathematical-physics-quantum-information' target='_blank'>Mathematical Physics and Quantum Information Research Group</a>)",
+      "area": "<a href='https://etheses.whiterose.ac.uk/29866' target='_blank'>Thesis: 'Algebraic Field Theory on Causal Sets: Local Structures and Quantization Methods'</a> supervised by <a href='https://rejzner.com', target='_blank'>Kasia Rejzner</a> and <a href='https://www.york.ac.uk/maths/people/eli-hawkins' target='_blank'>Eli Hawkins</a> (<a href='https://www.york.ac.uk/maths/research/mathematical-physics-quantum-information' target='_blank'>Mathematical Physics and Quantum Information Research Group</a>)",
       "studyType": "PhD in Mathematics (Mathematical Physics)",
       "startDate": "2017-10-01",
       "endDate": "2021-09-30",
@@ -94,7 +95,7 @@
     {
       "institution": "Fakultät II - Mathematik und Naturwissenschaften, Technische Universität Berlin (Technical University of Berlin)",
       "location": "Berlin, Germany",
-      "url": "https://www.tu.berlin/naturwissenschaften/physik",
+      "url": "https://www.tu.berlin/physik",
       "area": "Thesis: 'Shock Waves in Nonlinear Electrodynamics' supervised by Horst-Heino von Borzeszkowski and Thoralf Chrobok (<a href='https://www1.itp.tu-berlin.de/hellwig/vB/' target='_blank'>Group for Relativity and Quantum Theory</a>)",
       "studyType": "Master of Science in Physics",
       "startDate": "2011-04-01",
@@ -116,7 +117,7 @@
       "endDate": "2011-09-30",
       "courses": [
         "Research internship at the <a href='https://www.eng.yale.edu/caolab' target='_blank'>Hui Cao Research Laboratory</a> (Department of Applied Physics, Yale University, Connecticut, USA) organised through the <a href='https://www.daad.de/rise/de/rise-weltweit' target='_blank'>exchange program RISE (Research Internships in Science and Engineering)</a> by DAAD, working on structural coloration with experiments and a simulation in MATLAB (2010.08 - 2010.10).",
-        "Research internship at the <a href='https://www.laser-research.co.za' target='_blank'>Laser Research Institute</a> (Stellenbosch University, Western Cape, South Africa), working with <a href='https://physics.uonbi.ac.ke/staff/dr-zephania-birech' target='_blank'>Zephania Birech</a> and programming a measuring software with LabVIEW for a femtosecond experiment (under supervision by <a href='https://www.mpsd.mpg.de/person/50555/2724' target='_blank'>Heinrich Schwörer</a>) (2010.04 - 2010.07)."
+        "Research internship at the <a href='https://physics.sun.ac.za' target='_blank'>Laser Research Institute</a> (Stellenbosch University, Western Cape, South Africa), working with <a href='https://physics.uonbi.ac.ke/staff/dr-zephania-birech' target='_blank'>Zephania Birech</a> and programming a measuring software with LabVIEW for a femtosecond experiment (under supervision by <a href='https://www.mpsd.mpg.de/person/50555/2724' target='_blank'>Heinrich Schwörer</a>) (2010.04 - 2010.07)."
       ]
     }
   ],
