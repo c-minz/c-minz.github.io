@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-02-26'
+  last_updated: '2026-03-27'
 repos:
   c-minz/LaTeX-causets:
     description: Package of macros to typeset (Hasse) diagrams of partially ordered sets in LaTeX, with main application to causal sets (causets). The package uses TikZ and includes various style options to customize the diagrams.
@@ -7,8 +7,8 @@ repos:
     forks_count: 0
     homepage: https://ctan.org/pkg/causets
     languages:
-    - HTML&nbsp;(67.2%)
-    - TeX&nbsp;(32.4%)
+    - HTML&nbsp;(66.9%)
+    - TeX&nbsp;(32.6%)
     - Perl&nbsp;(0.4%)
     latest_release: v1.5, 2025-02-24
     latest_release_tag: v1.5
