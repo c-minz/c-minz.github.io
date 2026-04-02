@@ -1,7 +1,7 @@
 {
   "basics": {
     "name": "Christoph Minz",
-    "proficiency": "Researcher in theoretical and mathematical physics",
+    "proficiency": "Researcher in mathematical and theoretical physics",
     "image": "assets/img/c-minz_cv.jpg",
     "email": "christoph.minz{at}posteo.net",
     "place of birth": "Suhl, Germany (GDR)",
@@ -21,6 +21,16 @@
     ]
   },
   "work": [
+    {
+      "name": "Institut für Analysis, Leibniz-Universität Hannover",
+      "position": "Research assistant and assistant lecturer",
+      "location": "Hanover, Germany",
+      "url": "https://www.analysis.uni-hannover.de",
+      "startDate": "2026-04-01",
+      "endDate": "present",
+      "summary": "Working on mathematical aspects of relative entropy and modular Hamiltonians in quantum field theory.",
+      "highlights": ["Teaching 'Stochastik B' (SoSe 2026)"]
+    },
     {
       "name": "Institut für Analysis (and Riemann Center for Geometry and Physics), Leibniz-Universität Hannover",
       "position": "Riemann fellow",
