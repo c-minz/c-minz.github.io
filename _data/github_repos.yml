@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-05-08'
+  last_updated: '2026-05-15'
 repos:
   c-minz/LaTeX-causets:
     description: Package of macros to typeset (Hasse) diagrams of partially ordered sets in LaTeX, with main application to causal sets (causets). The package uses TikZ and includes various style options to customize the diagrams.
@@ -97,6 +97,25 @@ repos:
     - causets
     - quantum-gravity
     watchers_count: 2
+  c-minz/diamondresults:
+    description: Source code for the plotting of results from the causal set sprinkling simulations with MATLAB and LaTeX, developed during my PhD research at the University of York. Part 2/2 (see Readme file for more information).
+    fork: false
+    forks_count: 0
+    languages:
+    - TeX&nbsp;(65.4%)
+    - MATLAB&nbsp;(34.6%)
+    main_language: TeX
+    stargazers_count: 0
+    subscribers_count: 1
+    topics:
+    - causal-sets
+    - causets
+    - diamonds
+    - local-structure
+    - preferred-past
+    - spacetime-discretization-methods
+    - sprinkling
+    watchers_count: 0
   c-minz/diamondsprinkling:
     description: Source code for the causal set sprinkling simulations with MATLAB, developed during my PhD research at the University of York. Part 1/2 (see Readme file for more information).
     fork: false
