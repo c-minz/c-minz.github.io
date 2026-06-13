@@ -83,6 +83,9 @@ ninja.data = [{
           section: "News",},{id: "news-the-results-from-my-project-with-adriano-chialastri-and-ko-sanders-are-now-available-on-the-arxiv-bounds-on-relative-modular-hamiltonians-in-general-qft",
           title: 'The results from my project with Adriano Chialastri and Ko Sanders are now...',
           description: "",
+          section: "News",},{id: "news-i-have-migrated-my-mastodon-account-to-https-mathstodon-xyz-cminz",
+          title: 'I have migrated my Mastodon account to https://mathstodon.xyz/@cminz.',
+          description: "",
           section: "News",},{id: "projects-modular-operator-numerics",
           title: 'Modular operator numerics',
           description: "Numeric approach to modular operators of free, massive bosons and fermions.",
@@ -131,7 +134,7 @@ ninja.data = [{
         title: 'Mastodon',
         section: 'Socials',
         handler: () => {
-          window.open("https://mastodon.social/@cminz", "_blank");
+          window.open("https://mathstodon.xyz/@cminz", "_blank");
         },
       },{
         id: 'social-orcid',
