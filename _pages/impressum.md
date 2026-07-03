@@ -8,6 +8,11 @@ nav_order: 6
 
 The person responsible for the website is Christoph Minz.
 
+Leibniz University Hannover<br>
+Institute of Analysis<br>
+Welfengarten 1<br>
+30167 Hannover, Germany
+
 E-Mail: christoph.minz[_at_]posteo.net
 
 ## Disclaimer
