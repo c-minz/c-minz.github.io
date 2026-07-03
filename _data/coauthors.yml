@@ -62,6 +62,14 @@
   - firstname: ["Gerold", "Gerold O.", "G.", "G. O."]
     url: https://inspirehep.net/authors/2316171
 
+"stottmeister":
+  - firstname: ["Alexander", "Alex", "A."]
+    url: https://inspirehep.net/authors/1274836
+
+"strohmaier":
+  - firstname: ["Alexander", "Alex", "A."]
+    url: https://inspirehep.net/authors/987342
+
 "tonni":
   - firstname: ["Erik", "E."]
     url: https://inspirehep.net/authors/1028903
