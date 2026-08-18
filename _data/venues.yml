@@ -30,6 +30,10 @@
   url: https://link.springer.com/journal/23
   color: "#002457"
 
+"Springer: JHEP":
+  url: https://link.springer.com/journal/13130
+  color: "#d0b701"
+
 "Whiterose":
   url: https://etheses.whiterose.ac.uk
   color: "#587898"
