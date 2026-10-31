@@ -28,19 +28,23 @@
 
 "Springer: AHP":
   url: https://link.springer.com/journal/23
-  color: "#002457"
+  color: "#016cb3"
 
 "Springer: JHEP":
   url: https://link.springer.com/journal/13130
   color: "#d0b701"
 
+"Springer: LMP":
+  url: https://link.springer.com/journal/11005
+  color: "#db2129"
+
 "Whiterose":
   url: https://etheses.whiterose.ac.uk
   color: "#587898"
 
-"World Scientific: IJMPD":
-  url: https://www.worldscientific.com/worldscinet/ijmpd
-  color: "#0071a3"
+"World Scientific":
+  url: https://www.worldscientific.com
+  color: "#192b6c"
 
 "Conference":
   color: "#666666"
